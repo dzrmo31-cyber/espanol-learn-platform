@@ -1,0 +1,2163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>إسبانيول - تعلم اللغة الإسبانية</title>
+  <meta name="description" content="منصة إسبانيول لتعلم اللغة الإسبانية بطريقة سهلة وممتعة. فصول شاملة، دروس تفاعلية، اختبارات ونظام نقاط." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* ======== CSS VARIABLES ======== */
+    :root {
+      --primary: #7c3aed;
+      --primary-light: #8b5cf6;
+      --primary-dark: #6d28d9;
+      --secondary: #06b6d4;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg-dark: #0f0c29;
+      --bg-card: rgba(255,255,255,0.05);
+      --bg-card-hover: rgba(255,255,255,0.1);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border: rgba(255,255,255,0.1);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --radius-xl: 24px;
+      --shadow: 0 20px 60px rgba(0,0,0,0.4);
+      --shadow-sm: 0 4px 20px rgba(0,0,0,0.2);
+      --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      --font: 'Cairo', sans-serif;
+      --glow: 0 0 30px rgba(124,58,237,0.3);
+    }
+
+    /* ======== RESET & BASE ======== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ======== BACKGROUND ======== */
+    #site-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      transition: var(--transition);
+    }
+    #site-bg.has-image {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    #site-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(15,12,41,0.7);
+    }
+    .bg-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: float 8s ease-in-out infinite;
+      z-index: 0;
+    }
+    .bg-orb:nth-child(1) { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -200px; }
+    .bg-orb:nth-child(2) { width: 400px; height: 400px; background: var(--secondary); bottom: -100px; left: -100px; animation-delay: -3s; }
+    .bg-orb:nth-child(3) { width: 300px; height: 300px; background: var(--accent); top: 50%; left: 50%; animation-delay: -6s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(30px,-30px) scale(1.05); }
+      66% { transform: translate(-20px,20px) scale(0.95); }
+    }
+
+    /* ======== LAYOUT ======== */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+    /* ======== NAVBAR ======== */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 16px 0;
+      backdrop-filter: blur(20px);
+      background: rgba(15,12,41,0.8);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .navbar.scrolled {
+      padding: 10px 0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      box-shadow: var(--glow);
+    }
+    .logo-text { font-size: 20px; font-weight: 800; }
+    .logo-text span { color: var(--primary-light); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text-primary);
+      background: var(--bg-card-hover);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      box-shadow: 0 4px 20px rgba(124,58,237,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(124,58,237,0.5); }
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
+    .btn-accent {
+      background: linear-gradient(135deg, var(--accent), #f97316);
+      color: white;
+    }
+    .btn-accent:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(245,158,11,0.4); }
+    .btn-lg { padding: 14px 28px; font-size: 16px; border-radius: var(--radius); }
+    .btn-sm { padding: 6px 14px; font-size: 13px; }
+
+    .user-menu { position: relative; }
+    .user-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 16px;
+      cursor: pointer;
+      border: 2px solid var(--border);
+      transition: var(--transition);
+    }
+    .user-avatar:hover { border-color: var(--primary-light); box-shadow: var(--glow); }
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      background: rgba(30,27,75,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px;
+      min-width: 200px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: var(--transition);
+    }
+    .user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 14px;
+    }
+    .dropdown-item:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+    .dropdown-item.danger { color: var(--danger); }
+
+    /* ======== HERO SECTION ======== */
+    .hero {
+      padding: 140px 0 80px;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 13px;
+      color: var(--primary-light);
+      margin-bottom: 24px;
+      animation: fadeInUp 0.6s ease;
+    }
+    .hero-title {
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      animation: fadeInUp 0.7s ease 0.1s both;
+    }
+    .hero-title .highlight {
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      animation: fadeInUp 0.7s ease 0.2s both;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.7s ease 0.3s both;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+      padding-top: 48px;
+      border-top: 1px solid var(--border);
+      animation: fadeInUp 0.7s ease 0.4s both;
+    }
+    .stat-item { text-align: center; }
+    .stat-number {
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 13px; color: var(--text-muted); }
+
+    /* Hero Visual */
+    .hero-visual {
+      position: relative;
+      animation: fadeInRight 0.8s ease 0.2s both;
+    }
+    .hero-card {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+    }
+    .word-showcase {
+      text-align: center;
+      padding: 24px;
+    }
+    .spanish-word {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--primary-light);
+      margin-bottom: 8px;
+      direction: ltr;
+      animation: wordPulse 2s ease-in-out infinite;
+    }
+    .arabic-word {
+      font-size: 24px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+    .pronunciation-badge {
+      display: inline-block;
+      background: rgba(6,182,212,0.15);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: 100px;
+      padding: 4px 16px;
+      font-size: 13px;
+      color: var(--secondary);
+      direction: ltr;
+    }
+    @keyframes wordPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+    .mini-progress {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .mini-progress-item { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .mini-progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-card);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .mini-progress-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      animation: progressGrow 1.5s ease forwards;
+    }
+    @keyframes progressGrow { from { width: 0; } }
+
+    /* ======== PROGRESS SECTION (Logged in user) ======== */
+    #user-progress-section {
+      margin: 40px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .progress-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .progress-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--success), var(--secondary));
+    }
+    .progress-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .progress-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .xp-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245,158,11,0.15);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .progress-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .progress-stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    .progress-stat-card:hover { background: var(--bg-card-hover); transform: translateY(-3px); }
+    .progress-stat-card .icon { font-size: 24px; margin-bottom: 8px; }
+    .progress-stat-card .value { font-size: 22px; font-weight: 800; color: var(--primary-light); }
+    .progress-stat-card .label { font-size: 12px; color: var(--text-muted); }
+    .main-progress-bar {
+      background: rgba(255,255,255,0.05);
+      border-radius: 100px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .main-progress-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 1s ease;
+    }
+
+    /* ======== SECTIONS ======== */
+    .section {
+      padding: 80px 0;
+      position: relative;
+      z-index: 1;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .section-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124,58,237,0.1);
+      border: 1px solid rgba(124,58,237,0.2);
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--primary-light);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+    .section-subtitle { font-size: 16px; color: var(--text-secondary); }
+
+    /* ======== CHAPTERS GRID ======== */
+    .chapters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .chapter-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .chapter-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--chapter-color, linear-gradient(90deg, var(--primary), var(--secondary)));
+      transition: height var(--transition);
+    }
+    .chapter-card:hover { transform: translateY(-6px); background: var(--bg-card-hover); box-shadow: var(--shadow); }
+    .chapter-card:hover::before { height: 5px; }
+    .chapter-card.locked { opacity: 0.7; }
+    .chapter-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+      display: block;
+    }
+    .chapter-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .chapter-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .chapter-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .chapter-count {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .chapter-badge {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-weight: 700;
+    }
+    .badge-free { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .badge-premium { background: rgba(245,158,11,0.15); color: var(--accent); border: 1px solid rgba(245,158,11,0.3); }
+    .chapter-progress { height: 6px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; }
+    .chapter-progress-fill {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 1s ease;
+    }
+    .chapter-progress-text { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+    .lock-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(15,12,41,0.6);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .lock-icon { font-size: 32px; }
+
+    /* ======== LESSONS MODAL ======== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+      padding: 20px;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    .modal {
+      background: rgba(20,15,50,0.95);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: scale(0.9) translateY(20px);
+      transition: var(--transition);
+      position: relative;
+    }
+    .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+    .modal::-webkit-scrollbar { width: 6px; }
+    .modal::-webkit-scrollbar-track { background: transparent; }
+    .modal::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 3px; }
+
+    .modal-header {
+      padding: 28px 32px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: rgba(20,15,50,0.98);
+      backdrop-filter: blur(20px);
+      z-index: 10;
+    }
+    .modal-title { font-size: 20px; font-weight: 700; }
+    .modal-close {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: var(--transition);
+      font-size: 16px;
+    }
+    .modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
+    .modal-body { padding: 28px 32px; }
+
+    /* ======== LESSONS LIST ======== */
+    .lessons-list { display: flex; flex-direction: column; gap: 12px; }
+    .lesson-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .lesson-item:hover { background: var(--bg-card-hover); border-color: rgba(124,58,237,0.3); transform: translateX(-4px); }
+    .lesson-item.completed { border-color: rgba(16,185,129,0.3); }
+    .lesson-item.locked { opacity: 0.6; cursor: not-allowed; }
+    .lesson-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .lesson-num.completed { background: var(--success); color: white; }
+    .lesson-num.locked { background: var(--text-muted); }
+    .lesson-info { flex: 1; }
+    .lesson-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .lesson-meta { display: flex; align-items: center; gap: 12px; font-size: 12px; color: var(--text-muted); }
+    .lesson-meta span { display: flex; align-items: center; gap: 4px; }
+
+    /* ======== LESSON VIEW ======== */
+    .lesson-view-header {
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(6,182,212,0.2));
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .lesson-view-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; direction: ltr; }
+    .lesson-view-desc { font-size: 15px; color: var(--text-secondary); }
+    .lesson-content { font-size: 15px; line-height: 1.8; color: var(--text-secondary); margin-bottom: 28px; }
+
+    .vocabulary-section { margin-bottom: 28px; }
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .vocab-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .vocab-card:hover { background: var(--bg-card-hover); transform: translateY(-2px); }
+    .vocab-es {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary-light);
+      direction: ltr;
+      margin-bottom: 4px;
+    }
+    .vocab-ar { font-size: 15px; color: var(--text-primary); margin-bottom: 4px; }
+    .vocab-pron { font-size: 12px; color: var(--secondary); direction: ltr; }
+    .speak-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(6,182,212,0.15);
+      border: 1px solid rgba(6,182,212,0.3);
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 6px;
+    }
+    .speak-btn:hover { background: rgba(6,182,212,0.25); }
+
+    .examples-section { margin-bottom: 28px; }
+    .example-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-top: 12px;
+    }
+    .example-es {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary-light);
+      direction: ltr;
+      margin-bottom: 8px;
+      white-space: pre-line;
+    }
+    .example-ar { font-size: 14px; color: var(--text-secondary); white-space: pre-line; }
+
+    /* ======== QUIZ ======== */
+    .quiz-section { margin-bottom: 28px; }
+    .quiz-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 16px;
+    }
+    .quiz-question { font-size: 17px; font-weight: 600; margin-bottom: 20px; }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option {
+      padding: 14px 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .quiz-option:hover { background: rgba(124,58,237,0.1); border-color: rgba(124,58,237,0.3); }
+    .quiz-option.correct { background: rgba(16,185,129,0.15); border-color: var(--success); }
+    .quiz-option.wrong { background: rgba(239,68,68,0.15); border-color: var(--danger); }
+    .quiz-option.selected { border-color: var(--primary); }
+    .quiz-feedback {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .quiz-feedback.correct { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+    .quiz-feedback.wrong { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+    .quiz-submit {
+      margin-top: 16px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .lesson-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ======== FEATURES ======== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 24px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      text-align: center;
+      transition: var(--transition);
+    }
+    .feature-card:hover { transform: translateY(-6px); background: var(--bg-card-hover); box-shadow: var(--shadow-sm); }
+    .feature-icon {
+      width: 64px; height: 64px;
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 16px;
+    }
+    .feature-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .feature-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+
+    /* ======== PRICING ======== */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .pricing-card.featured {
+      border-color: var(--primary);
+      background: rgba(124,58,237,0.1);
+    }
+    .pricing-card.featured::before {
+      content: '⭐ الأكثر شعبية';
+      position: absolute;
+      top: 0; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 20px;
+      border-radius: 0 0 10px 10px;
+    }
+    .pricing-card:hover { transform: translateY(-8px); box-shadow: var(--shadow); }
+    .pricing-plan { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+    .pricing-price { font-size: 48px; font-weight: 900; color: var(--primary-light); }
+    .pricing-price span { font-size: 16px; color: var(--text-muted); }
+    .pricing-features { list-style: none; margin: 24px 0; text-align: right; }
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .pricing-features li:last-child { border-bottom: none; }
+    .pricing-features li i { color: var(--success); }
+
+    /* ======== AUTH MODAL ======== */
+    .auth-form { display: flex; flex-direction: column; gap: 18px; }
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label { font-size: 14px; font-weight: 600; color: var(--text-secondary); }
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 14px;
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-input:focus { border-color: var(--primary); background: rgba(124,58,237,0.05); box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
+    .form-input::placeholder { color: var(--text-muted); }
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: var(--transition);
+    }
+    .auth-tab.active { color: var(--primary-light); border-bottom-color: var(--primary); }
+    .auth-switch {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    .auth-switch a { color: var(--primary-light); cursor: pointer; }
+
+    /* ======== PAYMENT MODAL ======== */
+    .payment-info {
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .payment-info h4 { color: var(--accent); margin-bottom: 8px; }
+    .payment-info p { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .payment-steps {
+      counter-reset: step;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .payment-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      counter-increment: step;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step-num::before { content: counter(step); }
+    .step-content { font-size: 14px; color: var(--text-secondary); padding-top: 4px; }
+    .step-content strong { color: var(--text-primary); }
+
+    /* ======== TOAST ======== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: rgba(20,15,50,0.95);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      min-width: 300px;
+      max-width: 400px;
+      transform: translateX(-120%);
+      transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+      font-size: 14px;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.success { border-color: rgba(16,185,129,0.4); }
+    .toast.error { border-color: rgba(239,68,68,0.4); }
+    .toast.warning { border-color: rgba(245,158,11,0.4); }
+    .toast-icon { font-size: 20px; }
+    .toast-text { flex: 1; }
+
+    /* ======== XP POPUP ======== */
+    .xp-popup {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(0);
+      background: linear-gradient(135deg, var(--accent), #f97316);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 18px;
+      font-weight: 800;
+      z-index: 9998;
+      opacity: 0;
+      transition: all 1s ease;
+      pointer-events: none;
+    }
+    .xp-popup.show { opacity: 1; transform: translateX(-50%) translateY(-40px); }
+
+    /* ======== FOOTER ======== */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .footer-logo { font-size: 20px; font-weight: 800; margin-bottom: 12px; }
+    .footer-logo span { color: var(--primary-light); }
+    .footer-text { font-size: 14px; color: var(--text-muted); }
+
+    /* ======== LOADING ======== */
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 40px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ======== LEVEL BADGES ======== */
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .level-beginner { background: rgba(16,185,129,0.15); color: var(--success); }
+    .level-intermediate { background: rgba(6,182,212,0.15); color: var(--secondary); }
+    .level-advanced { background: rgba(245,158,11,0.15); color: var(--accent); }
+
+    /* ======== ANIMATIONS ======== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInRight {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .fade-in { animation: fadeInUp 0.6s ease forwards; }
+
+    /* ======== RESPONSIVE ======== */
+    .hamburger { display: none; cursor: pointer; font-size: 22px; }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 70px; left: 0; right: 0;
+      background: rgba(15,12,41,0.98);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 20px;
+      z-index: 999;
+    }
+    .mobile-menu.open { display: flex; flex-direction: column; gap: 8px; }
+    .mobile-menu a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      transition: var(--transition);
+    }
+    .mobile-menu a:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .hero-grid { grid-template-columns: 1fr; text-align: center; }
+      .hero-visual { order: -1; }
+      .hero-actions { justify-content: center; }
+      .hero-stats { grid-template-columns: repeat(3, 1fr); }
+      .progress-stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .container { padding: 0 16px; }
+      .hero { padding: 110px 0 60px; }
+      .hero-stats { grid-template-columns: 1fr; gap: 16px; }
+      .chapters-grid { grid-template-columns: 1fr; }
+      .modal-body { padding: 20px; }
+      .modal-header { padding: 20px; }
+      .progress-stats-grid { grid-template-columns: 1fr 1fr; }
+      .vocab-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ======== SECTION DIVIDER ======== */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 0;
+    }
+
+    /* ======== EMPTY STATE ======== */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state i { font-size: 48px; margin-bottom: 16px; display: block; }
+    .empty-state h3 { font-size: 20px; margin-bottom: 8px; color: var(--text-secondary); }
+
+    /* ======== SUBSCRIPTION REQUIRED ======== */
+    .sub-required {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .sub-required-icon { font-size: 48px; margin-bottom: 16px; }
+    .sub-required h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .sub-required p { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+
+    /* Tag */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Background -->
+<div id="site-bg">
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+  <div class="bg-orb"></div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- XP Popup -->
+<div class="xp-popup" id="xp-popup">+10 XP 🌟</div>
+
+<!-- ======================== NAVBAR ======================== -->
+<nav class="navbar" id="navbar">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-icon">🇪🇸</div>
+        <div class="logo-text">إسبانيول <span>ES</span></div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#home" class="active">الرئيسية</a></li>
+        <li><a href="#levels-guide">المستويات</a></li>
+        <li><a href="#chapters">الفصول</a></li>
+        <li><a href="#features">المميزات</a></li>
+        <li><a href="#pricing">الاشتراك</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div id="auth-buttons">
+          <button class="btn btn-secondary btn-sm" onclick="openAuthModal('login')">تسجيل الدخول</button>
+          <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">إنشاء حساب</button>
+        </div>
+        <div id="user-menu" class="user-menu" style="display:none;">
+          <div class="user-avatar" id="user-avatar-btn" onclick="toggleUserDropdown()">ط</div>
+          <div class="user-dropdown" id="user-dropdown">
+            <div class="dropdown-item" onclick="showSection('progress')"><i class="fa-solid fa-chart-line"></i> تقدمي</div>
+            <div class="dropdown-item" onclick="showPaymentModal()"><i class="fa-solid fa-credit-card"></i> الاشتراك</div>
+            <div class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</div>
+          </div>
+        </div>
+        <span class="hamburger" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#home" onclick="closeMobileMenu()">🏠 الرئيسية</a>
+  <a href="#levels-guide" onclick="closeMobileMenu()">🏢 المستويات</a>
+  <a href="#chapters" onclick="closeMobileMenu()">📚 الفصول</a>
+  <a href="#features" onclick="closeMobileMenu()">⭐ المميزات</a>
+  <a href="#pricing" onclick="closeMobileMenu()">💰 الاشتراك</a>
+</div>
+
+<!-- ======================== HERO ======================== -->
+<section class="hero" id="home">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fa-solid fa-star"></i>
+          منصة تعلم اللغة الإسبانية رقم 1
+        </div>
+        <h1 class="hero-title">
+          تعلم <span class="highlight">الإسبانية</span><br />
+          بطريقة ممتعة وفعّالة
+        </h1>
+        <p class="hero-subtitle">
+          منهج متكامل لتعلم اللغة الإسبانية من الصفر، مع دروس تفاعلية، نطق صوتي، اختبارات، ونظام نقاط يحفّزك على الاستمرار.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-primary btn-lg" onclick="scrollToChapters()">
+            <i class="fa-solid fa-rocket"></i>
+            ابدأ التعلم الآن
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="openAuthModal('register')">
+            <i class="fa-solid fa-user-plus"></i>
+            إنشاء حساب مجاني
+          </button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">6+</div>
+            <div class="stat-label">فصول تعليمية</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">50+</div>
+            <div class="stat-label">درس تفاعلي</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">مجاني</div>
+            <div class="stat-label">الفصل الأول</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-card">
+          <div class="word-showcase" id="word-showcase">
+            <div class="spanish-word" id="hero-word">¡Hola!</div>
+            <div class="arabic-word" id="hero-translation">مرحباً!</div>
+            <div class="pronunciation-badge" id="hero-pron">O-la</div>
+            <button class="speak-btn" onclick="speakWord(document.getElementById('hero-word').textContent, 'es-ES')" style="margin-top:12px;">
+              <i class="fa-solid fa-volume-high"></i> استمع
+            </button>
+          </div>
+          <div class="mini-progress">
+            <div class="mini-progress-item">
+              <span style="font-size:12px;color:var(--text-muted);">الأساسيات</span>
+              <div class="mini-progress-bar"><div class="mini-progress-fill" style="width:80%;"></div></div>
+              <span style="font-size:12px;color:var(--text-muted);">80%</span>
+            </div>
+            <div class="mini-progress-item">
+              <span style="font-size:12px;color:var(--text-muted);">المفردات</span>
+              <div class="mini-progress-bar"><div class="mini-progress-fill" style="width:55%;animation-delay:0.3s"></div></div>
+              <span style="font-size:12px;color:var(--text-muted);">55%</span>
+            </div>
+            <div class="mini-progress-item">
+              <span style="font-size:12px;color:var(--text-muted);">القواعد</span>
+              <div class="mini-progress-bar"><div class="mini-progress-fill" style="width:30%;animation-delay:0.6s"></div></div>
+              <span style="font-size:12px;color:var(--text-muted);">30%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== USER PROGRESS ======================== -->
+<section id="user-progress-section" style="display:none;">
+  <div class="container">
+    <div class="progress-card">
+      <div class="progress-header">
+        <div>
+          <h2 class="progress-title">مرحباً، <span id="progress-username">طالب</span>! 👋</h2>
+          <p style="font-size:13px;color:var(--text-muted);">استمر في تقدمك - أنت في المسار الصحيح</p>
+        </div>
+        <div class="xp-badge">
+          <i class="fa-solid fa-star"></i>
+          <span id="progress-xp">0</span> XP
+        </div>
+      </div>
+      <div class="progress-stats-grid">
+        <div class="progress-stat-card">
+          <div class="icon">📚</div>
+          <div class="value" id="stat-completed">0</div>
+          <div class="label">دروس مكتملة</div>
+        </div>
+        <div class="progress-stat-card">
+          <div class="icon">🏆</div>
+          <div class="value" id="stat-level">مبتدئ</div>
+          <div class="label">مستواك الحالي</div>
+        </div>
+        <div class="progress-stat-card">
+          <div class="icon">⚡</div>
+          <div class="value" id="stat-streak">0</div>
+          <div class="label">يوم متواصل</div>
+        </div>
+        <div class="progress-stat-card">
+          <div class="icon">📊</div>
+          <div class="value" id="stat-percentage">0%</div>
+          <div class="label">من المنهج</div>
+        </div>
+      </div>
+      <div class="main-progress-bar">
+        <div class="main-progress-fill" id="main-progress-fill" style="width:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-top:6px;">
+        <span>بداية الرحلة</span>
+        <span id="progress-label">0% مكتمل</span>
+        <span>المحترف</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+
+<!-- ======================== LEVELS GUIDE ======================== -->
+<section id="levels-guide" style="padding: 100px 0; position: relative; z-index: 1;">
+  <div class="container">
+    <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+      <h2 style="font-size: 36px; margin-bottom: 16px;">غرفة المستويات الأكاديمية</h2>
+      <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">نظام دراسي شامل ومفصل لتعلم الإسبانية (تم تحليل كافة المناهج لضمان دقة وخلو الدروس من الأخطاء 100%).</p>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+      
+      <!-- A1 -->
+      <div style="background: var(--bg-card); border: 1px solid rgba(16,185,129,0.3); border-radius: var(--radius-xl); padding: 30px; border-top: 5px solid #10b981; transition: var(--transition);">
+        <h3 style="color: #10b981; font-size: 24px; margin-bottom: 10px;">A1 - المستوى المبتدئ</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">الخطوة الأولى في رحلتك. تعلم الأساسيات والتعبيرات اليومية البسيطة بشكل منهجي.</p>
+        <ul style="list-style: none; padding: 0; color: var(--text-muted); font-size: 14px;">
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#10b981; margin-left:8px;"></i>التحيات والتعريف بالنفس</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#10b981; margin-left:8px;"></i>الأرقام، الوقت، والألوان</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#10b981; margin-left:8px;"></i>العائلة والمفردات اليومية الأساسية</li>
+        </ul>
+      </div>
+
+      <!-- A2 -->
+      <div style="background: var(--bg-card); border: 1px solid rgba(6,182,212,0.3); border-radius: var(--radius-xl); padding: 30px; border-top: 5px solid #06b6d4; transition: var(--transition);">
+        <h3 style="color: #06b6d4; font-size: 24px; margin-bottom: 10px;">A2 - المستوى الأساسي</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">بناء الجمل والتواصل المباشر في المواقف الحياتية المعتادة بثقة عالية.</p>
+        <ul style="list-style: none; padding: 0; color: var(--text-muted); font-size: 14px;">
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#06b6d4; margin-left:8px;"></i>وصف الروتين اليومي والأفعال الانعكاسية</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#06b6d4; margin-left:8px;"></i>التحدث عن الماضي (Pretérito Indefinido)</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#06b6d4; margin-left:8px;"></i>التسوق، السفر، وإعطاء الاتجاهات</li>
+        </ul>
+      </div>
+
+      <!-- B1 -->
+      <div style="background: var(--bg-card); border: 1px solid rgba(124,58,237,0.3); border-radius: var(--radius-xl); padding: 30px; border-top: 5px solid #7c3aed; transition: var(--transition);">
+        <h3 style="color: #7c3aed; font-size: 24px; margin-bottom: 10px;">B1 - المستوى المتوسط</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">التعبير عن الرأي، الطموحات، والتعامل مع معظم المواقف أثناء السفر باحتراف.</p>
+        <ul style="list-style: none; padding: 0; color: var(--text-muted); font-size: 14px;">
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-left:8px;"></i>التعبير عن الخطط (Futuro) والشروط</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-left:8px;"></i>أسلوب الشك والمشاعر (Subjuntivo)</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-left:8px;"></i>المناقشات المتعمقة وطرح الآراء</li>
+        </ul>
+      </div>
+
+      <!-- B2 -->
+      <div style="background: var(--bg-card); border: 1px solid rgba(245,158,11,0.3); border-radius: var(--radius-xl); padding: 30px; border-top: 5px solid #f59e0b; transition: var(--transition);">
+        <h3 style="color: #f59e0b; font-size: 24px; margin-bottom: 10px;">B2 - المستوى المتقدم</h3>
+        <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 15px;">الطلاقة، الفهم العميق، واستخدام الإسبانية في سياقات احترافية معقدة.</p>
+        <ul style="list-style: none; padding: 0; color: var(--text-muted); font-size: 14px;">
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#f59e0b; margin-left:8px;"></i>الإسبانية في بيئة العمل والمقابلات</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#f59e0b; margin-left:8px;"></i>الاستخدام المتقدم لأزمنة الشك</li>
+          <li style="margin-bottom: 8px;"><i class="fa-solid fa-check" style="color:#f59e0b; margin-left:8px;"></i>النقاشات المعقدة والطلاقة التامة</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+  
+<!-- ======================== CHAPTERS ======================== -->
+<section class="section" id="chapters">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><i class="fa-solid fa-book-open"></i> المنهج الكامل</div>
+      <h2 class="section-title">الفصول التعليمية</h2>
+      <p class="section-subtitle">ستة فصول شاملة تأخذك من الصفر إلى الاحتراف</p>
+    </div>
+    <div class="chapters-grid" id="chapters-grid">
+      <div style="grid-column:1/-1;text-align:center;">
+        <div class="loading-spinner"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ======================== FEATURES ======================== -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><i class="fa-solid fa-sparkles"></i> لماذا إسبانيول؟</div>
+      <h2 class="section-title">مميزات المنصة</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(124,58,237,0.15);">🎯</div>
+        <h3 class="feature-title">منهج منظم</h3>
+        <p class="feature-desc">فصول ودروس مرتبة بشكل تدريجي من المستوى المبتدئ إلى المتقدم</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(6,182,212,0.15);">🔊</div>
+        <h3 class="feature-title">نطق صوتي</h3>
+        <p class="feature-desc">استمع إلى نطق الكلمات والجمل بصوت واضح لتحسين لفظك</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(16,185,129,0.15);">✅</div>
+        <h3 class="feature-title">اختبارات تفاعلية</h3>
+        <p class="feature-desc">اختبارات بعد كل درس ونتائج فورية لقياس مستوى تقدمك</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(245,158,11,0.15);">⭐</div>
+        <h3 class="feature-title">نظام نقاط XP</h3>
+        <p class="feature-desc">اكسب نقاطاً وارتقِ في المستويات كلما أكملت دروساً واجتزت اختبارات</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(239,68,68,0.15);">💾</div>
+        <h3 class="feature-title">حفظ تلقائي</h3>
+        <p class="feature-desc">تقدمك محفوظ دائماً. استمر من حيث توقفت في أي وقت وأي جهاز</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:rgba(236,72,153,0.15);">📱</div>
+        <h3 class="feature-title">متجاوب بالكامل</h3>
+        <p class="feature-desc">تجربة مثالية على الهاتف والتابلت والكمبيوتر</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ======================== PRICING ======================== -->
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><i class="fa-solid fa-tag"></i> الأسعار</div>
+      <h2 class="section-title">اختر خطتك</h2>
+      <p class="section-subtitle">ابدأ مجاناً وطوّر نفسك بالخطة المميزة</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <p class="pricing-plan">الخطة المجانية</p>
+        <div class="pricing-price">0 <span>دج</span></div>
+        <ul class="pricing-features">
+          <li><i class="fa-solid fa-check"></i> الفصل الأول كاملاً</li>
+          <li><i class="fa-solid fa-check"></i> الفصل الثاني جزئياً</li>
+          <li><i class="fa-solid fa-check"></i> نظام النقاط والمستويات</li>
+          <li><i class="fa-solid fa-check"></i> حفظ التقدم</li>
+          <li style="opacity:0.4;"><i class="fa-solid fa-xmark" style="color:var(--danger)"></i> الفصول المتقدمة</li>
+          <li style="opacity:0.4;"><i class="fa-solid fa-xmark" style="color:var(--danger)"></i> الاختبارات الشاملة</li>
+        </ul>
+        <button class="btn btn-secondary" style="width:100%;" onclick="openAuthModal('register')">ابدأ مجاناً</button>
+      </div>
+      <div class="pricing-card featured">
+        <p class="pricing-plan" style="margin-top:24px;">الخطة المميزة</p>
+        <div class="pricing-price">1500 <span>دج/شهر</span></div>
+        <ul class="pricing-features">
+          <li><i class="fa-solid fa-check"></i> جميع الفصول الستة</li>
+          <li><i class="fa-solid fa-check"></i> جميع الدروس</li>
+          <li><i class="fa-solid fa-check"></i> الاختبارات الشاملة</li>
+          <li><i class="fa-solid fa-check"></i> النطق الصوتي كاملاً</li>
+          <li><i class="fa-solid fa-check"></i> شهادة إتمام</li>
+          <li><i class="fa-solid fa-check"></i> دعم مباشر</li>
+        </ul>
+        <button class="btn btn-primary" style="width:100%;" onclick="showPaymentModal()">اشترك الآن</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================== FOOTER ======================== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-logo">إسبانيول <span>ES</span></div>
+    <p class="footer-text">منصة تعلم اللغة الإسبانية © 2024</p>
+  </div>
+</footer>
+
+<!-- ======================== MODALS ======================== -->
+
+
+  <!-- Subscription Modal -->
+  <div id="sub-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('sub-modal')">&times;</span>
+      <h2>اختر خطتك الدراسية</h2>
+      <div class="sub-plans" style="display:flex; gap:20px; margin-top:20px;">
+        <div class="plan-card" style="flex:1; padding:20px; border:1px solid #ddd; border-radius:10px; text-align:center;">
+          <h3>الخطة المجانية</h3>
+          <p>وصول للفصول الأساسية فقط</p>
+          <h2 style="color:#667eea; margin:15px 0;">مجانًا</h2>
+          <button onclick="subscribeFree()" class="btn btn-outline" style="width:100%;">تفعيل</button>
+        </div>
+        <div class="plan-card" style="flex:1; padding:20px; border:1px solid #4facfe; border-radius:10px; text-align:center; box-shadow:0 5px 15px rgba(79,172,254,0.3);">
+          <h3>الخطة الشاملة (المدفوعة)</h3>
+          <p>وصول لجميع الفصول والمستويات والمحادثات والاختبارات المتقدمة</p>
+          <h2 style="color:#4facfe; margin:15px 0;">1500 دينار</h2>
+          <button onclick="requestPaidPlan()" class="btn btn-primary" style="width:100%;">طلب اشتراك</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3 class="modal-title">الدخول إلى إسبانيول</h3>
+      <button class="modal-close" onclick="closeModal('auth-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">تسجيل الدخول</div>
+        <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">إنشاء حساب</div>
+      </div>
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input type="email" class="form-input" id="login-email" placeholder="example@email.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">كلمة المرور</label>
+          <input type="password" class="form-input" id="login-password" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">
+          <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+        </button>
+      </form>
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form" onsubmit="handleRegister(event)" style="display:none;">
+        <div class="form-group">
+          <label class="form-label">الاسم الكامل</label>
+          <input type="text" class="form-input" id="reg-name" placeholder="اسمك الكامل" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="example@email.com" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">كلمة المرور (6 أحرف على الأقل)</label>
+          <input type="password" class="form-input" id="reg-password" placeholder="••••••••" minlength="6" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">
+          <i class="fa-solid fa-user-plus"></i> إنشاء حساب مجاني
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Chapters/Lessons Modal -->
+<div class="modal-overlay" id="lessons-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="lessons-modal-title">دروس الفصل</h3>
+      <button class="modal-close" onclick="closeModal('lessons-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="lessons-modal-body"></div>
+  </div>
+</div>
+
+<!-- Lesson View Modal -->
+<div class="modal-overlay" id="lesson-modal">
+  <div class="modal" style="max-width:900px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="lesson-modal-title">الدرس</h3>
+      <button class="modal-close" onclick="closeModal('lesson-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="lesson-modal-body"></div>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h3 class="modal-title">الاشتراك المميز</h3>
+      <button class="modal-close" onclick="closeModal('payment-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="payment-info">
+        <h4>💳 معلومات الدفع - بريد الجزائر</h4>
+        <p>يمكنك الدفع عبر خدمة CCP أو BaridiMob. المبلغ: <strong>1500 دج/شهر</strong></p>
+      </div>
+      <div class="payment-steps">
+        <div class="payment-step">
+          <div class="step-num"></div>
+          <div class="step-content">قم بتحويل المبلغ <strong>1500 دج</strong> إلى حساب CCP رقم: <strong>123456789</strong></div>
+        </div>
+        <div class="payment-step">
+          <div class="step-num"></div>
+          <div class="step-content">احتفظ برقم العملية أو وصل الدفع</div>
+        </div>
+        <div class="payment-step">
+          <div class="step-num"></div>
+          <div class="step-content">أدخل رقم العملية أدناه وانقر "إرسال"</div>
+        </div>
+      </div>
+      <form class="auth-form" onsubmit="handlePayment(event)" id="payment-form">
+        <div class="form-group">
+          <label class="form-label">طريقة الدفع</label>
+          <select class="form-input" id="pay-method">
+            <option value="ccp">CCP - بريد الجزائر</option>
+            <option value="baridimob">BaridiMob</option>
+            <option value="cib">CIB - بطاقة بنكية</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المبلغ المدفوع (دج)</label>
+          <input type="number" class="form-input" id="pay-amount" value="1500" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم العملية / المرجع</label>
+          <input type="text" class="form-input" id="pay-ref" placeholder="أدخل رقم العملية" required />
+        </div>
+        <button type="submit" class="btn btn-accent" style="width:100%;">
+          <i class="fa-solid fa-paper-plane"></i> إرسال طلب الدفع
+        </button>
+        <p style="font-size:12px;color:var(--text-muted);text-align:center;">سيتم مراجعة طلبك خلال 24 ساعة وتفعيل اشتراكك</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==============================
+// CONFIG
+// ==============================
+const API = 'http://localhost:3000/api';
+let currentUser = null;
+let authToken = localStorage.getItem('auth_token');
+let userProgress = {};
+let chapters = [];
+let currentLesson = null;
+let quizAnswers = {};
+
+// Word showcase animation
+const showcaseWords = [
+  { es: '¡Hola!', ar: 'مرحباً!', pron: 'O-la' },
+  { es: 'Gracias', ar: 'شكراً', pron: 'GRA-syas' },
+  { es: '¿Cómo estás?', ar: 'كيف حالك؟', pron: 'KO-mo es-TAS' },
+  { es: 'Buenos días', ar: 'صباح الخير', pron: 'BWE-nos DEE-as' },
+  { es: 'Me llamo...', ar: 'اسمي...', pron: 'me YA-mo' },
+  { es: 'España', ar: 'إسبانيا', pron: 'es-PA-nya' },
+  { es: 'Amor', ar: 'حب', pron: 'a-MOR' },
+];
+let wordIndex = 0;
+function cycleWords() {
+  const w = showcaseWords[wordIndex % showcaseWords.length];
+  const wordEl = document.getElementById('hero-word');
+  const transEl = document.getElementById('hero-translation');
+  const pronEl = document.getElementById('hero-pron');
+  if (wordEl) {
+    wordEl.style.opacity = '0'; transEl.style.opacity = '0'; pronEl.style.opacity = '0';
+    setTimeout(() => {
+      wordEl.textContent = w.es; transEl.textContent = w.ar; pronEl.textContent = w.pron;
+      wordEl.style.opacity = '1'; transEl.style.opacity = '1'; pronEl.style.opacity = '1';
+    }, 400);
+    wordIndex++;
+  }
+}
+setInterval(cycleWords, 3000);
+
+// ==============================
+// SITE SETTINGS (Background)
+// ==============================
+async function loadSiteSettings() {
+  try {
+    const res = await fetch(`${API}/settings`);
+    const settings = await res.json();
+    const bg = document.getElementById('site-bg');
+    if (settings.site_bg_image) {
+      bg.style.backgroundImage = `url('http://localhost:3000${settings.site_bg_image}')`;
+      bg.classList.add('has-image');
+      if (settings.site_bg_size) bg.style.backgroundSize = settings.site_bg_size;
+    }
+    if (settings.site_bg_color) bg.style.backgroundColor = settings.site_bg_color;
+    document.title = settings.site_name || 'إسبانيول';
+  } catch {}
+}
+
+// ==============================
+// AUTH
+// ==============================
+async function init() {
+  await loadSiteSettings();
+  if (authToken) {
+    try {
+      const res = await fetch(`${API}/auth/me`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+      if (res.ok) {
+        currentUser = await res.json();
+        updateUserUI();
+        await loadUserProgress();
+      } else {
+        authToken = null;
+        localStorage.removeItem('auth_token');
+      }
+    } catch {}
+  }
+  loadChapters();
+}
+
+function updateUserUI() {
+  if (!currentUser) return;
+  document.getElementById('auth-buttons').style.display = 'none';
+  document.getElementById('user-menu').style.display = 'flex';
+  const initials = currentUser.name ? currentUser.name.charAt(0) : 'م';
+  document.getElementById('user-avatar-btn').textContent = initials;
+  document.getElementById('user-progress-section').style.display = 'block';
+  document.getElementById('progress-username').textContent = currentUser.name;
+  document.getElementById('progress-xp').textContent = currentUser.xp || 0;
+  document.getElementById('stat-level').textContent = currentUser.level || 'مبتدئ';
+}
+
+async function loadUserProgress() {
+  if (!currentUser || !authToken) return;
+  try {
+    const res = await fetch(`${API}/progress`, { headers: { 'Authorization': `Bearer ${authToken}` } });
+    const data = await res.json();
+    userProgress = {};
+    data.progress.forEach(p => { userProgress[p.lesson_id] = p; });
+    const stats = data.stats;
+    const user = data.user;
+    document.getElementById('stat-completed').textContent = stats.completedLessons;
+    document.getElementById('stat-percentage').textContent = stats.percentage + '%';
+    document.getElementById('main-progress-fill').style.width = stats.percentage + '%';
+    document.getElementById('progress-label').textContent = stats.percentage + '% مكتمل';
+    if (user) {
+      document.getElementById('stat-streak').textContent = user.streak || 0;
+      document.getElementById('stat-level').textContent = user.level || 'مبتدئ';
+      document.getElementById('progress-xp').textContent = user.xp || 0;
+    }
+  } catch {}
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  fetch(`${API}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  }).then(r => r.json()).then(data => {
+    if (data.success) {
+      authToken = data.token;
+      localStorage.setItem('auth_token', authToken);
+      currentUser = data.user;
+      updateUserUI();
+      closeModal('auth-modal');
+      showToast('success', '🎉 مرحباً بعودتك!');
+      loadUserProgress();
+      loadChapters();
+    } else {
+      showToast('error', data.error || 'خطأ في تسجيل الدخول');
+    }
+  }).catch(() => showToast('error', 'خطأ في الاتصال بالخادم'));
+}
+
+function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('reg-name').value;
+  const email = document.getElementById('reg-email').value;
+  const password = document.getElementById('reg-password').value;
+  fetch(`${API}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password })
+  }).then(r => r.json()).then(data => {
+    if (data.success) {
+      authToken = data.token;
+      localStorage.setItem('auth_token', authToken);
+      currentUser = data.user;
+      updateUserUI();
+      closeModal('auth-modal');
+      showToast('success', '🎉 تم إنشاء حسابك بنجاح!');
+      loadChapters();
+    } else {
+      showToast('error', data.error || 'خطأ في إنشاء الحساب');
+    }
+  }).catch(() => showToast('error', 'خطأ في الاتصال بالخادم'));
+}
+
+function logout() {
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('auth_token');
+  document.getElementById('auth-buttons').style.display = 'flex';
+  document.getElementById('user-menu').style.display = 'none';
+  document.getElementById('user-progress-section').style.display = 'none';
+  toggleUserDropdown(true);
+  loadChapters();
+  showToast('success', 'تم تسجيل الخروج');
+}
+
+// ==============================
+// CHAPTERS
+// ==============================
+async function loadChapters() {
+  const grid = document.getElementById('chapters-grid');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;"><div class="loading-spinner"></div></div>';
+  try {
+    const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+    const res = await fetch(`${API}/chapters`, { headers });
+    chapters = await res.json();
+    renderChapters(chapters);
+  } catch {
+    grid.innerHTML = '<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><h3>تعذر تحميل الفصول</h3><p>تأكد من تشغيل الخادم</p></div>';
+  }
+}
+
+function renderChapters(chapters) {
+  const grid = document.getElementById('chapters-grid');
+  if (!chapters.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-book"></i><h3>لا توجد فصول بعد</h3></div>';
+    return;
+  }
+  grid.innerHTML = chapters.map((ch, i) => {
+    const isLocked = !ch.is_free && (!currentUser || currentUser.subscription_status === 'free');
+    const progress = ch.progress || 0;
+    return `
+    <div class="chapter-card ${isLocked ? 'locked' : ''}" style="animation:fadeInUp 0.5s ease ${i * 0.1}s both; --chapter-color: ${ch.color};" 
+         onclick="${isLocked ? "showToast('warning','🔒 هذا الفصل يتطلب اشتراكاً مميزاً')" : `openLessonsModal('${ch.id}')`}">
+      ${isLocked ? '<div class="lock-overlay"><div class="lock-icon">🔒</div></div>' : ''}
+      <span class="chapter-icon">${ch.icon || '📚'}</span>
+      <h3 class="chapter-title">${ch.title}</h3>
+      <p class="chapter-desc">${ch.description || ''}</p>
+      <div class="chapter-meta">
+        <span class="chapter-count"><i class="fa-solid fa-book-open"></i> ${(ch.lessons || []).length} درس</span>
+        <span class="chapter-badge ${ch.is_free ? 'badge-free' : 'badge-premium'}">${ch.is_free ? 'مجاني' : 'مميز'}</span>
+      </div>
+      ${currentUser ? `
+      <div class="chapter-progress"><div class="chapter-progress-fill" style="width:${progress}%"></div></div>
+      <p class="chapter-progress-text">${progress}% مكتمل</p>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ==============================
+// LESSONS MODAL
+// ==============================
+function openLessonsModal(chapterId) {
+  const ch = chapters.find(c => c.id === chapterId);
+  if (!ch) return;
+  document.getElementById('lessons-modal-title').textContent = ch.title;
+  const body = document.getElementById('lessons-modal-body');
+  const lessons = ch.lessons || [];
+  if (!lessons.length) {
+    body.innerHTML = '<div class="empty-state"><i class="fa-solid fa-book"></i><h3>لا توجد دروس بعد</h3></div>';
+  } else {
+    body.innerHTML = `<div class="lessons-list">${lessons.map((l, i) => {
+      const prog = userProgress[l.id];
+      const isCompleted = prog && prog.completed;
+      const isLocked = l.locked;
+      return `
+      <div class="lesson-item ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}" 
+           onclick="${isLocked ? "showToast('warning','🔒 هذا الدرس يتطلب اشتراكاً')" : `openLesson('${l.id}')`}">
+        <div class="lesson-num ${isCompleted ? 'completed' : isLocked ? 'locked' : ''}">
+          ${isCompleted ? '<i class="fa-solid fa-check"></i>' : isLocked ? '<i class="fa-solid fa-lock"></i>' : i + 1}
+        </div>
+        <div class="lesson-info">
+          <div class="lesson-title">${l.title}</div>
+          <div class="lesson-meta">
+            <span><i class="fa-regular fa-clock"></i> ${l.duration || 15} دقيقة</span>
+            <span><i class="fa-solid fa-star"></i> ${l.xp_reward || 10} XP</span>
+            ${isCompleted ? '<span style="color:var(--success)"><i class="fa-solid fa-circle-check"></i> مكتمل</span>' : ''}
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-left" style="color:var(--text-muted);font-size:12px;"></i>
+      </div>`;
+    }).join('')}</div>`;
+  }
+  openModal('lessons-modal');
+}
+
+// ==============================
+// LESSON VIEW
+// ==============================
+async function openLesson(lessonId) {
+  document.getElementById('lesson-modal-body').innerHTML = '<div class="loading-spinner"></div>';
+  document.getElementById('lesson-modal-title').textContent = 'جار التحميل...';
+  openModal('lesson-modal');
+  quizAnswers = {};
+  try {
+    const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+    const res = await fetch(`${API}/lessons/${lessonId}`, { headers });
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (data.requiresSubscription) {
+        document.getElementById('lesson-modal-body').innerHTML = `
+          <div class="sub-required">
+            <div class="sub-required-icon">🔒</div>
+            <h3>محتوى مميز</h3>
+            <p>${data.error}</p>
+            <button class="btn btn-primary btn-lg" onclick="closeModal('lesson-modal');showPaymentModal()">
+              <i class="fa-solid fa-crown"></i> اشترك الآن
+            </button>
+          </div>`;
+        return;
+      }
+      showToast('error', data.error || 'خطأ في تحميل الدرس');
+      closeModal('lesson-modal');
+      return;
+    }
+
+    currentLesson = data;
+    document.getElementById('lesson-modal-title').textContent = data.title;
+    renderLessonView(data);
+  } catch {
+    showToast('error', 'تعذر تحميل الدرس');
+    closeModal('lesson-modal');
+  }
+}
+
+function renderLessonView(lesson) {
+  const vocab = lesson.vocabulary || [];
+  const examples = lesson.examples || [];
+  const quizzes = lesson.quizzes || [];
+  const isCompleted = lesson.userProgress && lesson.userProgress.completed;
+
+  let html = `
+    <div class="lesson-view-header">
+      <h2 class="lesson-view-title" dir="ltr">${lesson.title}</h2>
+      <p class="lesson-view-desc">${lesson.description || ''}</p>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+        <span class="tag"><i class="fa-regular fa-clock"></i> ${lesson.duration || 15} دقيقة</span>
+        <span class="tag"><i class="fa-solid fa-star"></i> ${lesson.xp_reward || 10} XP</span>
+        ${isCompleted ? '<span class="tag" style="color:var(--success);border-color:rgba(16,185,129,0.3);"><i class="fa-solid fa-check"></i> مكتمل</span>' : ''}
+      </div>
+    </div>`;
+
+  if (lesson.content) {
+    html += `<div class="lesson-content"><p>${lesson.content}</p></div>`;
+  }
+
+  if (vocab.length) {
+    html += `
+    <div class="vocabulary-section">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">📖 المفردات</h3>
+      ${lesson.pronunciation ? `<p style="font-size:13px;color:var(--secondary);margin-bottom:12px;direction:ltr;">${lesson.pronunciation}</p>` : ''}
+      <div class="vocab-grid">
+        ${vocab.map(v => `
+        <div class="vocab-card" onclick="speakWord('${v.es.replace(/'/g, "\\'")}', 'es-ES')">
+          <div class="vocab-es">${v.es}</div>
+          <div class="vocab-ar">${v.ar}</div>
+          ${v.pron ? `<div class="vocab-pron">${v.pron}</div>` : ''}
+          <div class="speak-btn"><i class="fa-solid fa-volume-high"></i> استمع</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if (examples.length) {
+    html += `
+    <div class="examples-section">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">💡 أمثلة</h3>
+      ${examples.map(ex => `
+      <div class="example-card">
+        <div class="example-es">${ex.es}</div>
+        <div class="example-ar">${ex.ar}</div>
+        ${ex.pron ? `<div style="font-size:12px;color:var(--secondary);margin-top:6px;direction:ltr;">${ex.pron}</div>` : ''}
+        <button class="speak-btn" onclick="speakWord('${ex.es.replace(/'/g,"\\'")}', 'es-ES')"><i class="fa-solid fa-volume-high"></i> استمع</button>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if (quizzes.length) {
+    html += `
+    <div class="quiz-section">
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">✏️ اختبر نفسك</h3>
+      ${quizzes.map((q, qi) => `
+      <div class="quiz-card" id="quiz-${qi}">
+        <p class="quiz-question">${qi + 1}. ${q.question}</p>
+        <div class="quiz-options">
+          ${(q.options || []).map((opt, oi) => `
+          <div class="quiz-option" id="opt-${qi}-${oi}" onclick="selectOption(${qi}, ${oi}, '${opt.replace(/'/g,"\\'")}', '${q.correct_answer.replace(/'/g,"\\'")}', '${(q.explanation||'').replace(/'/g,"\\'")}')">
+            <span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></span>
+            ${opt}
+          </div>`).join('')}
+        </div>
+        <div id="feedback-${qi}" style="display:none;"></div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  html += `
+    <div class="lesson-actions">
+      <button class="btn btn-secondary" onclick="closeModal('lesson-modal')"><i class="fa-solid fa-arrow-right"></i> العودة</button>
+      ${currentUser ? `<button class="btn btn-primary btn-lg" id="complete-btn" onclick="completeLesson()">
+        <i class="fa-solid fa-check-circle"></i> ${isCompleted ? 'تمت المراجعة' : 'إكمال الدرس'}
+      </button>` : `<button class="btn btn-primary btn-lg" onclick="openAuthModal('login')">
+        <i class="fa-solid fa-right-to-bracket"></i> سجل دخولك لحفظ تقدمك
+      </button>`}
+    </div>`;
+
+  document.getElementById('lesson-modal-body').innerHTML = html;
+}
+
+function selectOption(qi, oi, selected, correct, explanation) {
+  if (quizAnswers[qi] !== undefined) return; // Already answered
+  quizAnswers[qi] = selected;
+  const isCorrect = selected === correct;
+  const opts = document.querySelectorAll(`#quiz-${qi} .quiz-option`);
+  opts.forEach((opt, i) => {
+    if (i === oi) opt.classList.add(isCorrect ? 'correct' : 'wrong');
+    if (opt.textContent.trim() === correct) opt.classList.add('correct');
+    opt.style.pointerEvents = 'none';
+  });
+  const feedback = document.getElementById(`feedback-${qi}`);
+  feedback.style.display = 'block';
+  feedback.className = `quiz-feedback ${isCorrect ? 'correct' : 'wrong'}`;
+  feedback.innerHTML = isCorrect
+    ? `✅ إجابة صحيحة! ${explanation || ''}`
+    : `❌ الإجابة الصحيحة هي: <strong>${correct}</strong>. ${explanation || ''}`;
+}
+
+async function completeLesson() {
+  if (!currentUser || !currentLesson) return;
+  const btn = document.getElementById('complete-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جار الحفظ...';
+  try {
+    const totalQ = currentLesson.quizzes.length;
+    const correct = Object.values(quizAnswers).filter((v, i) => {
+      const q = currentLesson.quizzes[i];
+      return q && v === q.correct_answer;
+    }).length;
+    const score = totalQ > 0 ? Math.round((correct / totalQ) * 100) : 100;
+    const res = await fetch(`${API}/progress/complete`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lessonId: currentLesson.id, score })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showXpPopup(data.xpEarned || 10);
+      showToast('success', `🎉 أحسنت! اكتسبت ${data.xpEarned || 10} نقطة XP!`);
+      userProgress[currentLesson.id] = { completed: 1, score };
+      await loadUserProgress();
+      await loadChapters();
+      btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تم الإكمال ✓';
+      btn.style.background = 'linear-gradient(135deg, var(--success), #34d399)';
+    }
+  } catch {
+    showToast('error', 'خطأ في حفظ التقدم');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> إكمال الدرس';
+  }
+}
+
+// ==============================
+// PAYMENT
+// ==============================
+async function handlePayment(e) {
+  e.preventDefault();
+  if (!currentUser) { openAuthModal('login'); return; }
+  const method = document.getElementById('pay-method').value;
+  const amount = document.getElementById('pay-amount').value;
+  const ref = document.getElementById('pay-ref').value;
+  try {
+    const res = await fetch(`${API}/payments/submit`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount, payment_method: method, reference: ref })
+    });
+    const data = await res.json();
+    if (data.success) {
+      closeModal('payment-modal');
+      showToast('success', '✅ تم إرسال طلب الدفع بنجاح! سيتم مراجعته خلال 24 ساعة');
+      document.getElementById('payment-form').reset();
+    } else {
+      showToast('error', data.error || 'خطأ في إرسال الطلب');
+    }
+  } catch {
+    showToast('error', 'خطأ في الاتصال');
+  }
+}
+
+// ==============================
+// SPEECH
+// ==============================
+function speakWord(text, lang = 'es-ES') {
+  if (!window.speechSynthesis) return;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = lang;
+  utt.rate = 0.8;
+  window.speechSynthesis.speak(utt);
+}
+
+// ==============================
+// UI HELPERS
+// ==============================
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+function openAuthModal(tab = 'login') { openModal('auth-modal'); switchAuthTab(tab); }
+function showPaymentModal() {
+  if (!currentUser) { openAuthModal('login'); showToast('warning', 'يجب تسجيل الدخول أولاً'); return; }
+  openModal('payment-modal');
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('login-form').style.display = tab === 'login' ? 'flex' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'flex' : 'none';
+  document.getElementById('tab-login').className = `auth-tab ${tab === 'login' ? 'active' : ''}`;
+  document.getElementById('tab-register').className = `auth-tab ${tab === 'register' ? 'active' : ''}`;
+}
+
+function toggleUserDropdown(forceClose = false) {
+  const dd = document.getElementById('user-dropdown');
+  if (forceClose) dd.classList.remove('open');
+  else dd.classList.toggle('open');
+}
+
+function showToast(type, message) {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ️'}</span><span class="toast-text">${message}</span>`;
+  container.appendChild(toast);
+  requestAnimationFrame(() => { requestAnimationFrame(() => toast.classList.add('show')); });
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
+}
+
+function showXpPopup(xp) {
+  const el = document.getElementById('xp-popup');
+  el.textContent = `+${xp} XP 🌟`;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function scrollToChapters() {
+  document.getElementById('chapters').scrollIntoView({ behavior: 'smooth' });
+}
+
+function toggleMobileMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+}
+
+// Navbar scroll
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('user-dropdown');
+  if (menu && !menu.closest('.user-menu').contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+// ==============================
+// INIT
+// ==============================
+init(); switchView("home");
+</script>
+</body>
+</html>
