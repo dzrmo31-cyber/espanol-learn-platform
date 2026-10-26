@@ -1711,6 +1711,14 @@
       <button class="modal-close" onclick="closeModal('auth-modal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
+      <div style="text-align:center;padding:8px 0 4px;">
+        <p style="color:var(--text-muted);font-size:14px;margin-bottom:18px;">سجّل الدخول أو أنشئ حسابك بنقرة واحدة باستخدام حساب Google</p>
+        <button type="button" class="btn btn-primary btn-lg" style="width:100%;" onclick="signInWithGoogle()">
+          <i class="fa-brands fa-google"></i> المتابعة باستخدام Google
+        </button>
+        <p style="color:var(--text-muted);font-size:12px;margin-top:14px;">إن لم يكن لديك حساب فسيُنشأ تلقائياً عند أول دخول</p>
+      </div>
+      <div style="display:none;">
       <div class="auth-tabs">
         <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">تسجيل الدخول</div>
         <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">إنشاء حساب</div>
@@ -1747,6 +1755,7 @@
           <i class="fa-solid fa-user-plus"></i> إنشاء حساب مجاني
         </button>
       </form>
+      </div>
     </div>
   </div>
 </div>
@@ -1849,6 +1858,22 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // مسار وهمي: كل استدعاء fetch(`${API}/...`) في الموقع تعترضه الطبقة التالية وتنفّذه على Supabase
 // بدل خادم Express المحلي — بقية كود الموقع لم يتغيّر.
 const API = '/__supabase_api';
+
+// عند العودة من Google تأتي الجلسة في رابط الصفحة: نسجّلها قبل أن يقرأ الموقع حالة الدخول
+(function captureOAuthReturn() {
+  try {
+    const t = new URLSearchParams(location.hash.replace(/^#/, '')).get('access_token');
+    if (t) localStorage.setItem('auth_token', t);
+  } catch (e) {}
+})();
+
+async function signInWithGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: location.origin + location.pathname }
+  });
+  if (error) showToast('error', 'تعذر الاتصال بحساب Google');
+}
 
 (function installSupabaseBackend() {
   const nativeFetch = window.fetch.bind(window);
