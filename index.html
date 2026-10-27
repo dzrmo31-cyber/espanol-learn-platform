@@ -1770,11 +1770,8 @@
 </div>
 
 <style>
-  .pf-avatars { display:grid; grid-template-columns:repeat(8,1fr); gap:8px; }
-  .pf-avatar { font-size:24px; line-height:1; padding:8px 0; background:rgba(255,255,255,0.05); border:2px solid transparent; border-radius:12px; cursor:pointer; }
-  .pf-avatar:hover { background:rgba(255,255,255,0.1); }
-  .pf-avatar.selected { border-color:var(--primary-light); background:rgba(124,58,237,0.25); }
-  @media (max-width:480px){ .pf-avatars { grid-template-columns:repeat(6,1fr); } }
+  select.form-input { color-scheme: dark; cursor: pointer; }
+  select.form-input option { background: #1e1b4b; color: #f1f5f9; }
 </style>
 <!-- Profile Modal -->
 <div class="modal-overlay" id="profile-modal">
@@ -1787,8 +1784,15 @@
       <p id="profile-intro" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أهلاً بك 👋 أكمل بياناتك لنبدأ رحلتك. جميع الحقول إلزامية.</p>
       <form id="profile-form" class="auth-form" onsubmit="saveProfile(event)">
         <div class="form-group">
-          <label class="form-label">شعار الحساب *</label>
-          <div class="pf-avatars" id="pf-avatars"></div>
+          <label class="form-label">شعار الحساب (صورتك) *</label>
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="pf-avatar-preview" style="width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,0.06);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--text-muted);font-size:30px;flex-shrink:0;"><i class="fa-solid fa-user"></i></div>
+            <div>
+              <input type="file" id="pf-avatar-file" accept="image/*" style="display:none;" onchange="profileHandleFile(this)" />
+              <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('pf-avatar-file').click()"><i class="fa-solid fa-camera"></i> اختر صورة</button>
+              <div style="color:var(--text-muted);font-size:12px;margin-top:6px;">صورة JPG أو PNG أو WEBP</div>
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">اسم المستخدم *</label>
@@ -1808,7 +1812,8 @@
         </div>
         <div class="form-group">
           <label class="form-label">ما هدفك من تعلم اللغة الإسبانية؟ *</label>
-          <select class="form-input" id="pf-goal"></select>
+          <select class="form-input" id="pf-goal" onchange="profileGoalChanged()"></select>
+          <input type="text" class="form-input" id="pf-goal-custom" maxlength="100" placeholder="اكتب هدفك هنا" style="display:none;" />
         </div>
         <div id="pf-error" style="color:var(--danger);font-size:14px;min-height:20px;"></div>
         <button type="submit" class="btn btn-primary" id="pf-save" style="width:100%;">
@@ -3236,20 +3241,67 @@ document.addEventListener('click', (e) => {
 // PROFILE (ملف المستخدم + الإعدادات)
 // ==============================
 const PROFILE_COUNTRIES = ['الجزائر','المغرب','تونس','ليبيا','مصر','السودان','موريتانيا','فلسطين','الأردن','لبنان','سوريا','العراق','السعودية','الإمارات','قطر','الكويت','البحرين','عُمان','اليمن','الصومال','جيبوتي','جزر القمر','إسبانيا','المكسيك','الأرجنتين','كولومبيا','تشيلي','بيرو','فنزويلا','الإكوادور','بوليفيا','باراغواي','الأوروغواي','كوبا','جمهورية الدومينيكان','بنما','كوستاريكا','غواتيمالا','هندوراس','السلفادور','نيكاراغوا','بورتوريكو','البرازيل','الولايات المتحدة','كندا','المملكة المتحدة','أيرلندا','فرنسا','ألمانيا','إيطاليا','البرتغال','هولندا','بلجيكا','سويسرا','النمسا','السويد','النرويج','الدنمارك','فنلندا','بولندا','رومانيا','اليونان','تركيا','روسيا','أوكرانيا','الهند','باكستان','بنغلاديش','إيران','الصين','اليابان','كوريا الجنوبية','إندونيسيا','ماليزيا','أستراليا','نيوزيلندا','جنوب أفريقيا','نيجيريا','السنغال','مالي','النيجر','تشاد','الكاميرون','ساحل العاج','غانا','كينيا','إثيوبيا','دولة أخرى'];
-const PROFILE_GOALS = ['السفر والسياحة','الدراسة في بلد ناطق بالإسبانية','العمل أو التجارة','الهجرة والعيش في بلد ناطق بالإسبانية','التواصل مع أصدقاء أو عائلة','الأفلام والموسيقى والثقافة','امتحانات وشهادات (DELE / SIELE)','هواية وتطوير الذات','هدف آخر'];
-const PROFILE_AVATARS = ['😀','😎','🤓','🦊','🐼','🦁','🐯','🐸','🦄','🐙','🦋','🌟','🚀','🎧','📚','⚽','🎨','🌍','☀️','🔥','🌹','🎸','🏆','💡'];
+const PROFILE_GOALS = ['السفر والسياحة','الدراسة في بلد ناطق بالإسبانية','العمل أو التجارة','الهجرة والعيش في بلد ناطق بالإسبانية','التواصل مع أصدقاء أو عائلة','الأفلام والموسيقى والثقافة','امتحانات وشهادات (DELE / SIELE)','هواية وتطوير الذات'];
 let profileAvatar = '';
 
 function profileFillOptions() {
   const c = document.getElementById('pf-country');
   if (c.options.length) return;
   c.innerHTML = '<option value="" disabled selected>اختر البلد</option>' + PROFILE_COUNTRIES.map(x => `<option value="${x}">${x}</option>`).join('');
-  document.getElementById('pf-goal').innerHTML = '<option value="" disabled selected>اختر هدفك</option>' + PROFILE_GOALS.map(x => `<option value="${x}">${x}</option>`).join('');
+  document.getElementById('pf-goal').innerHTML = '<option value="" disabled selected>اختر هدفك</option>' +
+    PROFILE_GOALS.map(x => `<option value="${x}">${x}</option>`).join('') +
+    '<option value="__other__">هدف آخر (اكتبه بنفسك)</option>';
 }
 
-function profilePickAvatar(a) {
-  profileAvatar = a;
-  document.querySelectorAll('#pf-avatars .pf-avatar').forEach(b => b.classList.toggle('selected', b.dataset.a === a));
+function profileGoalChanged() {
+  const other = document.getElementById('pf-goal').value === '__other__';
+  const box = document.getElementById('pf-goal-custom');
+  box.style.display = other ? 'block' : 'none';
+  if (other) box.focus();
+}
+
+function profileShowPreview() {
+  const box = document.getElementById('pf-avatar-preview');
+  box.innerHTML = '';
+  if (profileAvatar && profileAvatar.startsWith('data:image/')) {
+    const img = document.createElement('img');
+    img.src = profileAvatar; img.alt = '';
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+    box.appendChild(img);
+    box.style.borderStyle = 'solid';
+  } else if (profileAvatar) {
+    box.textContent = profileAvatar;
+  } else {
+    box.innerHTML = '<i class="fa-solid fa-user"></i>';
+    box.style.borderStyle = 'dashed';
+  }
+}
+
+function profileHandleFile(input) {
+  const f = input.files && input.files[0];
+  input.value = '';
+  const err = document.getElementById('pf-error');
+  err.textContent = '';
+  if (!f) return;
+  if (!/^image\/(jpeg|png|webp|gif)$/.test(f.type)) { err.textContent = 'اختر صورة بصيغة JPG أو PNG أو WEBP'; return; }
+  if (f.size > 8 * 1024 * 1024) { err.textContent = 'حجم الصورة كبير (الحد الأقصى 8 ميجابايت)'; return; }
+  const url = URL.createObjectURL(f);
+  const img = new Image();
+  img.onload = () => {
+    const S = 192;
+    const c = document.createElement('canvas');
+    c.width = c.height = S;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, S, S);
+    const side = Math.min(img.width, img.height);
+    ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, S, S);
+    profileAvatar = c.toDataURL('image/jpeg', 0.85);
+    URL.revokeObjectURL(url);
+    profileShowPreview();
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); err.textContent = 'تعذر قراءة الصورة، جرّب صورة أخرى'; };
+  img.src = url;
 }
 
 function openProfileModal(mandatory) {
@@ -3257,15 +3309,21 @@ function openProfileModal(mandatory) {
   profileFillOptions();
   toggleUserDropdown(true);
   const u = currentUser;
-  document.getElementById('pf-avatars').innerHTML = PROFILE_AVATARS.map(a => `<button type="button" class="pf-avatar" data-a="${a}" onclick="profilePickAvatar('${a}')">${a}</button>`).join('');
-  profilePickAvatar(u.avatar || '');
+  profileAvatar = u.avatar || '';
+  profileShowPreview();
   document.getElementById('pf-username').value = u.username || '';
   const birth = document.getElementById('pf-birth');
   birth.max = new Date().toISOString().slice(0, 10);
   birth.value = u.birth_date || '';
   document.getElementById('pf-country').value = u.country || '';
   document.getElementById('pf-city').value = u.city || '';
-  document.getElementById('pf-goal').value = u.goal || '';
+  const g = u.goal || '';
+  const sel = document.getElementById('pf-goal');
+  const custom = document.getElementById('pf-goal-custom');
+  if (g && !PROFILE_GOALS.includes(g)) { sel.value = '__other__'; custom.value = g; }
+  else { sel.value = g; custom.value = ''; }
+  profileGoalChanged();
+  if (sel.value !== '__other__') custom.style.display = 'none';
   document.getElementById('pf-error').textContent = '';
   document.getElementById('profile-modal-title').textContent = mandatory ? 'أكمل ملفك الشخصي' : 'إعدادات الحساب';
   document.getElementById('profile-intro').style.display = mandatory ? 'block' : 'none';
@@ -3277,21 +3335,24 @@ function openProfileModal(mandatory) {
 async function saveProfile(e) {
   e.preventDefault();
   const err = document.getElementById('pf-error');
+  const goalSel = document.getElementById('pf-goal').value;
+  const goal = goalSel === '__other__' ? document.getElementById('pf-goal-custom').value.trim() : goalSel;
   const data = {
     username: document.getElementById('pf-username').value.trim(),
     birth_date: document.getElementById('pf-birth').value,
     country: document.getElementById('pf-country').value,
     city: document.getElementById('pf-city').value.trim(),
-    goal: document.getElementById('pf-goal').value,
+    goal,
     avatar: profileAvatar
   };
   err.textContent = '';
-  if (!data.avatar) { err.textContent = 'اختر شعار حسابك'; return; }
+  if (!data.avatar) { err.textContent = 'ارفع صورة لحسابك'; return; }
   if (!/^[A-Za-z0-9_.\u0600-\u06FF]{3,20}$/.test(data.username)) { err.textContent = 'اسم المستخدم من 3 إلى 20 حرفاً (حروف وأرقام و _ و . فقط، بدون مسافات)'; return; }
   if (!data.birth_date) { err.textContent = 'أدخل تاريخ ميلادك'; return; }
   if (!data.country) { err.textContent = 'اختر البلد'; return; }
   if (data.city.length < 2) { err.textContent = 'اكتب اسم المدينة'; return; }
-  if (!data.goal) { err.textContent = 'اختر هدفك من تعلم الإسبانية'; return; }
+  if (!goalSel) { err.textContent = 'اختر هدفك من تعلم الإسبانية'; return; }
+  if (data.goal.length < 2) { err.textContent = 'اكتب هدفك من تعلم الإسبانية'; return; }
   const btn = document.getElementById('pf-save');
   btn.disabled = true;
   try {
@@ -3313,12 +3374,23 @@ async function saveProfile(e) {
   }
 }
 
-// يعرض شعار الحساب في الدائرة العلوية بدل الحرف الأول
+// يعرض صورة الحساب في الدائرة العلوية بدل الحرف الأول
 (function () {
   const base = updateUserUI;
   window.updateUserUI = function () {
     base();
-    if (currentUser && currentUser.avatar) document.getElementById('user-avatar-btn').textContent = currentUser.avatar;
+    if (!currentUser || !currentUser.avatar) return;
+    const b = document.getElementById('user-avatar-btn');
+    if (currentUser.avatar.startsWith('data:image/')) {
+      b.textContent = '';
+      b.style.overflow = 'hidden';
+      const im = document.createElement('img');
+      im.src = currentUser.avatar; im.alt = '';
+      im.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;';
+      b.appendChild(im);
+    } else {
+      b.textContent = currentUser.avatar;
+    }
   };
 })();
 
