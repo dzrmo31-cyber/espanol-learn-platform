@@ -1987,6 +1987,9 @@ async function signInWithGoogle(mode) {
         }
         return reply({ error: 'المستخدم غير موجود' }, 404);
       }
+      if (intent === 'register') {
+        await rpc('api_confirm_account').catch(e => console.warn('api_confirm_account:', e.message));
+      }
       if (intent === 'login') {
         const r = await rpc('api_cancel_new_account').catch(e => { console.warn('api_cancel_new_account:', e.message); return null; });
         if (r && r.cancelled) return noAccount();
