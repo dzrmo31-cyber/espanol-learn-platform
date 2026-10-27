@@ -1711,18 +1711,26 @@
       <button class="modal-close" onclick="closeModal('auth-modal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <div style="text-align:center;padding:8px 0 4px;">
-        <p style="color:var(--text-muted);font-size:14px;margin-bottom:18px;">سجّل الدخول أو أنشئ حسابك بنقرة واحدة باستخدام حساب Google</p>
-        <button type="button" class="btn btn-primary btn-lg" style="width:100%;" onclick="signInWithGoogle()">
-          <i class="fa-brands fa-google"></i> المتابعة باستخدام Google
-        </button>
-        <p style="color:var(--text-muted);font-size:12px;margin-top:14px;">إن لم يكن لديك حساب فسيُنشأ تلقائياً عند أول دخول</p>
-      </div>
-      <div style="display:none;">
       <div class="auth-tabs">
         <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">تسجيل الدخول</div>
         <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">إنشاء حساب</div>
       </div>
+      <div id="google-login-box" style="text-align:center;padding:8px 0 4px;">
+        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">لديك حساب بالفعل؟ ادخل بنقرة واحدة باستخدام حساب Google</p>
+        <button type="button" class="btn btn-primary btn-lg" style="width:100%;" onclick="signInWithGoogle('login')">
+          <i class="fa-brands fa-google"></i> تسجيل الدخول باستخدام Google
+        </button>
+      </div>
+      <div id="google-register-box" style="display:none;text-align:center;padding:8px 0 4px;">
+        <div id="no-account-notice" style="display:none;background:rgba(245,158,11,0.12);border:1px solid var(--warning);color:var(--warning);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.8;margin-bottom:16px;text-align:right;">
+          <i class="fa-solid fa-circle-info"></i> لا يوجد حساب مسجّل بحساب Google هذا. أنشئ حساباً جديداً أولاً بالزر أدناه، وبعدها يمكنك تسجيل الدخول متى شئت.
+        </div>
+        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أنشئ حسابك المجاني بنقرة واحدة باستخدام حساب Google</p>
+        <button type="button" class="btn btn-secondary btn-lg" style="width:100%;" onclick="signInWithGoogle('register')">
+          <i class="fa-brands fa-google"></i> إنشاء حساب باستخدام Google
+        </button>
+      </div>
+      <div style="display:none;">
       <!-- Login Form -->
       <form id="login-form" class="auth-form" onsubmit="handleLogin(event)">
         <div class="form-group">
@@ -1867,7 +1875,8 @@ const API = '/__supabase_api';
   } catch (e) {}
 })();
 
-async function signInWithGoogle() {
+async function signInWithGoogle(mode) {
+  localStorage.setItem('auth_intent', mode === 'register' ? 'register' : 'login');
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: location.origin + location.pathname }
@@ -1952,6 +1961,20 @@ async function signInWithGoogle() {
       if (!(await hasSession())) return reply({ error: 'غير مصرح' }, 401);
       const u = await loadProfile();
       if (!u) return reply({ error: 'المستخدم غير موجود' }, 404);
+      const intent = localStorage.getItem('auth_intent');
+      localStorage.removeItem('auth_intent');
+      if (intent === 'login') {
+        const r = await rpc('api_cancel_new_account');
+        if (r && r.cancelled) {
+          await sb.auth.signOut({ scope: 'local' });
+          setTimeout(() => {
+            openAuthModal('register');
+            const n = document.getElementById('no-account-notice');
+            if (n) n.style.display = 'block';
+          }, 700);
+          return reply({ error: 'لا يوجد حساب' }, 404);
+        }
+      }
       if (u.is_active === false) { await sb.auth.signOut(); return reply({ error: 'الحساب موقوف' }, 403); }
       return reply(u);
     }
@@ -3126,6 +3149,19 @@ document.addEventListener('click', (e) => {
     menu.classList.remove('open');
   }
 });
+
+// ربط تبويبي الدخول/إنشاء الحساب بزر Google المناسب لكل منهما
+(function () {
+  const base = switchAuthTab;
+  window.switchAuthTab = function (tab) {
+    base(tab);
+    const l = document.getElementById('google-login-box');
+    const r = document.getElementById('google-register-box');
+    if (l && r) { l.style.display = tab === 'login' ? 'block' : 'none'; r.style.display = tab === 'register' ? 'block' : 'none'; }
+    const n = document.getElementById('no-account-notice');
+    if (n && tab === 'login') n.style.display = 'none';
+  };
+})();
 
 // ==============================
 // INIT
