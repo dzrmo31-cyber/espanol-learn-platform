@@ -1375,6 +1375,7 @@
           <div class="user-dropdown" id="user-dropdown">
             <div class="dropdown-item" onclick="showSection('progress')"><i class="fa-solid fa-chart-line"></i> تقدمي</div>
             <div class="dropdown-item" onclick="showPaymentModal()"><i class="fa-solid fa-credit-card"></i> الاشتراك</div>
+            <div class="dropdown-item" onclick="openProfileModal(false)"><i class="fa-solid fa-gear"></i> الإعدادات</div>
             <div class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</div>
           </div>
         </div>
@@ -1768,6 +1769,59 @@
   </div>
 </div>
 
+<style>
+  .pf-avatars { display:grid; grid-template-columns:repeat(8,1fr); gap:8px; }
+  .pf-avatar { font-size:24px; line-height:1; padding:8px 0; background:rgba(255,255,255,0.05); border:2px solid transparent; border-radius:12px; cursor:pointer; }
+  .pf-avatar:hover { background:rgba(255,255,255,0.1); }
+  .pf-avatar.selected { border-color:var(--primary-light); background:rgba(124,58,237,0.25); }
+  @media (max-width:480px){ .pf-avatars { grid-template-columns:repeat(6,1fr); } }
+</style>
+<!-- Profile Modal -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <h3 class="modal-title" id="profile-modal-title">أكمل ملفك الشخصي</h3>
+      <button class="modal-close" id="profile-close-btn" onclick="closeModal('profile-modal')" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p id="profile-intro" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أهلاً بك 👋 أكمل بياناتك لنبدأ رحلتك. جميع الحقول إلزامية.</p>
+      <form id="profile-form" class="auth-form" onsubmit="saveProfile(event)">
+        <div class="form-group">
+          <label class="form-label">شعار الحساب *</label>
+          <div class="pf-avatars" id="pf-avatars"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">اسم المستخدم *</label>
+          <input type="text" class="form-input" id="pf-username" maxlength="20" placeholder="مثال: ahmed_09" autocomplete="off" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">تاريخ الميلاد *</label>
+          <input type="date" class="form-input" id="pf-birth" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">البلد *</label>
+          <select class="form-input" id="pf-country"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المدينة *</label>
+          <input type="text" class="form-input" id="pf-city" maxlength="60" placeholder="اسم مدينتك" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">ما هدفك من تعلم اللغة الإسبانية؟ *</label>
+          <select class="form-input" id="pf-goal"></select>
+        </div>
+        <div id="pf-error" style="color:var(--danger);font-size:14px;min-height:20px;"></div>
+        <button type="submit" class="btn btn-primary" id="pf-save" style="width:100%;">
+          <i class="fa-solid fa-floppy-disk"></i> حفظ
+        </button>
+        <button type="button" class="btn btn-secondary" id="pf-logout" onclick="closeModal('profile-modal'); logout();" style="width:100%;display:none;">
+          <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Chapters/Lessons Modal -->
 <div class="modal-overlay" id="lessons-modal">
   <div class="modal">
@@ -1995,7 +2049,16 @@ async function signInWithGoogle(mode) {
         if (r && r.cancelled) return noAccount();
       }
       if (u.is_active === false) { await sb.auth.signOut(); return reply({ error: 'الحساب موقوف' }, 403); }
+      if (u.profile_completed !== true) {
+        setTimeout(() => { if (typeof openProfileModal === 'function') openProfileModal(true); }, 900);
+      }
       return reply(u);
+    }
+
+    if (path === '/profile' && method === 'PUT') {
+      return fromRpc(await rpc('api_update_profile', {
+        p_username: body.username, p_birth_date: body.birth_date || null, p_country: body.country,
+        p_city: body.city, p_goal: body.goal, p_avatar: body.avatar }));
     }
 
     // ---------- الفصول والدروس ----------
@@ -3168,6 +3231,96 @@ document.addEventListener('click', (e) => {
     menu.classList.remove('open');
   }
 });
+
+// ==============================
+// PROFILE (ملف المستخدم + الإعدادات)
+// ==============================
+const PROFILE_COUNTRIES = ['الجزائر','المغرب','تونس','ليبيا','مصر','السودان','موريتانيا','فلسطين','الأردن','لبنان','سوريا','العراق','السعودية','الإمارات','قطر','الكويت','البحرين','عُمان','اليمن','الصومال','جيبوتي','جزر القمر','إسبانيا','المكسيك','الأرجنتين','كولومبيا','تشيلي','بيرو','فنزويلا','الإكوادور','بوليفيا','باراغواي','الأوروغواي','كوبا','جمهورية الدومينيكان','بنما','كوستاريكا','غواتيمالا','هندوراس','السلفادور','نيكاراغوا','بورتوريكو','البرازيل','الولايات المتحدة','كندا','المملكة المتحدة','أيرلندا','فرنسا','ألمانيا','إيطاليا','البرتغال','هولندا','بلجيكا','سويسرا','النمسا','السويد','النرويج','الدنمارك','فنلندا','بولندا','رومانيا','اليونان','تركيا','روسيا','أوكرانيا','الهند','باكستان','بنغلاديش','إيران','الصين','اليابان','كوريا الجنوبية','إندونيسيا','ماليزيا','أستراليا','نيوزيلندا','جنوب أفريقيا','نيجيريا','السنغال','مالي','النيجر','تشاد','الكاميرون','ساحل العاج','غانا','كينيا','إثيوبيا','دولة أخرى'];
+const PROFILE_GOALS = ['السفر والسياحة','الدراسة في بلد ناطق بالإسبانية','العمل أو التجارة','الهجرة والعيش في بلد ناطق بالإسبانية','التواصل مع أصدقاء أو عائلة','الأفلام والموسيقى والثقافة','امتحانات وشهادات (DELE / SIELE)','هواية وتطوير الذات','هدف آخر'];
+const PROFILE_AVATARS = ['😀','😎','🤓','🦊','🐼','🦁','🐯','🐸','🦄','🐙','🦋','🌟','🚀','🎧','📚','⚽','🎨','🌍','☀️','🔥','🌹','🎸','🏆','💡'];
+let profileAvatar = '';
+
+function profileFillOptions() {
+  const c = document.getElementById('pf-country');
+  if (c.options.length) return;
+  c.innerHTML = '<option value="" disabled selected>اختر البلد</option>' + PROFILE_COUNTRIES.map(x => `<option value="${x}">${x}</option>`).join('');
+  document.getElementById('pf-goal').innerHTML = '<option value="" disabled selected>اختر هدفك</option>' + PROFILE_GOALS.map(x => `<option value="${x}">${x}</option>`).join('');
+}
+
+function profilePickAvatar(a) {
+  profileAvatar = a;
+  document.querySelectorAll('#pf-avatars .pf-avatar').forEach(b => b.classList.toggle('selected', b.dataset.a === a));
+}
+
+function openProfileModal(mandatory) {
+  if (!currentUser) return;
+  profileFillOptions();
+  toggleUserDropdown(true);
+  const u = currentUser;
+  document.getElementById('pf-avatars').innerHTML = PROFILE_AVATARS.map(a => `<button type="button" class="pf-avatar" data-a="${a}" onclick="profilePickAvatar('${a}')">${a}</button>`).join('');
+  profilePickAvatar(u.avatar || '');
+  document.getElementById('pf-username').value = u.username || '';
+  const birth = document.getElementById('pf-birth');
+  birth.max = new Date().toISOString().slice(0, 10);
+  birth.value = u.birth_date || '';
+  document.getElementById('pf-country').value = u.country || '';
+  document.getElementById('pf-city').value = u.city || '';
+  document.getElementById('pf-goal').value = u.goal || '';
+  document.getElementById('pf-error').textContent = '';
+  document.getElementById('profile-modal-title').textContent = mandatory ? 'أكمل ملفك الشخصي' : 'إعدادات الحساب';
+  document.getElementById('profile-intro').style.display = mandatory ? 'block' : 'none';
+  document.getElementById('profile-close-btn').style.display = mandatory ? 'none' : 'flex';
+  document.getElementById('pf-logout').style.display = mandatory ? 'inline-flex' : 'none';
+  openModal('profile-modal');
+}
+
+async function saveProfile(e) {
+  e.preventDefault();
+  const err = document.getElementById('pf-error');
+  const data = {
+    username: document.getElementById('pf-username').value.trim(),
+    birth_date: document.getElementById('pf-birth').value,
+    country: document.getElementById('pf-country').value,
+    city: document.getElementById('pf-city').value.trim(),
+    goal: document.getElementById('pf-goal').value,
+    avatar: profileAvatar
+  };
+  err.textContent = '';
+  if (!data.avatar) { err.textContent = 'اختر شعار حسابك'; return; }
+  if (!/^[A-Za-z0-9_.\u0600-\u06FF]{3,20}$/.test(data.username)) { err.textContent = 'اسم المستخدم من 3 إلى 20 حرفاً (حروف وأرقام و _ و . فقط، بدون مسافات)'; return; }
+  if (!data.birth_date) { err.textContent = 'أدخل تاريخ ميلادك'; return; }
+  if (!data.country) { err.textContent = 'اختر البلد'; return; }
+  if (data.city.length < 2) { err.textContent = 'اكتب اسم المدينة'; return; }
+  if (!data.goal) { err.textContent = 'اختر هدفك من تعلم الإسبانية'; return; }
+  const btn = document.getElementById('pf-save');
+  btn.disabled = true;
+  try {
+    const res = await fetch(`${API}/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+      body: JSON.stringify(data)
+    });
+    const out = await res.json();
+    if (!res.ok) { err.textContent = out.error || 'تعذر الحفظ'; return; }
+    currentUser = { ...currentUser, ...out.user };
+    updateUserUI();
+    closeModal('profile-modal');
+    showToast('success', 'تم حفظ بياناتك');
+  } catch (ex) {
+    err.textContent = 'خطأ في الاتصال بالخادم';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// يعرض شعار الحساب في الدائرة العلوية بدل الحرف الأول
+(function () {
+  const base = updateUserUI;
+  window.updateUserUI = function () {
+    base();
+    if (currentUser && currentUser.avatar) document.getElementById('user-avatar-btn').textContent = currentUser.avatar;
+  };
+})();
 
 // ربط تبويبي الدخول/إنشاء الحساب بزر Google المناسب لكل منهما
 (function () {
