@@ -1879,7 +1879,7 @@ async function signInWithGoogle(mode) {
   localStorage.setItem('auth_intent', mode === 'register' ? 'register' : 'login');
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: location.origin + location.pathname }
+    options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: 'select_account' } }
   });
   if (error) showToast('error', 'تعذر الاتصال بحساب Google');
 }
@@ -1964,7 +1964,7 @@ async function signInWithGoogle(mode) {
       const intent = localStorage.getItem('auth_intent');
       localStorage.removeItem('auth_intent');
       if (intent === 'login') {
-        const r = await rpc('api_cancel_new_account');
+        const r = await rpc('api_cancel_new_account').catch(e => { console.warn('api_cancel_new_account غير مثبتة:', e.message); return null; });
         if (r && r.cancelled) {
           await sb.auth.signOut({ scope: 'local' });
           setTimeout(() => {
