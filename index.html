@@ -1870,8 +1870,17 @@ const API = '/__supabase_api';
 // عند العودة من Google تأتي الجلسة في رابط الصفحة: نسجّلها قبل أن يقرأ الموقع حالة الدخول
 (function captureOAuthReturn() {
   try {
-    const t = new URLSearchParams(location.hash.replace(/^#/, '')).get('access_token');
+    const hp = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const qp = new URLSearchParams(location.search);
+    const t = hp.get('access_token');
     if (t) localStorage.setItem('auth_token', t);
+    else localStorage.removeItem('auth_intent');
+    const err = hp.get('error_description') || qp.get('error_description');
+    if (err) {
+      console.error('OAuth error:', err);
+      localStorage.removeItem('auth_intent');
+      setTimeout(() => { if (typeof showToast === 'function') showToast('error', 'تعذر تسجيل الدخول: ' + err.replace(/\+/g, ' ')); }, 800);
+    }
   } catch (e) {}
 })();
 
@@ -1959,21 +1968,28 @@ async function signInWithGoogle(mode) {
 
     if (path === '/auth/me' && method === 'GET') {
       if (!(await hasSession())) return reply({ error: 'غير مصرح' }, 401);
-      const u = await loadProfile();
-      if (!u) return reply({ error: 'المستخدم غير موجود' }, 404);
       const intent = localStorage.getItem('auth_intent');
       localStorage.removeItem('auth_intent');
-      if (intent === 'login') {
-        const r = await rpc('api_cancel_new_account').catch(e => { console.warn('api_cancel_new_account غير مثبتة:', e.message); return null; });
-        if (r && r.cancelled) {
-          await sb.auth.signOut({ scope: 'local' });
-          setTimeout(() => {
-            openAuthModal('register');
-            const n = document.getElementById('no-account-notice');
-            if (n) n.style.display = 'block';
-          }, 700);
-          return reply({ error: 'لا يوجد حساب' }, 404);
+      const noAccount = async () => {
+        await sb.auth.signOut({ scope: 'local' });
+        setTimeout(() => {
+          openAuthModal('register');
+          const n = document.getElementById('no-account-notice');
+          if (n) n.style.display = 'block';
+        }, 700);
+        return reply({ error: 'لا يوجد حساب' }, 404);
+      };
+      const u = await loadProfile();
+      if (!u) {
+        if (intent === 'login') {
+          await rpc('api_cancel_new_account').catch(() => null);
+          return noAccount();
         }
+        return reply({ error: 'المستخدم غير موجود' }, 404);
+      }
+      if (intent === 'login') {
+        const r = await rpc('api_cancel_new_account').catch(e => { console.warn('api_cancel_new_account:', e.message); return null; });
+        if (r && r.cancelled) return noAccount();
       }
       if (u.is_active === false) { await sb.auth.signOut(); return reply({ error: 'الحساب موقوف' }, 403); }
       return reply(u);
