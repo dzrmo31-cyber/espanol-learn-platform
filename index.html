@@ -1784,6 +1784,10 @@
       <p id="profile-intro" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أهلاً بك 👋 أكمل بياناتك لنبدأ رحلتك. جميع الحقول إلزامية.</p>
       <form id="profile-form" class="auth-form" onsubmit="saveProfile(event)">
         <div class="form-group">
+          <label class="form-label">البريد الإلكتروني (من حساب Google)</label>
+          <input type="email" class="form-input" id="pf-email" readonly style="opacity:0.7;cursor:not-allowed;" />
+        </div>
+        <div class="form-group">
           <label class="form-label">شعار الحساب (صورتك) *</label>
           <div style="display:flex;align-items:center;gap:16px;">
             <div id="pf-avatar-preview" style="width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,0.06);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--text-muted);font-size:30px;flex-shrink:0;"><i class="fa-solid fa-user"></i></div>
@@ -1819,7 +1823,8 @@
         <button type="submit" class="btn btn-primary" id="pf-save" style="width:100%;">
           <i class="fa-solid fa-floppy-disk"></i> حفظ
         </button>
-        <button type="button" class="btn btn-secondary" id="pf-logout" onclick="closeModal('profile-modal'); logout();" style="width:100%;display:none;">
+        <div style="border-top:1px solid var(--border);margin:6px 0 2px;"></div>
+        <button type="button" class="btn btn-secondary" id="pf-logout" onclick="profileLogout()" style="width:100%;color:var(--danger);border-color:var(--danger);">
           <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
         </button>
       </form>
@@ -3240,8 +3245,24 @@ document.addEventListener('click', (e) => {
 // ==============================
 // PROFILE (ملف المستخدم + الإعدادات)
 // ==============================
-const PROFILE_COUNTRIES = ['الجزائر','المغرب','تونس','ليبيا','مصر','السودان','موريتانيا','فلسطين','الأردن','لبنان','سوريا','العراق','السعودية','الإمارات','قطر','الكويت','البحرين','عُمان','اليمن','الصومال','جيبوتي','جزر القمر','إسبانيا','المكسيك','الأرجنتين','كولومبيا','تشيلي','بيرو','فنزويلا','الإكوادور','بوليفيا','باراغواي','الأوروغواي','كوبا','جمهورية الدومينيكان','بنما','كوستاريكا','غواتيمالا','هندوراس','السلفادور','نيكاراغوا','بورتوريكو','البرازيل','الولايات المتحدة','كندا','المملكة المتحدة','أيرلندا','فرنسا','ألمانيا','إيطاليا','البرتغال','هولندا','بلجيكا','سويسرا','النمسا','السويد','النرويج','الدنمارك','فنلندا','بولندا','رومانيا','اليونان','تركيا','روسيا','أوكرانيا','الهند','باكستان','بنغلاديش','إيران','الصين','اليابان','كوريا الجنوبية','إندونيسيا','ماليزيا','أستراليا','نيوزيلندا','جنوب أفريقيا','نيجيريا','السنغال','مالي','النيجر','تشاد','الكاميرون','ساحل العاج','غانا','كينيا','إثيوبيا','دولة أخرى'];
+const PROFILE_COUNTRIES = ['الجمهورية الجزائرية الديمقراطية الشعبية','المملكة المغربية','الجمهورية العربية الصحراوية الديمقراطية','الجمهورية التونسية','دولة ليبيا','جمهورية مصر العربية','جمهورية السودان','الجمهورية الإسلامية الموريتانية','دولة فلسطين','المملكة الأردنية الهاشمية','الجمهورية اللبنانية','الجمهورية العربية السورية','جمهورية العراق','المملكة العربية السعودية','دولة الإمارات العربية المتحدة','دولة قطر','دولة الكويت','مملكة البحرين','سلطنة عُمان','الجمهورية اليمنية','جمهورية الصومال الفيدرالية','جمهورية جيبوتي','اتحاد جزر القمر','مملكة إسبانيا','الولايات المتحدة المكسيكية (المكسيك)','جمهورية الأرجنتين','جمهورية كولومبيا','جمهورية تشيلي','جمهورية بيرو','جمهورية فنزويلا البوليفارية','جمهورية الإكوادور','دولة بوليفيا المتعددة القوميات','جمهورية باراغواي','جمهورية الأوروغواي الشرقية','جمهورية كوبا','جمهورية الدومينيكان','جمهورية بنما','جمهورية كوستاريكا','جمهورية غواتيمالا','جمهورية هندوراس','جمهورية السلفادور','جمهورية نيكاراغوا','كومنولث بورتوريكو','جمهورية غينيا الاستوائية','جمهورية البرازيل الاتحادية','الولايات المتحدة الأمريكية','كندا','المملكة المتحدة لبريطانيا العظمى وأيرلندا الشمالية','جمهورية أيرلندا','الجمهورية الفرنسية','جمهورية ألمانيا الاتحادية','الجمهورية الإيطالية','الجمهورية البرتغالية','مملكة هولندا','مملكة بلجيكا','الاتحاد السويسري','جمهورية النمسا','مملكة السويد','مملكة النرويج','مملكة الدنمارك','جمهورية فنلندا','جمهورية بولندا','رومانيا','الجمهورية الهيلينية (اليونان)','جمهورية تركيا','الاتحاد الروسي','أوكرانيا','جمهورية الهند','جمهورية باكستان الإسلامية','جمهورية بنغلاديش الشعبية','الجمهورية الإسلامية الإيرانية','جمهورية الصين الشعبية','اليابان','جمهورية كوريا','جمهورية إندونيسيا','ماليزيا','كومنولث أستراليا','نيوزيلندا','جمهورية جنوب أفريقيا','جمهورية نيجيريا الاتحادية','جمهورية السنغال','جمهورية مالي','جمهورية النيجر','جمهورية تشاد','جمهورية الكاميرون','جمهورية كوت ديفوار (ساحل العاج)','جمهورية غانا','جمهورية كينيا','جمهورية إثيوبيا الاتحادية الديمقراطية','دولة أخرى'];
 const PROFILE_GOALS = ['السفر والسياحة','الدراسة في بلد ناطق بالإسبانية','العمل أو التجارة','الهجرة والعيش في بلد ناطق بالإسبانية','التواصل مع أصدقاء أو عائلة','الأفلام والموسيقى والثقافة','امتحانات وشهادات (DELE / SIELE)','هواية وتطوير الذات'];
+let profileLocked = false;
+(function () {
+  const baseClose = closeModal;
+  window.closeModal = function (id) {
+    // النافذة الإلزامية لا تُغلق (نقر خارجها، زر، أو أي كود) إلا بعد الحفظ أو الخروج
+    if (id === 'profile-modal' && profileLocked && currentUser) return;
+    baseClose(id);
+  };
+})();
+
+function profileLogout() {
+  profileLocked = false;
+  closeModal('profile-modal');
+  logout();
+}
+
 let profileAvatar = '';
 
 function profileFillOptions() {
@@ -3325,10 +3346,15 @@ function openProfileModal(mandatory) {
   profileGoalChanged();
   if (sel.value !== '__other__') custom.style.display = 'none';
   document.getElementById('pf-error').textContent = '';
-  document.getElementById('profile-modal-title').textContent = mandatory ? 'أكمل ملفك الشخصي' : 'إعدادات الحساب';
-  document.getElementById('profile-intro').style.display = mandatory ? 'block' : 'none';
+  document.getElementById('pf-email').value = u.email || '';
+  profileLocked = !!mandatory;
+  document.getElementById('profile-modal-title').textContent = mandatory ? 'أكمل ملفك الشخصي' : 'الإعدادات · المعلومات الشخصية';
+  const intro = document.getElementById('profile-intro');
+  intro.style.display = 'block';
+  intro.textContent = mandatory
+    ? 'أهلاً بك 👋 أكمل بياناتك لنبدأ رحلتك. جميع الحقول إلزامية، ولا يمكن إغلاق هذه النافذة قبل الحفظ.'
+    : 'هذه معلوماتك الشخصية. يمكنك تعديلها ثم الضغط على حفظ.';
   document.getElementById('profile-close-btn').style.display = mandatory ? 'none' : 'flex';
-  document.getElementById('pf-logout').style.display = mandatory ? 'inline-flex' : 'none';
   openModal('profile-modal');
 }
 
@@ -3365,6 +3391,7 @@ async function saveProfile(e) {
     if (!res.ok) { err.textContent = out.error || 'تعذر الحفظ'; return; }
     currentUser = { ...currentUser, ...out.user };
     updateUserUI();
+    profileLocked = false;
     closeModal('profile-modal');
     showToast('success', 'تم حفظ بياناتك');
   } catch (ex) {
