@@ -1359,6 +1359,7 @@
       <ul class="nav-links">
         <li><a href="#home" class="active">الرئيسية</a></li>
         <li><a href="#levels-guide">المستويات</a></li>
+        <li><a href="#lessons-room">دروس</a></li>
         <li><a href="#chapters">الفصول</a></li>
         <li><a href="#exams">الامتحانات</a></li>
         <li><a href="#features">المميزات</a></li>
@@ -1389,6 +1390,7 @@
 <div class="mobile-menu" id="mobile-menu">
   <a href="#home" onclick="closeMobileMenu()">🏠 الرئيسية</a>
   <a href="#levels-guide" onclick="closeMobileMenu()">🏢 المستويات</a>
+  <a href="#lessons-room" onclick="closeMobileMenu()">📖 دروس</a>
   <a href="#chapters" onclick="closeMobileMenu()">📚 الفصول</a>
   <a href="#exams" onclick="closeMobileMenu()">🎓 الامتحانات</a>
   <a href="#features" onclick="closeMobileMenu()">⭐ المميزات</a>
@@ -1572,6 +1574,63 @@
 </section>
   
 <!-- ======================== CHAPTERS ======================== -->
+<style>
+  .lr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; }
+  .lr-card { text-align:right; }
+  .lr-card h3 { font-size:20px; margin:0 0 4px; }
+  .lr-card p { color:var(--text-secondary); font-size:14px; line-height:1.8; margin:0; }
+  .lr-num { position:absolute; top:14px; left:20px; font-size:44px; font-weight:800; color:rgba(255,255,255,0.07); }
+  .lr-ico { width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:28px; margin-bottom:16px; }
+  .lr-es-title { direction:ltr; text-align:right; color:var(--secondary); font-weight:700; font-size:14px; margin:2px 0 8px; }
+  .lr-go { margin-top:14px; color:var(--primary-light); font-size:14px; font-weight:700; }
+  .lr-bar { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:6px; }
+  .lr-h { font-size:18px; font-weight:800; margin:28px 0 10px; padding-right:12px; border-right:4px solid var(--primary-light); }
+  .lr-p { color:var(--text-secondary); line-height:2; font-size:15px; margin:8px 0; }
+  .lr-note, .lr-tip { border-radius:12px; padding:12px 14px; font-size:14px; line-height:1.9; margin:12px 0; }
+  .lr-note { background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); color:#fcd34d; }
+  .lr-tip { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#6ee7b7; }
+  .lr-tablewrap { overflow-x:auto; margin:10px 0; border:1px solid var(--border); border-radius:12px; }
+  .lr-table { width:100%; border-collapse:collapse; font-size:14px; min-width:380px; }
+  .lr-table th { background:rgba(124,58,237,0.18); padding:10px 12px; text-align:right; font-weight:700; white-space:nowrap; }
+  .lr-table td { padding:9px 12px; border-top:1px solid var(--border); vertical-align:middle; text-align:right; }
+  .lr-es { direction:ltr; unicode-bidi:isolate; display:inline-flex; align-items:center; gap:8px; color:#c4b5fd; font-weight:700; text-align:left; }
+  .lr-spk { background:rgba(6,182,212,0.15); color:var(--secondary); border:1px solid rgba(6,182,212,0.35); width:28px; height:28px; min-width:28px; border-radius:50%; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; justify-content:center; }
+  .lr-spk:hover { background:rgba(6,182,212,0.32); }
+  .lr-chips { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin:10px 0; }
+  .lr-chip { display:flex; align-items:center; justify-content:space-between; gap:10px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:9px 12px; }
+  .lr-chip .ar { color:var(--text-secondary); font-size:13px; text-align:left; }
+  .lr-dialog { display:flex; flex-direction:column; gap:10px; margin:10px 0; }
+  .lr-line { border:1px solid var(--border); border-radius:14px; padding:10px 14px; max-width:92%; }
+  .lr-line.a { background:rgba(124,58,237,0.12); align-self:flex-start; }
+  .lr-line.b { background:rgba(6,182,212,0.1); align-self:flex-end; }
+  .lr-line .who { font-size:12px; color:var(--text-muted); margin-bottom:2px; }
+  .lr-line .ar { color:var(--text-secondary); font-size:13px; margin-top:2px; }
+  .lr-qtop { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--text-secondary); font-size:14px; }
+  .lr-prog { height:6px; background:rgba(255,255,255,0.08); border-radius:6px; margin:12px 0 4px; overflow:hidden; }
+  .lr-prog-bar { height:100%; background:linear-gradient(90deg,var(--primary),var(--secondary)); transition:width .3s; }
+  .lr-qtitle { text-align:center; font-size:17px; font-weight:700; margin:18px 0 14px; }
+  .lr-opts { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; margin:18px 0 8px; }
+  .lr-opt { background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:13px 14px; color:var(--text-primary); font-family:inherit; font-size:15px; cursor:pointer; transition:var(--transition); }
+  .lr-opt:hover:not(:disabled) { background:rgba(255,255,255,0.1); border-color:var(--primary-light); }
+  .lr-opt.ok { background:rgba(16,185,129,0.2); border-color:var(--success); }
+  .lr-opt.bad { background:rgba(239,68,68,0.2); border-color:var(--danger); }
+  .lr-fb { text-align:center; margin-top:10px; min-height:20px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .lr-fb .good { color:#6ee7b7; font-weight:700; } .lr-fb .badtxt { color:#fca5a5; font-weight:700; }
+  .lr-result { text-align:center; padding:20px 0; } .lr-result .big { font-size:56px; }
+  @media (max-width:520px){ .lr-line { max-width:100%; } .lr-table { min-width:320px; } }
+</style>
+<!-- ======================== LESSONS ROOM ======================== -->
+<section class="section" id="lessons-room">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-badge"><i class="fa-solid fa-book-open-reader"></i> غرفة الدروس</div>
+      <h2 class="section-title">دروس</h2>
+      <p class="section-subtitle">8 دروس مكتوبة بالعربية مع صوت إسباني واختبار استماع لكل درس، مفتوحة للجميع</p>
+    </div>
+    <div class="lr-grid" id="lr-grid"></div>
+  </div>
+</section>
+
 <section class="section" id="chapters">
   <div class="container">
     <div class="section-header">
@@ -1829,6 +1888,33 @@
           <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
         </button>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Lesson Room Modal -->
+<div class="modal-overlay" id="lesson-room-modal">
+  <div class="modal" style="max-width:900px;">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title" id="lr-title"></h3>
+        <div class="lr-es-title" id="lr-es-title" lang="es" style="margin:2px 0 0;"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('lesson-room-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div id="lr-view-lesson">
+        <div class="lr-bar">
+          <button type="button" class="btn btn-secondary btn-sm" id="lr-playall" onclick="lrPlayAll()"><i class="fa-solid fa-headphones"></i> استمع للدرس كاملاً</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="lrStartQuiz()"><i class="fa-solid fa-ear-listen"></i> اختبر استماعك</button>
+        </div>
+        <div id="lr-body"></div>
+        <div style="display:flex;justify-content:space-between;gap:10px;margin-top:28px;">
+          <button type="button" class="btn btn-secondary btn-sm" id="lr-prev" onclick="lrNav(-1)"><i class="fa-solid fa-arrow-right"></i> <span></span></button>
+          <button type="button" class="btn btn-secondary btn-sm" id="lr-next" onclick="lrNav(1)"><span></span> <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+      </div>
+      <div id="lr-view-quiz" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -3421,6 +3507,558 @@ async function saveProfile(e) {
     }
   };
 })();
+
+// ==============================
+// غرفة الدروس (دروس مكتوبة + استماع)
+// ==============================
+const LR_LESSONS = [
+{ icon:'🔤', grad:'linear-gradient(135deg,#7c3aed,#a78bfa)', es:'El alfabeto español', ar:'الحروف والأصوات',
+  desc:'الحروف الأبجدية، طريقة النطق، الحروف المتحركة والساكنة.',
+  blocks:[
+    ['p','الأبجدية الإسبانية (El alfabeto) فيها 27 حرفاً، وتُكتب الكلمة غالباً كما تُنطق، لذلك تُعدّ من أسهل اللغات في القراءة بعد أن تعرف أصوات الحروف. اضغط على زر السماعة بجانب أي حرف أو كلمة لتسمعها بصوت إسباني.'],
+    ['h','الأبجدية كاملة'],
+    ['table',['الحرف','اسمه','النطق بالعربية','مثال','معناه'],[
+      ['A a','a','آ','agua','ماء'],['B b','be','بي','barco','سفينة'],['C c','ce','ثي / سي','casa','بيت'],['D d','de','دي','dedo','إصبع'],
+      ['E e','e','إي','escuela','مدرسة'],['F f','efe','إفي','familia','عائلة'],['G g','ge','خي','gato','قطّ'],['H h','hache','آتشي','hotel','فندق'],
+      ['I i','i','إي','isla','جزيرة'],['J j','jota','خوتا','jardín','حديقة'],['K k','ka','كا','kilo','كيلو'],['L l','ele','إيلي','luna','قمر'],
+      ['M m','eme','إيمي','mesa','طاولة'],['N n','ene','إيني','nariz','أنف'],['Ñ ñ','eñe','إينيي','España','إسبانيا'],['O o','o','أو','ojo','عين'],
+      ['P p','pe','بي (مهموسة)','pan','خبز'],['Q q','cu','كو','queso','جبن'],['R r','erre','إيري','rojo','أحمر'],['S s','ese','إيسي','sol','شمس'],
+      ['T t','te','تي','tierra','أرض'],['U u','u','وو','uva','عنب'],['V v','uve','أوبي','vaca','بقرة'],['W w','uve doble','أوبي دوبلي','wifi','واي فاي'],
+      ['X x','equis','إيكيس','taxi','سيارة أجرة'],['Y y','ye','يي','yo','أنا'],['Z z','zeta','ثيتا','zapato','حذاء']
+    ],{say:[1,3],pair:[3,4]}],
+    ['note','حرف P غير موجود في العربية: هو قريب من الباء لكنه مهموس (بلا اهتزاز في الحنجرة). وحرف V يُنطق في الإسبانية مثل B تقريباً. وفي إسبانيا يُنطق C قبل e و i، وكذلك Z، مثل th الإنجليزية (ث)، أما في أمريكا اللاتينية فيُنطقان سيناً.'],
+    ['h','الحروف المتحركة (Las vocales)'],
+    ['p','في الإسبانية خمسة حروف متحركة: a e i o u. تُنطق دائماً بنفس الصوت الواضح القصير مهما كان موقعها في الكلمة، وهذا يختلف عن الإنجليزية التي يتغير فيها صوت الحرف المتحرك.'],
+    ['table',['الحرف','النطق','مثال','معناه'],[['a','آ','mano','يد'],['e','إي','leche','حليب'],['i','ي','hijo','ابن'],['o','أو','oso','دبّ'],['u','وو','uno','واحد']],{say:[2],pair:[2,3]}],
+    ['h','الحروف الساكنة (Las consonantes)'],
+    ['p','الحروف الساكنة هي بقية الأبجدية (22 حرفاً): b c d f g h j k l m n ñ p q r s t v w x y z. أغلبها يُنطق كما في الجدول الأول، لكن بعضها يتغير حسب الحرف الذي بعده:'],
+    ['table',['الحالة','النطق','مثال','معناه'],[
+      ['C قبل a / o / u','ك','coche','سيارة'],['C قبل e / i','ث (إسبانيا) أو س','cine','سينما'],
+      ['G قبل a / o / u','غ','gracias','شكراً'],['G قبل e / i','خ','gente','ناس'],
+      ['gue / gui','غ (الـ u صامتة)','guitarra','غيتار'],['güe / güi','غو (تُنطق الـ u)','pingüino','بطريق'],
+      ['H','صامتة دائماً','hola','مرحباً'],['J','خ','jugo','عصير'],['LL','يي (تشبه Y)','calle','شارع'],
+      ['Ñ','ني','niño','طفل'],['QU','ك (الـ u صامتة)','quince','خمسة عشر'],['CH','تش','chocolate','شوكولاتة'],
+      ['RR أو R أول الكلمة','راء مكررة متدحرجة','perro','كلب'],['R بين حرفين متحركين','راء خفيفة بنقرة واحدة','pero','لكن'],
+      ['V','مثل B','vida','حياة'],['Z','ث أو س','zorro','ثعلب'],['X','كس (وفي México تُنطق خ)','México','المكسيك'],['Y','ي','ya','الآن']
+    ],{say:[2],pair:[2,3]}],
+    ['h','النبر: أين نضغط على الكلمة؟'],
+    ['p','الكلمة المنتهية بحرف متحرك أو n أو s يقع النبر فيها على المقطع قبل الأخير. والمنتهية بأي حرف ساكن آخر يقع النبر على المقطع الأخير. وإذا وُجدت علامة (´) فالنبر على الحرف الذي عليها دائماً.'],
+    ['table',['الكلمة','النبر','معناها'],[['casa','CA-sa','بيت'],['hablan','HA-blan','يتحدثون'],['lunes','LU-nes','الاثنين'],['hablar','ha-BLAR','يتحدث'],['ciudad','ciu-DAD','مدينة'],['café','ca-FÉ','قهوة'],['árbol','ÁR-bol','شجرة']],{say:[0],pair:[0,2]}],
+    ['tip','نصيحة: استمع إلى الكلمة ثم كرّرها بصوت عالٍ، وبعد أن تنهي الدرس جرّب زر «اختبر استماعك».']
+  ]},
+{ icon:'🔢', grad:'linear-gradient(135deg,#0891b2,#22d3ee)', es:'Los números', ar:'الأرقام والأعداد',
+  desc:'الأعداد من 0 إلى 100، المئات، الآلاف، التواريخ والأرقام الترتيبية.',
+  blocks:[
+    ['p','الأعداد في الإسبانية منتظمة بعد العدد 30. احفظ الأعداد من 0 إلى 29 جيداً، ثم ستجد أن الباقي يتبع قاعدة واحدة.'],
+    ['h','من 0 إلى 10'],
+    ['chips',[['cero','0'],['uno','1'],['dos','2'],['tres','3'],['cuatro','4'],['cinco','5'],['seis','6'],['siete','7'],['ocho','8'],['nueve','9'],['diez','10']]],
+    ['h','من 11 إلى 20'],
+    ['chips',[['once','11'],['doce','12'],['trece','13'],['catorce','14'],['quince','15'],['dieciséis','16'],['diecisiete','17'],['dieciocho','18'],['diecinueve','19'],['veinte','20']]],
+    ['h','من 21 إلى 29'],
+    ['p','تُكتب كلمة واحدة: veinti + الوحدة. لاحظ الأعداد التي عليها علامة نبر.'],
+    ['chips',[['veintiuno','21'],['veintidós','22'],['veintitrés','23'],['veinticuatro','24'],['veinticinco','25'],['veintiséis','26'],['veintisiete','27'],['veintiocho','28'],['veintinueve','29']]],
+    ['h','العقود حتى 100'],
+    ['chips',[['treinta','30'],['cuarenta','40'],['cincuenta','50'],['sesenta','60'],['setenta','70'],['ochenta','80'],['noventa','90'],['cien','100']]],
+    ['p','من 31 إلى 99 نكتب العقد ثم y (وتعني «و») ثم الوحدة، وكلها كلمات منفصلة:'],
+    ['chips',[['treinta y uno','31'],['cuarenta y dos','42'],['cincuenta y cinco','55'],['setenta y siete','77'],['noventa y nueve','99']]],
+    ['h','المئات'],
+    ['chips',[['ciento uno','101'],['doscientos','200'],['trescientos','300'],['cuatrocientos','400'],['quinientos','500'],['seiscientos','600'],['setecientos','700'],['ochocientos','800'],['novecientos','900']]],
+    ['note','العدد 100 وحده يُقال cien، أما قبل عدد آخر فيُقال ciento مثل ciento cinco (105). والأعداد 500 و700 و900 شاذة في شكلها. وتتطابق المئات مع المعدود في التأنيث: doscientas casas (200 بيت).'],
+    ['h','الآلاف والملايين'],
+    ['chips',[['mil','1000'],['dos mil','2000'],['diez mil','10.000'],['cien mil','100.000'],['un millón','1.000.000']]],
+    ['p','كلمة mil لا تُجمع (dos mil وليس dos miles). والسنة 2026 تُقال: dos mil veintiséis، والسنة 1999: mil novecientos noventa y nueve.'],
+    ['h','الأرقام الترتيبية'],
+    ['chips',[['primero','الأول'],['segundo','الثاني'],['tercero','الثالث'],['cuarto','الرابع'],['quinto','الخامس'],['sexto','السادس'],['séptimo','السابع'],['octavo','الثامن'],['noveno','التاسع'],['décimo','العاشر']]],
+    ['note','تصبح primero و tercero هكذا: primer و tercer قبل اسم مذكر مفرد (el primer día = اليوم الأول). وللمؤنث: primera، segunda، tercera.'],
+    ['h','أيام الأسبوع'],
+    ['chips',[['lunes','الاثنين'],['martes','الثلاثاء'],['miércoles','الأربعاء'],['jueves','الخميس'],['viernes','الجمعة'],['sábado','السبت'],['domingo','الأحد']]],
+    ['h','أشهر السنة'],
+    ['chips',[['enero','يناير (جانفي)'],['febrero','فبراير (فيفري)'],['marzo','مارس'],['abril','أبريل (أفريل)'],['mayo','مايو (ماي)'],['junio','يونيو (جوان)'],['julio','يوليو (جويلية)'],['agosto','أغسطس (أوت)'],['septiembre','سبتمبر'],['octubre','أكتوبر'],['noviembre','نوفمبر'],['diciembre','ديسمبر']]],
+    ['note','أسماء الأيام والأشهر تُكتب بحرف صغير في الإسبانية، إلا في أول الجملة.'],
+    ['h','التواريخ والعمر'],
+    ['p','صيغة التاريخ: el + اليوم + de + الشهر + de + السنة.'],
+    ['table',['الجملة','المعنى'],[
+      ['Hoy es el veintiocho de octubre.','اليوم هو الثامن والعشرون من أكتوبر.'],
+      ['Mi cumpleaños es el cinco de mayo.','عيد ميلادي في الخامس من ماي.'],
+      ['Estamos en dos mil veintiséis.','نحن في عام 2026.'],
+      ['¿Cuántos años tienes?','كم عمرك؟'],
+      ['Tengo veinte años.','عمري عشرون سنة.']
+    ],{say:[0],pair:[0,1]}]
+  ]},
+{ icon:'👋', grad:'linear-gradient(135deg,#059669,#34d399)', es:'Los saludos y las presentaciones', ar:'التحيات والتعارف',
+  desc:'مرحبًا، صباح الخير، ما اسمك؟ من أين أنت؟',
+  blocks:[
+    ['p','هذه أهم عبارات أول لقاء مع أي إسباني: التحية، والسؤال عن الحال، وتقديم نفسك. تعلّمها كلها وسترى أنك تستطيع إجراء أول محادثة.'],
+    ['h','التحيات الأساسية'],
+    ['chips',[['Hola','مرحباً'],['Buenos días','صباح الخير'],['Buenas tardes','مساء الخير (بعد الظهر)'],['Buenas noches','مساء الخير (الليل) / تصبح على خير'],['¿Qué tal?','كيف الحال؟ (غير رسمي)']]],
+    ['note','Buenos días تُقال حتى الظهر تقريباً، وBuenas tardes من الظهر حتى الغروب، وBuenas noches بعد الغروب وعند النوم.'],
+    ['h','كيف حالك؟'],
+    ['table',['العبارة','المعنى'],[
+      ['¿Cómo estás?','كيف حالك؟ (غير رسمي)'],['¿Cómo está usted?','كيف حالك؟ (رسمي)'],['Estoy bien, gracias.','أنا بخير، شكراً.'],
+      ['Más o menos.','لا بأس.'],['Estoy mal.','لست بخير.'],['¿Y tú?','وأنت؟']
+    ],{say:[0],pair:[0,1]}],
+    ['h','التعارف وتقديم النفس'],
+    ['table',['العبارة','المعنى'],[
+      ['¿Cómo te llamas?','ما اسمك؟'],['Me llamo Karim.','اسمي كريم.'],['Mucho gusto.','تشرفت بمعرفتك.'],
+      ['Encantado.','سررت بلقائك (يقولها الرجل).'],['Encantada.','سررت بلقائك (تقولها المرأة).'],
+      ['¿De dónde eres?','من أين أنت؟'],['Soy de Argelia.','أنا من الجزائر.'],
+      ['¿Dónde vives?','أين تسكن؟'],['Vivo en Orán.','أسكن في وهران.'],
+      ['¿Cuántos años tienes?','كم عمرك؟'],['Tengo veinte años.','عمري عشرون سنة.'],
+      ['¿A qué te dedicas?','ماذا تعمل؟'],['Soy estudiante.','أنا طالب.']
+    ],{say:[0],pair:[0,1]}],
+    ['h','الوداع والمجاملات'],
+    ['chips',[['Adiós','وداعاً'],['Hasta luego','إلى اللقاء'],['Hasta mañana','إلى الغد'],['Nos vemos','نراكم لاحقاً'],['Por favor','من فضلك'],['Gracias','شكراً'],['De nada','عفواً'],['Perdón','المعذرة'],['Disculpe','عذراً (رسمي)'],['Lo siento','آسف'],['Bienvenido','أهلاً بك']]],
+    ['h','عندما لا تفهم'],
+    ['chips',[['No entiendo','لا أفهم'],['¿Puedes repetir?','هل تعيد من فضلك؟'],['Más despacio, por favor','أبطأ من فضلك'],['¿Hablas español?','هل تتحدث الإسبانية؟'],['Hablo un poco de español','أتحدث قليلاً من الإسبانية']]],
+    ['h','tú أم usted؟'],
+    ['p','نستعمل tú مع الأصدقاء والعائلة والأطفال ومن هم في عمرنا. ونستعمل usted مع كبار السن ومع من نلتقيهم لأول مرة في موقف رسمي (عمل، إدارة، متجر) احتراماً لهم.'],
+    ['h','الجنسيات'],
+    ['table',['مذكر','مؤنث','المعنى'],[
+      ['argelino','argelina','جزائري'],['marroquí','marroquí','مغربي'],['saharaui','saharaui','صحراوي'],['tunecino','tunecina','تونسي'],
+      ['egipcio','egipcia','مصري'],['saudí','saudí','سعودي'],['español','española','إسباني'],['mexicano','mexicana','مكسيكي'],['francés','francesa','فرنسي']
+    ],{say:[0,1],pair:[0,2]}],
+    ['note','الجنسية تُكتب بحرف صغير في الإسبانية. والكلمات المنتهية بـ í مثل marroquí وsaudí تبقى نفسها للمذكر والمؤنث.'],
+    ['h','حوار تطبيقي'],
+    ['dialog',[
+      ['Ana','¡Hola! ¿Cómo te llamas?','مرحباً! ما اسمك؟'],
+      ['Karim','Hola, me llamo Karim. ¿Y tú?','مرحباً، اسمي كريم. وأنتِ؟'],
+      ['Ana','Me llamo Ana. Mucho gusto.','اسمي آنا. تشرفت بمعرفتك.'],
+      ['Karim','Encantado. ¿De dónde eres?','سررت بلقائك. من أين أنتِ؟'],
+      ['Ana','Soy de España, de Madrid. ¿Y tú?','أنا من إسبانيا، من مدريد. وأنت؟'],
+      ['Karim','Soy de Argelia, de Orán.','أنا من الجزائر، من وهران.'],
+      ['Ana','¿Hablas español?','هل تتحدث الإسبانية؟'],
+      ['Karim','Sí, un poco. Estoy aprendiendo.','نعم، قليلاً. أنا أتعلم.'],
+      ['Ana','¡Muy bien! Hasta luego.','ممتاز! إلى اللقاء.'],
+      ['Karim','Adiós, hasta luego.','وداعاً، إلى اللقاء.']
+    ]]
+  ]},
+{ icon:'🙋', grad:'linear-gradient(135deg,#d97706,#fbbf24)', es:'Los pronombres personales', ar:'الضمائر الشخصية',
+  desc:'Yo، Tú، Él، Ella، Nosotros، Vosotros، Ellos.',
+  blocks:[
+    ['p','الضمائر الشخصية (Los pronombres personales) هي الكلمات التي تحل محل الأسماء للإشارة إلى الفاعل: أنا، أنت، هو، هي... وهي أساس تصريف الأفعال.'],
+    ['h','الضمائر الأساسية'],
+    ['table',['الضمير','المعنى','ملاحظة'],[
+      ['yo','أنا','—'],['tú','أنتَ / أنتِ','غير رسمي'],['él','هو','—'],['ella','هي','—'],['usted','أنتَ / أنتِ','رسمي، ويُختصر Ud.'],
+      ['nosotros','نحن','مذكر أو مختلط'],['nosotras','نحن (إناث)','إناث فقط'],['vosotros','أنتم','تُستعمل في إسبانيا'],['vosotras','أنتن','تُستعمل في إسبانيا'],
+      ['ellos','هم','مذكر أو مختلط'],['ellas','هن','إناث فقط'],['ustedes','أنتم (رسمي)','الشائع في أمريكا اللاتينية']
+    ],{say:[0],pair:[0,1]}],
+    ['note','إذا كانت المجموعة فيها رجل واحد على الأقل نستعمل المذكر (nosotros، vosotros، ellos) حتى لو كان الباقي نساء.'],
+    ['h','الضمير غالباً يُحذف'],
+    ['p','في الإسبانية تدلّ نهاية الفعل على الفاعل، لذلك نقول Hablo español (أتحدث الإسبانية) دون yo في أغلب الأحيان. نذكر الضمير للتوكيد أو للتمييز: Yo soy Ahmed, ¿y tú?'],
+    ['h','تصريف الفعل hablar (يتحدث) مثالاً'],
+    ['table',['الضمير','الفعل','المعنى'],[
+      ['yo','hablo','أتحدث'],['tú','hablas','تتحدث'],['él / ella / usted','habla','يتحدث / تتحدث'],
+      ['nosotros','hablamos','نتحدث'],['vosotros','habláis','تتحدثون'],['ellos / ustedes','hablan','يتحدثون']
+    ],{say:[1],pair:[1,2]}],
+    ['h','جمل بالضمائر'],
+    ['table',['الجملة','المعنى'],[
+      ['Yo soy estudiante.','أنا طالب.'],['Tú eres amable.','أنت لطيف.'],['Él es médico.','هو طبيب.'],['Ella es profesora.','هي معلمة.'],
+      ['Nosotros somos amigos.','نحن أصدقاء.'],['Ellos son de Argelia.','هم من الجزائر.'],['Usted es muy amable.','حضرتك لطيف جداً.']
+    ],{say:[0],pair:[0,1]}],
+    ['h','انتبه للعلامة'],
+    ['table',['الكلمة','المعنى'],[
+      ['tú eres','أنتَ (ضمير) تكون'],['tu libro','كتابك (ملكية)'],['él es','هو (ضمير) يكون'],['el libro','الكتاب (أداة تعريف)']
+    ],{say:[0],pair:[0,1]}],
+    ['tip','العلامة على tú وél تفرّقهما عن tu (كتابك) وel (الـ).']
+  ]},
+{ icon:'⚖️', grad:'linear-gradient(135deg,#db2777,#f472b6)', es:'Los verbos ser y estar', ar:'الأفعال الأساسية Ser و Estar',
+  desc:'الفرق بينهما، التصريف، الهوية والحالة والمكان.',
+  blocks:[
+    ['p','الفعلان ser و estar معناهما «يكون»، وهما أهم فعلين في الإسبانية. في العربية لا نحتاج فعلاً للكينونة في الحاضر (أنا طالب)، أما في الإسبانية فهو واجب دائماً: Soy estudiante.'],
+    ['h','التصريف في المضارع'],
+    ['table',['الضمير','ser','estar'],[
+      ['yo','soy','estoy'],['tú','eres','estás'],['él / ella / usted','es','está'],['nosotros','somos','estamos'],['vosotros','sois','estáis'],['ellos / ustedes','son','están']
+    ],{say:[1,2]}],
+    ['h','متى نستعمل SER؟ (الأشياء الثابتة)'],
+    ['table',['الاستعمال','الجملة','المعنى'],[
+      ['الهوية والاسم','Soy Karim.','أنا كريم.'],['المهنة','Ella es médica.','هي طبيبة.'],['الجنسية والأصل','Somos de Argelia.','نحن من الجزائر.'],
+      ['الصفات الدائمة','Mi hermano es alto.','أخي طويل.'],['الوقت','Son las tres.','الساعة الثالثة.'],['التاريخ','Hoy es lunes.','اليوم الاثنين.'],
+      ['المادة والملكية','La mesa es de madera.','الطاولة من خشب.'],['العلاقات','Ana es mi amiga.','آنا صديقتي.']
+    ],{say:[1],pair:[1,2]}],
+    ['h','متى نستعمل ESTAR؟ (الأماكن والأحوال المؤقتة)'],
+    ['table',['الاستعمال','الجملة','المعنى'],[
+      ['مكان المدن والدول','Madrid está en España.','مدريد في إسبانيا.'],['مكان الأشياء','El libro está en la mesa.','الكتاب على الطاولة.'],
+      ['الحالة المؤقتة','Estoy cansado.','أنا متعب.'],['المشاعر','Ella está contenta.','هي سعيدة.'],
+      ['الفعل المستمر','Estoy estudiando español.','أنا أدرس الإسبانية الآن.'],['نتيجة الحدث','La puerta está cerrada.','الباب مغلق.']
+    ],{say:[1],pair:[1,2]}],
+    ['note','للحفظ: SER = DOCTOR (الوصف، المهنة، الصفة الدائمة، الوقت، الأصل، العلاقة)، وESTAR = PLACE (الموقع، الفعل المستمر، الحالة، المشاعر).'],
+    ['h','نفس الصفة بمعنى مختلف'],
+    ['table',['مع ser','معناها','مع estar','معناها'],[
+      ['Él es aburrido.','هو شخص ممل.','Él está aburrido.','هو يشعر بالملل.'],
+      ['Ella es lista.','هي ذكية.','Ella está lista.','هي جاهزة.'],
+      ['La sopa es buena.','الشوربة جيدة بطبيعتها.','La sopa está buena.','الشوربة لذيذة الآن.']
+    ],{say:[0,2]}],
+    ['h','تمرين: ser أم estar؟'],
+    ['table',['أكمل','الجواب','السبب'],[
+      ['Yo ___ de Argelia.','soy','الأصل'],['El café ___ caliente.','está','حالة مؤقتة'],['Mi madre ___ profesora.','es','مهنة'],
+      ['Nosotros ___ en casa.','estamos','مكان'],['Ellos ___ amables.','son','صفة دائمة']
+    ],{}]
+  ]},
+{ icon:'👫', grad:'linear-gradient(135deg,#2563eb,#60a5fa)', es:'El género de los sustantivos', ar:'المذكر والمؤنث',
+  desc:'المذكر والمؤنث، الكلمات المنتهية بـ O و A والاستثناءات.',
+  blocks:[
+    ['p','كل اسم في الإسبانية إما مذكر (masculino) أو مؤنث (femenino)، حتى الجمادات، كما في العربية (كتاب مذكر وطاولة مؤنثة). والقاعدة الذهبية: تعلّم الاسم دائماً مع أداته el أو la.'],
+    ['h','القاعدة الأساسية: O و A'],
+    ['table',['النهاية','الجنس','مثال','المعنى'],[
+      ['-o','مذكر','el libro','الكتاب'],['-o','مذكر','el amigo','الصديق'],['-a','مؤنث','la casa','البيت'],['-a','مؤنث','la mesa','الطاولة']
+    ],{say:[2],pair:[2,3]}],
+    ['h','نهايات تدل على التأنيث'],
+    ['table',['النهاية','مثال','المعنى'],[
+      ['-ción','la nación','الأمة'],['-sión','la televisión','التلفاز'],['-dad','la ciudad','المدينة'],['-tad','la libertad','الحرية'],['-tud','la actitud','الموقف'],['-umbre','la costumbre','العادة']
+    ],{say:[1],pair:[1,2]}],
+    ['h','نهايات تدل على التذكير'],
+    ['table',['النهاية','مثال','المعنى'],[
+      ['-or','el color','اللون'],['-aje','el viaje','الرحلة'],['-án','el pan','الخبز'],['-ma (أصل يوناني)','el problema','المشكلة'],['-ma (أصل يوناني)','el idioma','اللغة'],['-ma (أصل يوناني)','el programa','البرنامج']
+    ],{say:[1],pair:[1,2]}],
+    ['h','استثناءات مهمة'],
+    ['chips',[['la mano','اليد'],['la foto','الصورة'],['la moto','الدراجة النارية'],['el día','اليوم'],['el mapa','الخريطة'],['el planeta','الكوكب'],['la noche','الليل'],['la leche','الحليب'],['el coche','السيارة'],['la flor','الزهرة'],['el árbol','الشجرة'],['la luz','الضوء']]],
+    ['note','mano وfoto وmoto تنتهي بـ o لكنها مؤنثة، وdía وmapa وplaneta تنتهي بـ a لكنها مذكرة. والأسماء المنتهية بـ e أو بحرف ساكن آخر يجب حفظ جنسها مع أداتها.'],
+    ['h','مؤنث الأشخاص والحيوانات'],
+    ['table',['مذكر','مؤنث','المعنى'],[
+      ['el niño','la niña','الطفل / الطفلة'],['el amigo','la amiga','الصديق / الصديقة'],['el profesor','la profesora','المعلم / المعلمة'],
+      ['el doctor','la doctora','الطبيب / الطبيبة'],['el estudiante','la estudiante','الطالب / الطالبة (نفس الكلمة)'],['el artista','la artista','الفنان / الفنانة'],
+      ['el actor','la actriz','الممثل / الممثلة'],['el padre','la madre','الأب / الأم'],['el hombre','la mujer','الرجل / المرأة'],['el rey','la reina','الملك / الملكة']
+    ],{say:[0,1]}],
+    ['h','الجمع'],
+    ['table',['القاعدة','المفرد','الجمع','المعنى'],[
+      ['حرف متحرك + s','el libro','los libros','الكتب'],['حرف ساكن + es','la ciudad','las ciudades','المدن'],
+      ['z تصبح ces','el lápiz','los lápices','أقلام الرصاص'],['ينتهي بـ s غير منبورة: لا يتغير','el lunes','los lunes','أيام الاثنين']
+    ],{say:[1,2],pair:[2,3]}]
+  ]},
+{ icon:'📖', grad:'linear-gradient(135deg,#7c3aed,#ec4899)', es:'Los artículos', ar:'أدوات التعريف والتنكير',
+  desc:'El، La، Los، Las، Un، Una، Unos، Unas.',
+  blocks:[
+    ['p','الأداة (el artículo) تسبق الاسم وتتطابق معه في الجنس والعدد. أدوات التعريف تقابل «ال» في العربية. أما أدوات التنكير فتقابل الاسم النكرة (كتاب، بيت) أو «بعض».'],
+    ['h','أدوات التعريف (ال)'],
+    ['table',['','مذكر','مؤنث'],[['مفرد','el','la'],['جمع','los','las']],{say:[1,2]}],
+    ['table',['المثال','المعنى'],[['el libro','الكتاب'],['la casa','البيت'],['los libros','الكتب'],['las casas','البيوت']],{say:[0],pair:[0,1]}],
+    ['h','أدوات التنكير (واحد / بعض)'],
+    ['table',['','مذكر','مؤنث'],[['مفرد','un','una'],['جمع','unos','unas']],{say:[1,2]}],
+    ['table',['المثال','المعنى'],[['un libro','كتاب (واحد)'],['una casa','بيت (واحد)'],['unos libros','بعض الكتب'],['unas casas','بعض البيوت']],{say:[0],pair:[0,1]}],
+    ['h','متى نستعمل هذه ومتى تلك؟'],
+    ['table',['الجملة','المعنى'],[
+      ['Tengo un perro.','عندي كلب (أي كلب غير محدد).'],['El perro es negro.','الكلب أسود (الكلب الذي نعرفه).'],
+      ['Quiero una manzana.','أريد تفاحة.'],['La manzana es roja.','التفاحة حمراء.']
+    ],{say:[0],pair:[0,1]}],
+    ['h','حالات خاصة'],
+    ['table',['الحالة','المثال','المعنى'],[
+      ['a + el تصبح al','Voy al cine.','أذهب إلى السينما.'],['de + el تصبح del','El libro del profesor.','كتاب المعلم.'],
+      ['مؤنث يبدأ بـ a منبورة: نستعمل el','el agua','الماء'],['لكن الجمع يبقى مؤنثاً','las aguas','المياه'],
+      ['أيام الأسبوع: el للمفرد','El lunes tengo clase.','يوم الاثنين عندي درس.'],['أيام الأسبوع: los للتكرار','Los lunes estudio.','أيام الاثنين أدرس.']
+    ],{say:[1],pair:[1,2]}],
+    ['h','متى نحذف الأداة؟'],
+    ['table',['الحالة','المثال','المعنى'],[
+      ['المهنة بعد ser','Soy médico.','أنا طبيب.'],['الجنسية','Es argelino.','هو جزائري.'],['اللغات بعد hablar','Hablo español.','أتحدث الإسبانية.'],
+      ['الساعة','Es la una.','الساعة الواحدة.'],['الساعة','Son las tres.','الساعة الثالثة.']
+    ],{say:[1],pair:[1,2]}],
+    ['h','مفردات للتدريب'],
+    ['chips',[['el chico','الولد'],['la chica','البنت'],['los chicos','الأولاد'],['las chicas','البنات'],['un gato','قط'],['una gata','قطة'],['unos libros','بعض الكتب'],['unas flores','بعض الزهور']]]
+  ]},
+{ icon:'🎨', grad:'linear-gradient(135deg,#ea580c,#fb923c)', es:'Los colores y los adjetivos', ar:'الألوان والصفات',
+  desc:'الألوان، الصفات، المطابقة بين الاسم والصفة.',
+  blocks:[
+    ['p','الصفات (los adjetivos) تصف الأسماء، ومنها الألوان. وفي الإسبانية تأتي الصفة غالباً بعد الاسم وتتطابق معه في الجنس والعدد، تماماً كما في العربية: la casa blanca = البيت الأبيض.'],
+    ['h','الألوان'],
+    ['chips',[['rojo','أحمر'],['azul','أزرق'],['verde','أخضر'],['amarillo','أصفر'],['negro','أسود'],['blanco','أبيض'],['naranja','برتقالي'],['morado','بنفسجي'],['rosa','وردي'],['gris','رمادي'],['marrón','بني'],['dorado','ذهبي'],['plateado','فضي']]],
+    ['h','المطابقة: صفات تنتهي بـ O'],
+    ['table',['مذكر مفرد','مؤنث مفرد','مذكر جمع','مؤنث جمع'],[
+      ['rojo','roja','rojos','rojas'],['blanco','blanca','blancos','blancas'],['negro','negra','negros','negras'],['bonito','bonita','bonitos','bonitas']
+    ],{say:[0,1,2,3]}],
+    ['h','المطابقة: صفات تنتهي بـ E أو حرف ساكن'],
+    ['p','هذه الصفات لا تتغير بين المذكر والمؤنث، ويتغير الجمع فقط:'],
+    ['table',['مفرد (مذكر ومؤنث)','جمع'],[
+      ['verde','verdes'],['azul','azules'],['gris','grises'],['marrón','marrones'],['grande','grandes'],['fácil','fáciles']
+    ],{say:[0,1]}],
+    ['h','جمل بالألوان والصفات'],
+    ['table',['الجملة','المعنى'],[
+      ['La casa blanca es grande.','البيت الأبيض كبير.'],['El coche rojo es nuevo.','السيارة الحمراء جديدة.'],
+      ['Los libros azules son caros.','الكتب الزرقاء غالية.'],['Las flores amarillas son bonitas.','الزهور الصفراء جميلة.'],
+      ['Tengo un gato negro.','عندي قط أسود.'],['Ella tiene una falda verde.','عندها تنورة خضراء.']
+    ],{say:[0],pair:[0,1]}],
+    ['h','صفات شائعة'],
+    ['chips',[['grande','كبير'],['pequeño','صغير'],['bonito','جميل'],['feo','قبيح'],['alto','طويل'],['bajo','قصير'],['nuevo','جديد'],['viejo','قديم'],['bueno','جيد'],['malo','سيئ'],['caro','غالٍ'],['barato','رخيص'],['fácil','سهل'],['difícil','صعب'],['feliz','سعيد'],['triste','حزين'],['rápido','سريع'],['lento','بطيء'],['limpio','نظيف'],['sucio','متسخ'],['joven','شاب'],['inteligente','ذكي'],['simpático','لطيف']]],
+    ['h','صفات تُختصر قبل الاسم'],
+    ['p','الصفات bueno وmalo وgrande تُختصر قبل اسم مذكر مفرد: buen وmal وgran.'],
+    ['table',['الجملة','المعنى'],[['Es un buen libro.','إنه كتاب جيد.'],['Es un mal día.','إنه يوم سيئ.'],['Es un gran hombre.','إنه رجل عظيم.']],{say:[0],pair:[0,1]}]
+  ]}
+];
+
+let lrIdx = 0, lrSpeakList = [], lrPairs = [], lrPlaying = false, lrTimer = null, lrQ = null, lrVoiceWarned = false;
+
+function lrEl(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;
+  return e;
+}
+function lrShuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function lrCheckAudio() {
+  if (!window.speechSynthesis) { showToast('warning', 'متصفحك لا يدعم تشغيل الصوت، جرّب Chrome أو Edge'); return false; }
+  if (!esVoice) pickEsVoice();
+  if (!esVoice && !lrVoiceWarned && (speechSynthesis.getVoices() || []).length) {
+    lrVoiceWarned = true;
+    showToast('warning', 'لم نجد صوتاً إسبانياً في جهازك، قد يكون النطق غير دقيق');
+  }
+  return true;
+}
+function lrSay(text, rate) {
+  if (!lrCheckAudio()) return;
+  lrStopAll();
+  speakWord(text, 'es-ES', rate || 0.85);
+}
+function lrSpk(text) {
+  const b = lrEl('button', 'lr-spk');
+  b.type = 'button';
+  b.title = 'استمع';
+  b.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+  b.addEventListener('click', e => { e.stopPropagation(); lrSay(text); });
+  return b;
+}
+function lrEsSpan(text) {
+  const s = lrEl('span', 'lr-es');
+  s.lang = 'es';
+  s.appendChild(lrEl('span', '', text));
+  s.appendChild(lrSpk(text));
+  return s;
+}
+
+// ---------- بناء الدرس ----------
+function lrRender(L) {
+  const body = document.getElementById('lr-body');
+  body.innerHTML = '';
+  lrSpeakList = [];
+  lrPairs = [];
+  L.blocks.forEach(b => {
+    const type = b[0];
+    if (type === 'h') body.appendChild(lrEl('div', 'lr-h', b[1]));
+    else if (type === 'p') body.appendChild(lrEl('p', 'lr-p', b[1]));
+    else if (type === 'note') body.appendChild(lrEl('div', 'lr-note', '💡 ' + b[1]));
+    else if (type === 'tip') body.appendChild(lrEl('div', 'lr-tip', '✅ ' + b[1]));
+    else if (type === 'chips') {
+      const grid = lrEl('div', 'lr-chips');
+      b[1].forEach(([es, ar]) => {
+        const c = lrEl('div', 'lr-chip');
+        c.appendChild(lrEsSpan(es));
+        c.appendChild(lrEl('span', 'ar', ar));
+        grid.appendChild(c);
+        lrSpeakList.push(es);
+        lrPairs.push({ es, ar });
+      });
+      body.appendChild(grid);
+    } else if (type === 'table') {
+      const head = b[1], rows = b[2], opt = b[3] || {}, say = opt.say || [];
+      const wrap = lrEl('div', 'lr-tablewrap');
+      const t = lrEl('table', 'lr-table');
+      const tr0 = document.createElement('tr');
+      head.forEach(h => tr0.appendChild(lrEl('th', '', h)));
+      const th = document.createElement('thead'); th.appendChild(tr0); t.appendChild(th);
+      const tb = document.createElement('tbody');
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        r.forEach((c, ci) => {
+          const td = document.createElement('td');
+          if (say.includes(ci) && c) { td.appendChild(lrEsSpan(c)); lrSpeakList.push(c); }
+          else td.textContent = c;
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+        if (opt.pair) lrPairs.push({ es: r[opt.pair[0]], ar: r[opt.pair[1]] });
+      });
+      t.appendChild(tb); wrap.appendChild(t); body.appendChild(wrap);
+    } else if (type === 'dialog') {
+      const d = lrEl('div', 'lr-dialog');
+      b[1].forEach(([who, es, ar], i) => {
+        const row = lrEl('div', 'lr-line ' + (i % 2 ? 'b' : 'a'));
+        row.appendChild(lrEl('div', 'who', who));
+        row.appendChild(lrEsSpan(es));
+        row.appendChild(lrEl('div', 'ar', ar));
+        d.appendChild(row);
+        lrSpeakList.push(es);
+      });
+      body.appendChild(d);
+    }
+  });
+  // إزالة التكرار في أسئلة الاختبار
+  const seenEs = new Set(), seenAr = new Set();
+  lrPairs = lrPairs.filter(p => {
+    if (!p.es || !p.ar) return false;
+    const k = p.es.toLowerCase();
+    if (seenEs.has(k) || seenAr.has(p.ar)) return false;
+    seenEs.add(k); seenAr.add(p.ar);
+    return true;
+  });
+}
+
+function lrBuildGrid() {
+  const grid = document.getElementById('lr-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  LR_LESSONS.forEach((L, i) => {
+    const card = lrEl('div', 'chapter-card lr-card');
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.appendChild(lrEl('div', 'lr-num', String(i + 1)));
+    const ico = lrEl('div', 'lr-ico', L.icon);
+    ico.style.background = L.grad;
+    card.appendChild(ico);
+    card.appendChild(lrEl('h3', '', L.ar));
+    const es = lrEl('div', 'lr-es-title', L.es); es.lang = 'es';
+    card.appendChild(es);
+    card.appendChild(lrEl('p', '', L.desc));
+    card.appendChild(lrEl('div', 'lr-go', 'ابدأ الدرس ←'));
+    card.addEventListener('click', () => lrOpen(i));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter') lrOpen(i); });
+    grid.appendChild(card);
+  });
+}
+
+function lrOpen(i) {
+  if (i < 0 || i >= LR_LESSONS.length) return;
+  lrStopAll();
+  lrIdx = i;
+  const L = LR_LESSONS[i];
+  document.getElementById('lr-title').textContent = (i + 1) + '. ' + L.ar;
+  document.getElementById('lr-es-title').textContent = L.es;
+  lrRender(L);
+  document.getElementById('lr-view-lesson').style.display = 'block';
+  document.getElementById('lr-view-quiz').style.display = 'none';
+  const prev = document.getElementById('lr-prev'), next = document.getElementById('lr-next');
+  prev.style.visibility = i > 0 ? 'visible' : 'hidden';
+  next.style.visibility = i < LR_LESSONS.length - 1 ? 'visible' : 'hidden';
+  prev.querySelector('span').textContent = i > 0 ? 'السابق: ' + LR_LESSONS[i - 1].ar : '';
+  next.querySelector('span').textContent = i < LR_LESSONS.length - 1 ? 'التالي: ' + LR_LESSONS[i + 1].ar : '';
+  openModal('lesson-room-modal');
+  document.querySelector('#lesson-room-modal .modal').scrollTop = 0;
+}
+function lrNav(d) { lrOpen(lrIdx + d); }
+
+// ---------- تشغيل الدرس كاملاً ----------
+function lrUpdatePlayBtn() {
+  const b = document.getElementById('lr-playall');
+  if (b) b.innerHTML = lrPlaying ? '<i class="fa-solid fa-stop"></i> إيقاف الاستماع' : '<i class="fa-solid fa-headphones"></i> استمع للدرس كاملاً';
+}
+function lrStopAll() {
+  lrPlaying = false;
+  clearTimeout(lrTimer);
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  lrUpdatePlayBtn();
+}
+function lrPlayAll() {
+  if (lrPlaying) { lrStopAll(); return; }
+  if (!lrCheckAudio()) return;
+  const list = lrSpeakList.slice();
+  if (!list.length) return;
+  speechSynthesis.cancel();
+  lrPlaying = true;
+  lrUpdatePlayBtn();
+  let k = 0;
+  const next = () => {
+    if (!lrPlaying) return;
+    if (k >= list.length) { lrStopAll(); return; }
+    const u = new SpeechSynthesisUtterance(list[k++]);
+    u.lang = 'es-ES'; u.rate = 0.8;
+    if (esVoice) u.voice = esVoice;
+    u.onend = () => { lrTimer = setTimeout(next, 450); };
+    u.onerror = () => { lrTimer = setTimeout(next, 150); };
+    speechSynthesis.speak(u);
+  };
+  next();
+}
+
+// ---------- اختبار الاستماع ----------
+function lrStartQuiz() {
+  if (!lrCheckAudio()) return;
+  if (lrPairs.length < 4) { showToast('warning', 'لا توجد مفردات كافية لهذا الاختبار'); return; }
+  lrStopAll();
+  lrQ = { qs: lrShuffle(lrPairs).slice(0, 8), i: 0, score: 0, done: false };
+  document.getElementById('lr-view-lesson').style.display = 'none';
+  document.getElementById('lr-view-quiz').style.display = 'block';
+  document.querySelector('#lesson-room-modal .modal').scrollTop = 0;
+  lrQuizShow();
+}
+function lrBackToLesson() {
+  lrStopAll();
+  document.getElementById('lr-view-quiz').style.display = 'none';
+  document.getElementById('lr-view-lesson').style.display = 'block';
+  document.querySelector('#lesson-room-modal .modal').scrollTop = 0;
+}
+function lrQuizShow() {
+  const box = document.getElementById('lr-view-quiz');
+  box.innerHTML = '';
+  if (lrQ.i >= lrQ.qs.length) {
+    const pct = Math.round(100 * lrQ.score / lrQ.qs.length);
+    const res = lrEl('div', 'lr-result');
+    res.appendChild(lrEl('div', 'big', pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '🔁'));
+    res.appendChild(lrEl('h3', '', 'نتيجتك: ' + lrQ.score + ' من ' + lrQ.qs.length));
+    res.appendChild(lrEl('p', 'lr-p', pct >= 80 ? 'ممتاز! أذنك تلتقط الإسبانية جيداً.' : pct >= 50 ? 'جيد! أعد الاستماع للدرس لتثبيت المفردات.' : 'لا بأس، استمع للدرس كاملاً ثم أعد المحاولة.'));
+    const row = lrEl('div', 'lr-bar'); row.style.justifyContent = 'center';
+    const again = lrEl('button', 'btn btn-primary btn-sm'); again.innerHTML = '<i class="fa-solid fa-rotate"></i> أعد الاختبار';
+    again.onclick = lrStartQuiz;
+    const back = lrEl('button', 'btn btn-secondary btn-sm'); back.innerHTML = '<i class="fa-solid fa-book-open"></i> العودة للدرس';
+    back.onclick = lrBackToLesson;
+    row.append(again, back); res.appendChild(row); box.appendChild(res);
+    return;
+  }
+  const q = lrQ.qs[lrQ.i];
+  lrQ.done = false;
+  const top = lrEl('div', 'lr-qtop');
+  top.appendChild(lrEl('span', '', 'سؤال ' + (lrQ.i + 1) + ' من ' + lrQ.qs.length));
+  const exit = lrEl('button', 'btn btn-secondary btn-sm'); exit.innerHTML = '<i class="fa-solid fa-arrow-right"></i> العودة للدرس';
+  exit.onclick = lrBackToLesson; top.appendChild(exit);
+  box.appendChild(top);
+  const prog = lrEl('div', 'lr-prog'); const bar = lrEl('div', 'lr-prog-bar'); bar.style.width = (100 * lrQ.i / lrQ.qs.length) + '%'; prog.appendChild(bar); box.appendChild(prog);
+  box.appendChild(lrEl('p', 'lr-qtitle', 'استمع، ثم اختر المعنى الصحيح'));
+  const ctr = lrEl('div', 'lr-bar'); ctr.style.justifyContent = 'center';
+  const play = lrEl('button', 'btn btn-primary'); play.innerHTML = '<i class="fa-solid fa-play"></i> استمع';
+  play.onclick = () => lrSay(q.es, 0.8);
+  const slow = lrEl('button', 'btn btn-secondary'); slow.innerHTML = '<i class="fa-solid fa-person-walking"></i> أبطأ';
+  slow.onclick = () => lrSay(q.es, 0.5);
+  ctr.append(play, slow); box.appendChild(ctr);
+  const wrong = lrShuffle(lrPairs.filter(p => p.ar !== q.ar)).slice(0, 3).map(p => p.ar);
+  const opts = lrShuffle([q.ar, ...wrong]);
+  const grid = lrEl('div', 'lr-opts');
+  const fb = lrEl('div', 'lr-fb');
+  opts.forEach(o => {
+    const b = lrEl('button', 'lr-opt', o);
+    b.type = 'button';
+    b.onclick = () => {
+      if (lrQ.done) return;
+      lrQ.done = true;
+      const ok = o === q.ar;
+      if (ok) lrQ.score++;
+      grid.querySelectorAll('.lr-opt').forEach(x => {
+        if (x.textContent === q.ar) x.classList.add('ok');
+        else if (x === b) x.classList.add('bad');
+        x.disabled = true;
+      });
+      fb.innerHTML = '';
+      fb.appendChild(lrEl('div', ok ? 'good' : 'badtxt', ok ? '✅ صحيح!' : '❌ الجواب الصحيح: ' + q.ar));
+      const sp = lrEl('div', 'lr-reveal'); sp.appendChild(lrEsSpan(q.es)); fb.appendChild(sp);
+      const nx = lrEl('button', 'btn btn-primary btn-sm', lrQ.i + 1 >= lrQ.qs.length ? 'عرض النتيجة' : 'السؤال التالي');
+      nx.onclick = () => { lrQ.i++; lrQuizShow(); };
+      fb.appendChild(nx);
+    };
+    grid.appendChild(b);
+  });
+  box.appendChild(grid);
+  box.appendChild(fb);
+  setTimeout(() => { if (lrQ && lrQ.qs[lrQ.i] === q && lrQ.i < lrQ.qs.length) lrSay(q.es, 0.8); }, 300);
+}
+
+// إيقاف الصوت عند إغلاق النافذة بأي طريقة (زر ✕ أو النقر خارجها)
+(function () {
+  const base = closeModal;
+  window.closeModal = function (id) {
+    if (id === 'lesson-room-modal') lrStopAll();
+    base(id);
+  };
+})();
+
+lrBuildGrid();
 
 // ربط تبويبي الدخول/إنشاء الحساب بزر Google المناسب لكل منهما
 (function () {
