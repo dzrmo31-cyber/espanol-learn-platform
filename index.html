@@ -1358,8 +1358,8 @@
 
       <ul class="nav-links">
         <li><a href="#home" class="active">الرئيسية</a></li>
-        <li><a href="#levels-guide">المستويات</a></li>
         <li><a href="#lessons-room">دروس</a></li>
+        <li><a href="#levels-guide">المستويات</a></li>
         <li><a href="#chapters">الفصول</a></li>
         <li><a href="#exams">الامتحانات</a></li>
         <li><a href="#features">المميزات</a></li>
@@ -1389,8 +1389,8 @@
 <!-- Mobile Menu -->
 <div class="mobile-menu" id="mobile-menu">
   <a href="#home" onclick="closeMobileMenu()">🏠 الرئيسية</a>
-  <a href="#levels-guide" onclick="closeMobileMenu()">🏢 المستويات</a>
   <a href="#lessons-room" onclick="closeMobileMenu()">📖 دروس</a>
+  <a href="#levels-guide" onclick="closeMobileMenu()">🏢 المستويات</a>
   <a href="#chapters" onclick="closeMobileMenu()">📚 الفصول</a>
   <a href="#exams" onclick="closeMobileMenu()">🎓 الامتحانات</a>
   <a href="#features" onclick="closeMobileMenu()">⭐ المميزات</a>
@@ -1525,55 +1525,6 @@
   </div>
 </section>
 
-<div class="divider"></div>
-
-
-<!-- ======================== LEVELS ======================== -->
-<section id="levels-guide" style="padding: 100px 0 60px; position: relative; z-index: 1;">
-  <div class="container">
-    <div class="section-header" style="text-align: center; margin-bottom: 48px;">
-      <div class="section-badge"><i class="fa-solid fa-layer-group"></i> نظام دراسي متدرج</div>
-      <h2 class="section-title">المستويات</h2>
-      <p class="section-subtitle">أربعة مستويات معتمدة (إطار CEFR الأوروبي) — انقر على أي مستوى لعرض فصوله</p>
-    </div>
-
-    <div class="levels-grid" id="levels-grid">
-      <div class="level-card" data-level="A1" style="--lvl-color:#10b981;" onclick="filterByLevel('A1')">
-        <div class="level-label">A1</div>
-        <div class="level-name">🌱 المستوى المبتدئ</div>
-        <p class="level-desc">الخطوة الأولى في رحلتك: التحيات، التعريف بالنفس، العائلة، الأرقام، الوقت، الألوان، والطقس.</p>
-        <div class="level-meta" id="lvl-stats-A1"></div>
-        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
-      </div>
-
-      <div class="level-card" data-level="A2" style="--lvl-color:#06b6d4;" onclick="filterByLevel('A2')">
-        <div class="level-label">A2</div>
-        <div class="level-name">🚶 المستوى الأساسي</div>
-        <p class="level-desc">تواصل يومي بثقة: الطعام والمطعم، التسوق، الروتين اليومي، الهوايات، والماضي البسيط.</p>
-        <div class="level-meta" id="lvl-stats-A2"></div>
-        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
-      </div>
-
-      <div class="level-card" data-level="B1" style="--lvl-color:#7c3aed;" onclick="filterByLevel('B1')">
-        <div class="level-label">B1</div>
-        <div class="level-name">🚀 المستوى المتوسط</div>
-        <p class="level-desc">عمّق لغتك: المستقبل والمشروط، صيغة الشك (Subjuntivo)، التعبير عن الرأي، والسفر والصحة.</p>
-        <div class="level-meta" id="lvl-stats-B1"></div>
-        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
-      </div>
-
-      <div class="level-card" data-level="B2" style="--lvl-color:#f59e0b;" onclick="filterByLevel('B2')">
-        <div class="level-label">B2</div>
-        <div class="level-name">🏆 المستوى المتقدم</div>
-        <p class="level-desc">الاحتراف والتقفّي: الإسبانية في العمل والمقابلات، إدارة الاجتماعات، النقاش والإقناع، والعبارات الاصطلاحية.</p>
-        <div class="level-meta" id="lvl-stats-B2"></div>
-        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
-      </div>
-    </div>
-  </div>
-</section>
-  
-<!-- ======================== CHAPTERS ======================== -->
 <style>
   .lr-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px; }
   .lr-card { text-align:right; }
@@ -1631,6 +1582,55 @@
   </div>
 </section>
 
+<div class="divider"></div>
+
+
+<!-- ======================== LEVELS ======================== -->
+<section id="levels-guide" style="padding: 100px 0 60px; position: relative; z-index: 1;">
+  <div class="container">
+    <div class="section-header" style="text-align: center; margin-bottom: 48px;">
+      <div class="section-badge"><i class="fa-solid fa-layer-group"></i> نظام دراسي متدرج</div>
+      <h2 class="section-title">المستويات</h2>
+      <p class="section-subtitle">أربعة مستويات معتمدة (إطار CEFR الأوروبي) — انقر على أي مستوى لعرض فصوله</p>
+    </div>
+
+    <div class="levels-grid" id="levels-grid">
+      <div class="level-card" data-level="A1" style="--lvl-color:#10b981;" onclick="filterByLevel('A1')">
+        <div class="level-label">A1</div>
+        <div class="level-name">🌱 المستوى المبتدئ</div>
+        <p class="level-desc">الخطوة الأولى في رحلتك: التحيات، التعريف بالنفس، العائلة، الأرقام، الوقت، الألوان، والطقس.</p>
+        <div class="level-meta" id="lvl-stats-A1"></div>
+        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
+
+      <div class="level-card" data-level="A2" style="--lvl-color:#06b6d4;" onclick="filterByLevel('A2')">
+        <div class="level-label">A2</div>
+        <div class="level-name">🚶 المستوى الأساسي</div>
+        <p class="level-desc">تواصل يومي بثقة: الطعام والمطعم، التسوق، الروتين اليومي، الهوايات، والماضي البسيط.</p>
+        <div class="level-meta" id="lvl-stats-A2"></div>
+        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
+
+      <div class="level-card" data-level="B1" style="--lvl-color:#7c3aed;" onclick="filterByLevel('B1')">
+        <div class="level-label">B1</div>
+        <div class="level-name">🚀 المستوى المتوسط</div>
+        <p class="level-desc">عمّق لغتك: المستقبل والمشروط، صيغة الشك (Subjuntivo)، التعبير عن الرأي، والسفر والصحة.</p>
+        <div class="level-meta" id="lvl-stats-B1"></div>
+        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
+
+      <div class="level-card" data-level="B2" style="--lvl-color:#f59e0b;" onclick="filterByLevel('B2')">
+        <div class="level-label">B2</div>
+        <div class="level-name">🏆 المستوى المتقدم</div>
+        <p class="level-desc">الاحتراف والتقفّي: الإسبانية في العمل والمقابلات، إدارة الاجتماعات، النقاش والإقناع، والعبارات الاصطلاحية.</p>
+        <div class="level-meta" id="lvl-stats-B2"></div>
+        <span class="level-cta">استعرض فصول هذا المستوى <i class="fa-solid fa-arrow-down"></i></span>
+      </div>
+    </div>
+  </div>
+</section>
+  
+<!-- ======================== CHAPTERS ======================== -->
 <section class="section" id="chapters">
   <div class="container">
     <div class="section-header">
