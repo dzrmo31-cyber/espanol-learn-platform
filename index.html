@@ -1374,9 +1374,13 @@
         <div id="user-menu" class="user-menu" style="display:none;">
           <div class="user-avatar" id="user-avatar-btn" onclick="toggleUserDropdown()">ط</div>
           <div class="user-dropdown" id="user-dropdown">
-            <div class="dropdown-item" onclick="showSection('progress')"><i class="fa-solid fa-chart-line"></i> تقدمي</div>
+            <div class="dropdown-item" onclick="openProgressModal()"><i class="fa-solid fa-chart-line"></i> تقدمي</div>
             <div class="dropdown-item" onclick="showPaymentModal()"><i class="fa-solid fa-credit-card"></i> الاشتراك</div>
-            <div class="dropdown-item" onclick="openProfileModal(false)"><i class="fa-solid fa-gear"></i> الإعدادات</div>
+            <div class="dropdown-item" onclick="toggleSettingsSub(event)"><i class="fa-solid fa-gear"></i> الإعدادات <i class="fa-solid fa-angle-left" style="margin-inline-start:auto;"></i></div>
+            <div class="settings-sub" id="settings-sub">
+              <div class="dropdown-item" onclick="openProfileModal(false)"><i class="fa-solid fa-user-pen"></i> معلومات شخصية</div>
+              <div class="dropdown-item" onclick="openLanguageModal()"><i class="fa-solid fa-globe"></i> لغة الموقع</div>
+            </div>
             <div class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</div>
           </div>
         </div>
@@ -1569,6 +1573,49 @@
   .lr-fb .good { color:#6ee7b7; font-weight:700; } .lr-fb .badtxt { color:#fca5a5; font-weight:700; }
   .lr-result { text-align:center; padding:20px 0; } .lr-result .big { font-size:56px; }
   @media (max-width:520px){ .lr-line { max-width:100%; } .lr-table { min-width:320px; } }
+
+  /* ======== نافذة التقدم ======== */
+  .pm-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px; }
+  .pm-stat { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:14px; padding:14px 10px; text-align:center; }
+  .pm-stat .v { font-size:24px; font-weight:900; color:var(--primary-light); }
+  .pm-stat .l { font-size:12px; color:var(--text-muted); margin-top:4px; }
+  .pm-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:16px; }
+  .pm-card h4 { font-size:15px; margin:0 0 10px; color:var(--secondary); }
+  .pm-line { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); margin-bottom:6px; }
+  .pm-line .t { flex:1; font-size:14px; font-weight:600; }
+  .pm-line .s { font-size:12px; color:var(--text-muted); white-space:nowrap; }
+  .pm-bar { height:8px; background:rgba(255,255,255,0.07); border-radius:100px; overflow:hidden; margin-top:6px; }
+  .pm-bar div { height:100%; border-radius:100px; background:linear-gradient(90deg,var(--primary),var(--secondary)); transition:width .6s; }
+  .pm-lvl { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .pm-lvl .code { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:14px; flex-shrink:0; }
+  .pm-lvl .meta { flex:1; min-width:0; }
+  .pm-lvl .row { display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); margin-bottom:4px; }
+  .pm-empty { text-align:center; padding:26px 10px; color:var(--text-muted); }
+  .pm-empty i { font-size:40px; display:block; margin-bottom:10px; opacity:.5; }
+  @media (max-width:520px){ .pm-stats { grid-template-columns:1fr 1fr; } }
+
+  /* ======== قائمة اللغات ======== */
+  .lang-list { display:flex; flex-direction:column; gap:10px; }
+  .lang-row { display:flex; align-items:center; gap:12px; padding:12px 16px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; cursor:pointer; transition:var(--transition); font-size:15px; font-weight:600; }
+  .lang-row:hover { background:var(--bg-card-hover); border-color:rgba(124,58,237,0.35); transform:translateY(-2px); }
+  .lang-row.active { border-color:var(--primary); background:rgba(124,58,237,0.12); }
+  .lang-flag { font-size:22px; }
+  .lang-row .fa-check { margin-inline-start:auto; color:var(--success); }
+
+  /* ======== فرع الإعدادات في القائمة المنسدلة ======== */
+  .settings-sub { display:none; flex-direction:column; gap:2px; margin:2px 0 4px; padding-right:12px; border-right:2px solid rgba(124,58,237,0.35); }
+  .settings-sub.open { display:flex; }
+  .settings-sub .dropdown-item { font-size:13px; padding:8px 12px; }
+
+  /* ======== اللغات LTR ======== */
+  body.lang-ltr .toast-container { left:auto; right:24px; }
+  body.lang-ltr .toast { transform:translateX(120%); }
+  body.lang-ltr .toast.show { transform:translateX(0); }
+  body.lang-ltr .user-dropdown { left:auto; right:0; }
+  body.lang-ltr .lr-h { border-right:0; border-left:4px solid var(--primary-light); padding-right:0; padding-left:12px; }
+  body.lang-ltr .pricing-features { text-align:left; }
+  body.lang-ltr .lr-table th, body.lang-ltr .lr-table td { text-align:left; }
+  body.lang-ltr .settings-sub { padding-right:0; padding-left:12px; border-right:0; border-left:2px solid rgba(124,58,237,0.35); }
 </style>
 <!-- ======================== LESSONS ROOM ======================== -->
 <section class="section" id="lessons-room">
@@ -2004,6 +2051,28 @@
   </div>
 </div>
 
+<!-- ======================== PROGRESS MODAL ======================== -->
+<div class="modal-overlay" id="progress-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa-solid fa-chart-line" style="color:var(--primary-light);"></i> <span id="progress-modal-title">تقدمي</span></div>
+      <button class="modal-close" onclick="closeModal('progress-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="progress-body"></div>
+  </div>
+</div>
+
+<!-- ======================== LANGUAGE MODAL ======================== -->
+<div class="modal-overlay" id="language-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa-solid fa-globe" style="color:var(--secondary);"></i> <span id="language-modal-title">لغة الموقع</span></div>
+      <button class="modal-close" onclick="closeModal('language-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body"><div class="lang-list" id="lang-list"></div></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="lessons-extra.js"></script>
 <script>
@@ -2359,6 +2428,288 @@ function mergeLocalChapters(remote) {
     .map((ch, i) => shapeLocalChapter(ch, 100 + i));
   return [...(remote || []), ...local];
 }
+
+// ==============================
+// لغة الواجهة (i18n) — عربي/إنجليزي/إسباني/برتغالي/روسي
+// المفاتيح هي النصوص العربية الأصلية، والقيم ترجماتها للواجهة فقط
+// (محتوى الدروس التعليمي يبقى بعربي لأنه المنهج نفسه)
+// ==============================
+const UI_TEXTS = {
+  'الرئيسية': { en:'Home', es:'Inicio', pt:'Início', ru:'Главная' },
+  'دروس': { en:'Lessons', es:'Lecciones', pt:'Lições', ru:'Уроки' },
+  'المستويات': { en:'Levels', es:'Niveles', pt:'Níveis', ru:'Уровни' },
+  'الفصول': { en:'Chapters', es:'Capítulos', pt:'Capítulos', ru:'Главы' },
+  'الامتحانات': { en:'Exams', es:'Exámenes', pt:'Exames', ru:'Экзамены' },
+  'المميزات': { en:'Features', es:'Ventajas', pt:'Recursos', ru:'Преимущества' },
+  'الاشتراك': { en:'Pricing', es:'Suscripción', pt:'Assinatura', ru:'Подписка' },
+  '🏠 الرئيسية': { en:'🏠 Home', es:'🏠 Inicio', pt:'🏠 Início', ru:'🏠 Главная' },
+  '📖 دروس': { en:'📖 Lessons', es:'📖 Lecciones', pt:'📖 Lições', ru:'📖 Уроки' },
+  '🏢 المستويات': { en:'🏢 Levels', es:'🏢 Niveles', pt:'🏢 Níveis', ru:'🏢 Уровни' },
+  '📚 الفصول': { en:'📚 Chapters', es:'📚 Capítulos', pt:'📚 Capítulos', ru:'📚 Главы' },
+  '🎓 الامتحانات': { en:'🎓 Exams', es:'🎓 Exámenes', pt:'🎓 Exames', ru:'🎓 Экзамены' },
+  '⭐ المميزات': { en:'⭐ Features', es:'⭐ Ventajas', pt:'⭐ Recursos', ru:'⭐ Преимущества' },
+  '💰 الاشتراك': { en:'💰 Pricing', es:'💰 Suscripción', pt:'💰 Assinatura', ru:'💰 Подписка' },
+  'تسجيل الدخول': { en:'Sign in', es:'Iniciar sesión', pt:'Entrar', ru:'Войти' },
+  'إنشاء حساب': { en:'Create account', es:'Crear cuenta', pt:'Criar conta', ru:'Создать аккаунт' },
+  'تقدمي': { en:'My progress', es:'Mi progreso', pt:'Meu progresso', ru:'Мой прогресс' },
+  'الإعدادات': { en:'Settings', es:'Configuración', pt:'Configurações', ru:'Настройки' },
+  'معلومات شخصية': { en:'Personal info', es:'Información personal', pt:'Informações pessoais', ru:'Личные данные' },
+  'لغة الموقع': { en:'Site language', es:'Idioma del sitio', pt:'Idioma do site', ru:'Язык сайта' },
+  'تسجيل الخروج': { en:'Log out', es:'Cerrar sesión', pt:'Sair', ru:'Выйти' },
+  'منصة تعلم اللغة الإسبانية رقم 1': { en:'The #1 platform for learning Spanish', es:'La plataforma n.º 1 para aprender español', pt:'A plataforma n.º 1 para aprender espanhol', ru:'Платформа №1 для изучения испанского' },
+  'منهج متكامل لتعلم اللغة الإسبانية من الصفر، مع دروس تفاعلية، نطق صوتي، اختبارات، ونظام نقاط يحفّزك على الاستمرار.': { en:'A complete curriculum to learn Spanish from scratch, with interactive lessons, audio pronunciation, quizzes, and an XP system that keeps you going.', es:'Un método completo para aprender español desde cero, con lecciones interactivas, pronunciación en audio, pruebas y un sistema de puntos que te motiva a seguir.', pt:'Um método completo para aprender espanhol do zero, com lições interativas, pronúncia em áudio, testes e um sistema de pontos que motiva você a continuar.', ru:'Полный курс испанского с нуля: интерактивные уроки, озвучка, тесты и система баллов, которая мотивирует не останавливаться.' },
+  'ابدأ التعلم الآن': { en:'Start learning now', es:'Empieza a aprender ya', pt:'Comece a aprender agora', ru:'Начать учиться сейчас' },
+  'إنشاء حساب مجاني': { en:'Create a free account', es:'Crea una cuenta gratis', pt:'Crie uma conta grátis', ru:'Создать бесплатный аккаунт' },
+  'فصول تعليمية': { en:'Learning chapters', es:'Capítulos educativos', pt:'Capítulos educativos', ru:'Обучающих глав' },
+  'درس تفاعلي': { en:'Interactive lessons', es:'Lecciones interactivas', pt:'Lições interativas', ru:'Интерактивных уроков' },
+  'مجاني': { en:'Free', es:'Gratis', pt:'Grátis', ru:'Бесплатно' },
+  'كل الفصول والدروس': { en:'All chapters & lessons', es:'Todos los capítulos y lecciones', pt:'Todos os capítulos e lições', ru:'Все главы и уроки' },
+  'غرفة الدروس': { en:'Lessons room', es:'Sala de lecciones', pt:'Sala de lições', ru:'Зал уроков' },
+  '8 دروس مكتوبة بالعربية مع صوت إسباني واختبار استماع لكل درس، مفتوحة للجميع': { en:'8 lessons written in Arabic with Spanish audio and a listening quiz for each — open to everyone', es:'8 lecciones escritas en árabe con audio en español y un quiz de escucha por lección, abiertas a todos', pt:'8 lições escritas em árabe com áudio em espanhol e um quiz de escuta por lição, abertas a todos', ru:'8 уроков на арабском с испанским озвучиванием и тестом на аудирование — открыты для всех' },
+  'نظام دراسي متدرج': { en:'Structured learning path', es:'Ruta de estudio gradual', pt:'Trilha de estudo gradual', ru:'Пошаговая система обучения' },
+  'أربعة مستويات معتمدة (إطار CEFR الأوروبي) — انقر على أي مستوى لعرض فصوله': { en:'Four CEFR-aligned levels — click any level to view its chapters', es:'Cuatro niveles alineados con el MCER — haz clic en un nivel para ver sus capítulos', pt:'Quatro níveis alinhados ao QCER — clique num nível para ver seus capítulos', ru:'Четыре уровня по CEFR — нажмите на уровень, чтобы открыть его главы' },
+  'المنهج الكامل': { en:'Full curriculum', es:'Plan completo', pt:'Programa completo', ru:'Полная программа' },
+  'الفصول التعليمية': { en:'Learning chapters', es:'Los capítulos', pt:'Os capítulos', ru:'Обучающие главы' },
+  'اختبار الإتقان': { en:'Mastery test', es:'Prueba de dominio', pt:'Teste de domínio', ru:'Проверка мастерства' },
+  'امتحانات المستويات': { en:'Level exams', es:'Exámenes de nivel', pt:'Exames de nível', ru:'Экзамены по уровням' },
+  'امتحان شامل في نهاية كل مستوى — حصري للمشتركين المميزين، والنجاح 70% يمنحك 50 XP': { en:'A comprehensive exam at the end of each level — exclusive to premium members; score 70% to earn 50 XP', es:'Un examen integral al final de cada nivel — exclusivo para miembros premium; con 70% ganas 50 XP', pt:'Um exame completo no fim de cada nível — exclusivo para membros premium; com 70% ganha 50 XP', ru:'Итоговый экзамен в конце каждого уровня — только для премиум-подписчиков; 70% дают 50 XP' },
+  'لماذا إسبانيول؟': { en:'Why Español?', es:'¿Por qué Español?', pt:'Por que Espanol?', ru:'Почему Espanol?' },
+  'مميزات المنصة': { en:'Platform features', es:'Ventajas de la plataforma', pt:'Recursos da plataforma', ru:'Преимущества платформы' },
+  'منهج منظم': { en:'Structured curriculum', es:'Currículo estructurado', pt:'Currículo estruturado', ru:'Структурированный курс' },
+  'فصول ودروس مرتبة بشكل تدريجي من المستوى المبتدئ إلى المتقدم': { en:'Chapters and lessons ordered step by step, from beginner to advanced', es:'Capítulos y lecciones ordenados paso a paso, de principiante a avanzado', pt:'Capítulos e lições ordenados passo a passo, do iniciante ao avançado', ru:'Главы и уроки по возрастанию — от новичка до продвинутого' },
+  'نطق صوتي': { en:'Audio pronunciation', es:'Pronunciación en audio', pt:'Pronúncia em áudio', ru:'Озвученное произношение' },
+  'استمع إلى نطق الكلمات والجمل بصوت واضح لتحسين لفظك': { en:'Listen to clear audio of words and sentences to improve your accent', es:'Escucha palabras y frases con audio claro para mejorar tu pronunciación', pt:'Ouça palavras e frases com áudio claro para melhorar sua pronúncia', ru:'Слушайте чёткое озвучивание слов и фраз, чтобы улучшить акцент' },
+  'اختبارات تفاعلية': { en:'Interactive quizzes', es:'Pruebas interactivas', pt:'Testes interativos', ru:'Интерактивные тесты' },
+  'اختبارات بعد كل درس ونتائج فورية لقياس مستوى تقدمك': { en:'A quiz after each lesson with instant results to measure your progress', es:'Una prueba tras cada lección con resultados al instante', pt:'Um teste após cada lição com resultados instantâneos', ru:'Тест после каждого урока с мгновенным результатом' },
+  'نظام نقاط XP': { en:'XP points system', es:'Sistema de puntos XP', pt:'Sistema de pontos XP', ru:'Система баллов XP' },
+  'اكسب نقاطاً وارتقِ في المستويات كلما أكملت دروساً واجتزت اختبارات': { en:'Earn XP and level up as you complete lessons and pass quizzes', es:'Gana XP y sube de nivel al completar lecciones y aprobar pruebas', pt:'Ganhe XP e suba de nível ao concluir lições e passar testes', ru:'Зарабатывайте XP и растите в уровнях, проходя уроки и тесты' },
+  'حفظ تلقائي': { en:'Auto-save', es:'Guardado automático', pt:'Salvamento automático', ru:'Автосохранение' },
+  'تقدمك محفوظ دائماً. استمر من حيث توقفت في أي وقت وأي جهاز': { en:'Your progress is always saved. Continue where you left off, on any device', es:'Tu progreso siempre se guarda. Continúa donde lo dejaste, en cualquier dispositivo', pt:'Seu progresso é sempre salvo. Continue de onde parou, em qualquer dispositivo', ru:'Прогресс всегда сохраняется — продолжайте с любого устройства' },
+  'متجاوب بالكامل': { en:'Fully responsive', es:'Totalmente adaptable', pt:'Totalmente responsivo', ru:'Полная адаптивность' },
+  'تجربة مثالية على الهاتف والتابلت والكمبيوتر': { en:'A perfect experience on phone, tablet and desktop', es:'Una experiencia perfecta en móvil, tablet y ordenador', pt:'Uma experiência perfeita no celular, tablet e computador', ru:'Идеально работает на телефоне, планшете и компьютере' },
+  'الأسعار': { en:'Pricing', es:'Precios', pt:'Preços', ru:'Цены' },
+  'اختر خطتك': { en:'Choose your plan', es:'Elige tu plan', pt:'Escolha seu plano', ru:'Выберите свой план' },
+  'ابدأ مجاناً وطوّر نفسك بالخطة المميزة': { en:'Start free and grow with the premium plan', es:'Empieza gratis y mejora con el plan premium', pt:'Comece grátis e evolua com o plano premium', ru:'Начните бесплатно и развивайтесь с премиум-планом' },
+  'الخطة المجانية': { en:'Free plan', es:'Plan gratuito', pt:'Plano gratuito', ru:'Бесплатный план' },
+  'الخطة المميزة': { en:'Premium plan', es:'Plan premium', pt:'Plano premium', ru:'Премиум-план' },
+  'جميع الفصول والدروس (75 درساً)': { en:'All chapters and lessons (75 lessons)', es:'Todos los capítulos y lecciones (75 lecciones)', pt:'Todos os capítulos e lições (75 lições)', ru:'Все главы и уроки (75 уроков)' },
+  'تمارين النطق مع التحليل التصحيحي': { en:'Speaking exercises with corrective analysis', es:'Ejercicios de pronunciación con análisis correctivo', pt:'Exercícios de pronúncia com análise corretiva', ru:'Упражнения на произношение с разбором ошибок' },
+  'نصوص الإملاء المترجمة': { en:'Translated dictation texts', es:'Textos de dictado traducidos', pt:'Textos de ditado traduzidos', ru:'Тексты диктантов с переводом' },
+  'نظام النقاط والمستويات': { en:'XP and level system', es:'Sistema de puntos y niveles', pt:'Sistema de pontos e níveis', ru:'Система баллов и уровней' },
+  'حفظ التقدم': { en:'Progress saving', es:'Guardado del progreso', pt:'Salvamento do progresso', ru:'Сохранение прогресса' },
+  'الامتحانات الشاملة للمستويات': { en:'Comprehensive level exams', es:'Exámenes integrales de nivel', pt:'Exames completos de nível', ru:'Итоговые экзамены по уровням' },
+  'كل مزايا الخطة المجانية': { en:'All free plan benefits', es:'Todas las ventajas del plan gratuito', pt:'Todos os benefícios do plano gratuito', ru:'Все преимущества бесплатного плана' },
+  'امتحانات شاملة A1 ← A2 ← B1 ← B2': { en:'Comprehensive exams A1 → A2 → B1 → B2', es:'Exámenes integrales A1 → A2 → B1 → B2', pt:'Exames completos A1 → A2 → B1 → B2', ru:'Итоговые экзамены A1 → A2 → B1 → B2' },
+  'شهادة اجتياز كل مستوى': { en:'A certificate for each level passed', es:'Certificado por cada nivel superado', pt:'Certificado por cada nível concluído', ru:'Сертификат за каждый уровень' },
+  'مكافآت XP مضاعفة': { en:'Double XP rewards', es:'Recompensas XP dobles', pt:'Recompensas XP em dobro', ru:'Двойные награды XP' },
+  'دعم مباشر': { en:'Direct support', es:'Soporte directo', pt:'Suporte direto', ru:'Прямая поддержка' },
+  'أولوية المحتوى الجديد': { en:'Priority access to new content', es:'Prioridad en el contenido nuevo', pt:'Prioridade no conteúdo novo', ru:'Приоритетный доступ к новому контенту' },
+  'ابدأ مجاناً': { en:'Start free', es:'Empieza gratis', pt:'Comece grátis', ru:'Начать бесплатно' },
+  'اشترك الآن': { en:'Subscribe now', es:'Suscríbete ahora', pt:'Assine agora', ru:'Подписаться сейчас' },
+  'منصة تعلم اللغة الإسبانية © 2024': { en:'Spanish learning platform © 2024', es:'Plataforma para aprender español © 2024', pt:'Plataforma para aprender espanhol © 2024', ru:'Платформа изучения испанского © 2024' },
+  'سياسة الخصوصية': { en:'Privacy Policy', es:'Política de privacidad', pt:'Política de privacidade', ru:'Политика конфиденциальности' },
+  'شروط الاستخدام': { en:'Terms of Use', es:'Términos de uso', pt:'Termos de uso', ru:'Условия использования' },
+  '🌱 المستوى المبتدئ': { en:'🌱 Beginner level', es:'🌱 Nivel principiante', pt:'🌱 Nível iniciante', ru:'🌱 Начальный уровень' },
+  'الخطوة الأولى في رحلتك: التحيات، التعريف بالنفس، العائلة، الأرقام، الوقت، الألوان، والطقس.': { en:'Your first steps: greetings, introducing yourself, family, numbers, time, colors and weather.', es:'Tus primeros pasos: saludos, presentaciones, familia, números, hora, colores y tiempo.', pt:'Seus primeiros passos: saudações, apresentações, família, números, hora, cores e clima.', ru:'Первые шаги: приветствия, знакомство, семья, числа, время, цвета и погода.' },
+  '🚶 المستوى الأساسي': { en:'🚶 Elementary level', es:'🚶 Nivel básico', pt:'🚶 Nível básico', ru:'🚶 Базовый уровень' },
+  'تواصل يومي بثقة: الطعام والمطعم، التسوق، الروتين اليومي، الهوايات، والماضي البسيط.': { en:'Everyday confidence: food and restaurants, shopping, daily routine, hobbies and the simple past.', es:'Comunica con confianza: comida y restaurantes, compras, rutina diaria, aficiones y el pasado simple.', pt:'Comunique-se com confiança: comida e restaurantes, compras, rotina, hobbies e o passado simples.', ru:'Уверенное общение: еда и рестораны, покупки, распорядок дня, хобби и простое прошедшее время.' },
+  '🚀 المستوى المتوسط': { en:'🚀 Intermediate level', es:'🚀 Nivel intermedio', pt:'🚀 Nível intermediário', ru:'🚀 Средний уровень' },
+  'عمّق لغتك: المستقبل والمشروط، صيغة الشك (Subjuntivo)، التعبير عن الرأي، والسفر والصحة.': { en:'Deepen your Spanish: future and conditional, the subjunctive, opinions, travel and health.', es:'Profundiza: futuro y condicional, subjuntivo, opiniones, viajes y salud.', pt:'Aprofunde: futuro e condicional, subjuntivo, opiniões, viagens e saúde.', ru:'Углубление: будущее и условное наклонение, субъектив, мнение, путешествия и здоровье.' },
+  '🏆 المستوى المتقدم': { en:'🏆 Advanced level', es:'🏆 Nivel avanzado', pt:'🏆 Nível avançado', ru:'🏆 Продвинутый уровень' },
+  'الاحتراف والتقفّي: الإسبانية في العمل والمقابلات، إدارة الاجتماعات، النقاش والإقناع، والعبارات الاصطلاحية.': { en:'Go professional: Spanish at work, interviews, meetings, debate and persuasion, and idioms.', es:'Nivel profesional: español laboral, entrevistas, reuniones, debate, persuasión y modismos.', pt:'Nível profissional: espanhol no trabalho, entrevistas, reuniões, debate, persuasão e expressões idiomáticas.', ru:'Профессиональный уровень: деловой испанский, интервью, совещания, дискуссии, убеждение и идиомы.' },
+  'استعرض فصول هذا المستوى': { en:'View this level chapters', es:'Ver los capítulos de este nivel', pt:'Ver os capítulos deste nível', ru:'Показать главы этого уровня' },
+  'دروس مكتملة': { en:'Completed lessons', es:'Lecciones completadas', pt:'Lições concluídas', ru:'Пройдено уроков' },
+  'مستواك الحالي': { en:'Your current level', es:'Tu nivel actual', pt:'Seu nível atual', ru:'Ваш текущий уровень' },
+  'يوم متواصل': { en:'Day streak', es:'Días seguidos', pt:'Dias seguidos', ru:'Дней подряд' },
+  'متوسط النطق': { en:'Speaking average', es:'Pronunciación media', pt:'Pronúncia média', ru:'Среднее произношение' },
+  'من المنهج': { en:'of the curriculum', es:'del plan de estudios', pt:'da programa', ru:'от программы' },
+  'استمر في تقدمك - أنت في المسار الصحيح': { en:'Keep going — you are on the right track', es:'Sigue así — vas por buen camino', pt:'Continue assim — você está no caminho certo', ru:'Продолжайте — вы на верном пути' }
+};
+const HERO_TITLE = {
+  ar: 'تعلم <span class="highlight">الإسبانية</span><br />بطريقة ممتعة وفعّالة',
+  en: 'Learn <span class="highlight">Spanish</span><br />the fun and effective way',
+  es: 'Aprende <span class="highlight">español</span><br />de forma fácil y divertida',
+  pt: 'Aprenda <span class="highlight">espanhol</span><br />de forma fácil e eficaz',
+  ru: 'Учите <span class="highlight">испанский</span><br />легко и с удовольствием'
+};
+const LANGS = [
+  { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'pt', name: 'Português', flag: '🇵🇹' },
+  { code: 'ru', name: 'Русский', flag: '🇷🇺' }
+];
+const I18N_SELECTOR = '.nav-links a, .mobile-menu a, #auth-buttons button, .user-dropdown .dropdown-item, .settings-sub .dropdown-item, .hero-badge, .hero-subtitle, .hero-actions button, .stat-label, .section-badge, .section-title, .section-subtitle:not(#chapters-count-text), .feature-title, .feature-desc, .pricing-plan, .pricing-features li, .footer-text:not([style]), .footer-text a, .level-name, .level-desc, .level-cta, .progress-stat-card .label, .progress-card p';
+
+// يستبدل النص مع الحفاظ على الأيقونات والعناصر الداخلية
+function translateEl(el, newText) {
+  const textNodes = Array.prototype.filter.call(el.childNodes, n => n.nodeType === 3 && n.textContent.trim());
+  if (!textNodes.length) { el.textContent = newText; return; }
+  textNodes.forEach((n, i) => { n.textContent = (i === textNodes.length - 1) ? ' ' + newText : ''; });
+}
+function currentLang() { return localStorage.getItem('site_lang') || 'ar'; }
+function applyLanguage(lang) {
+  lang = LANGS.some(l => l.code === lang) ? lang : 'ar';
+  localStorage.setItem('site_lang', lang);
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = lang;
+  document.body.classList.toggle('lang-ltr', lang !== 'ar');
+  document.querySelectorAll(I18N_SELECTOR).forEach(el => {
+    if (el.dataset.arT === undefined) el.dataset.arT = el.textContent.trim();
+    const entry = UI_TEXTS[el.dataset.arT];
+    const target = (entry && entry[lang]) ? entry[lang] : el.dataset.arT;
+    if (el.textContent.trim() !== target) translateEl(el, target);
+  });
+  const ht = document.querySelector('.hero-title');
+  if (ht) {
+    if (ht.dataset.arH === undefined) ht.dataset.arH = ht.innerHTML;
+    ht.innerHTML = HERO_TITLE[lang] || ht.dataset.arH;
+  }
+  const pm = document.getElementById('progress-modal-title');
+  if (pm) pm.textContent = PROG_I18N.title[lang] || PROG_I18N.title.ar;
+  const lm = document.getElementById('language-modal-title');
+  if (lm) lm.textContent = (UI_TEXTS['لغة الموقع'] && UI_TEXTS['لغة الموقع'][lang]) || 'لغة الموقع';
+}
+function openLanguageModal() { renderLangList(); openModal('language-modal'); }
+function renderLangList() {
+  const cur = currentLang();
+  document.getElementById('lang-list').innerHTML = LANGS.map(l =>
+    '<div class="lang-row ' + (l.code === cur ? 'active' : '') + '" onclick="setLanguage(\'' + l.code + '\')">'
+    + '<span class="lang-flag">' + l.flag + '</span><span>' + l.name + '</span>'
+    + (l.code === cur ? '<i class="fa-solid fa-check"></i>' : '') + '</div>').join('');
+}
+function setLanguage(code) {
+  applyLanguage(code);
+  renderLangList();
+  showToast('success', code === 'ar' ? 'تم تغيير لغة الواجهة إلى العربية' : 'Interface language updated');
+}
+function toggleSettingsSub(e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  document.getElementById('settings-sub').classList.toggle('open');
+}
+function closeSettingsSub() {
+  const s = document.getElementById('settings-sub');
+  if (s) s.classList.remove('open');
+}
+
+// ==============================
+// نافذة «تقدمي» — النقاط، ماذا قرأ، أين متوقف، وتفصيل النقاط لكل مستوى وفصل
+// ==============================
+const PROG_I18N = {
+  title:      { ar:'تقدمي', en:'My progress', es:'Mi progreso', pt:'Meu progresso', ru:'Мой прогресс' },
+  totalXp:    { ar:'إجمالي نقاطك', en:'Total XP', es:'XP totales', pt:'XP total', ru:'Всего XP' },
+  done:       { ar:'دروس مكتملة', en:'Completed lessons', es:'Lecciones completadas', pt:'Lições concluídas', ru:'Пройдено уроков' },
+  pct:        { ar:'نسبة الإنجاز', en:'Completion', es:'Finalización', pt:'Conclusão', ru:'Завершено' },
+  stopped:    { ar:'أين متوقف؟', en:'Where you stopped', es:'Dónde te quedaste', pt:'Onde parou', ru:'Где вы остановились' },
+  next:       { ar:'التالي لك', en:'Up next', es:'A continuación', pt:'A seguir', ru:'Далее' },
+  read:       { ar:'ماذا قرأت؟', en:'What you have read', es:'Lo que has leído', pt:'O que você leu', ru:'Что вы прошли' },
+  chapterXp:  { ar:'نقاط الفصل', en:'Chapter XP', es:'XP del capítulo', pt:'XP do capítulo', ru:'XP главы' },
+  levelXp:    { ar:'نقاطك في كل مستوى', en:'Your XP per level', es:'Tu XP por nivel', pt:'Seu XP por nível', ru:'Ваш XP по уровням' },
+  noProgress: { ar:'لم تبدأ رحلتك بعد — ابدأ أول درس الآن', en:'You have not started yet — begin your first lesson now', es:'Aún no has empezado — comienza tu primera lección', pt:'Você ainda não começou — comece sua primeira lição', ru:'Вы ещё не начали — начните первый урок' },
+  startNow:   { ar:'ابدأ أول درس الآن', en:'Start your first lesson', es:'Empieza tu primera lección', pt:'Comece sua primeira lição', ru:'Начните первый урок' },
+  open:       { ar:'فتح', en:'Open', es:'Abrir', pt:'Abrir', ru:'Открыть' },
+  continue:   { ar:'أكمل من هنا', en:'Continue here', es:'Continúa aquí', pt:'Continue aqui', ru:'Продолжить здесь' },
+  loginTitle: { ar:'سجّل دخولك لعرض تقدمك', en:'Sign in to see your progress', es:'Inicia sesión para ver tu progreso', pt:'Entre para ver seu progresso', ru:'Войдите, чтобы увидеть прогресс' },
+  loginBody:  { ar:'نقاطك ودروسك المحفوظة تظهر هنا بعد تسجيل الدخول', en:'Your XP and saved lessons appear here after signing in', es:'Tus puntos y lecciones guardadas aparecen aquí tras iniciar sesión', pt:'Seus pontos e lições salvas aparecem aqui depois de entrar', ru:'Баллы и уроки появятся здесь после входа' },
+  loginBtn:   { ar:'تسجيل الدخول', en:'Sign in', es:'Iniciar sesión', pt:'Entrar', ru:'Войти' },
+  score:      { ar:'الدرجة', en:'Score', es:'Puntuación', pt:'Pontuação', ru:'Результат' },
+  lvNames:    { ar:['مبتدئ','أساسي','متوسط','متقدم'], en:['Beginner','Elementary','Intermediate','Advanced'], es:['Principiante','Básico','Intermedio','Avanzado'], pt:['Iniciante','Básico','Intermediário','Avançado'], ru:['Начальный','Базовый','Средний','Продвинутый'] }
+};
+function pt_(key) {
+  const v = PROG_I18N[key];
+  return (v && (v[currentLang()] || v.ar)) || '';
+}
+function openProgressModal() {
+  document.getElementById('progress-modal-title').textContent = pt_('title');
+  openModal('progress-modal');
+  renderProgressView();
+}
+function renderProgressView() {
+  const body = document.getElementById('progress-body');
+  if (!currentUser) {
+    body.innerHTML = '<div class="pm-empty"><i class="fa-solid fa-lock"></i>'
+      + '<h3 style="color:var(--text-secondary);font-size:17px;margin-bottom:6px;">' + pt_('loginTitle') + '</h3>'
+      + '<p style="font-size:13px;margin-bottom:16px;">' + pt_('loginBody') + '</p>'
+      + '<button class="btn btn-primary" onclick="closeModal(\'progress-modal\');openAuthModal(\'login\')">' + pt_('loginBtn') + '</button></div>';
+    return;
+  }
+  let totalXp = 0, doneCount = 0, last = null, lastT = 0, totalLessons = 0;
+  const lv = {}, read = [];
+  chapters.forEach(ch => {
+    const doneIn = [];
+    (ch.lessons || []).forEach(l => {
+      totalLessons++;
+      const code = (ch.level || 'A1').split(' ')[0];
+      if (!lv[code]) lv[code] = { earned: 0, total: 0, done: 0, lessons: 0 };
+      lv[code].lessons++; lv[code].total += (l.xp_reward || 10);
+      const p = userProgress[l.id];
+      if (p && p.completed) {
+        doneCount++; totalXp += (l.xp_reward || 10);
+        lv[code].done++; lv[code].earned += (l.xp_reward || 10);
+        doneIn.push({ l: l, p: p, xp: l.xp_reward || 10 });
+        const t = p.last_attempt ? new Date(p.last_attempt).getTime() : 0;
+        if (t > lastT) { lastT = t; last = { l: l, ch: ch }; }
+      }
+    });
+    if (doneIn.length) read.push({ ch: ch, done: doneIn });
+  });
+  let next = null;
+  for (let i = 0; i < chapters.length && !next; i++) {
+    const ls = chapters[i].lessons || [];
+    for (let j = 0; j < ls.length; j++) {
+      if (!(userProgress[ls[j].id] && userProgress[ls[j].id].completed)) { next = { l: ls[j], ch: chapters[i] }; break; }
+    }
+  }
+  const pct = totalLessons ? Math.round(doneCount / totalLessons * 100) : 0;
+  let h = '<div class="pm-stats">'
+    + '<div class="pm-stat"><div class="v">' + totalXp + '</div><div class="l">' + pt_('totalXp') + '</div></div>'
+    + '<div class="pm-stat"><div class="v">' + doneCount + '</div><div class="l">' + pt_('done') + '</div></div>'
+    + '<div class="pm-stat"><div class="v">' + pct + '%</div><div class="l">' + pt_('pct') + '</div></div></div>';
+  h += '<div class="pm-card"><h4>📍 ' + pt_('stopped') + '</h4>';
+  if (last) {
+    h += '<div class="pm-line"><span class="t">📖 ' + last.l.title + '</span><span class="s">' + last.ch.title.split(':')[0] + '</span>'
+      + '<button class="btn btn-primary btn-sm" onclick="closeModal(\'progress-modal\');openLesson(\'' + last.l.id + '\')">' + pt_('continue') + '</button></div>';
+  } else {
+    h += '<div class="pm-line"><span class="t">' + pt_('noProgress') + '</span></div>';
+  }
+  if (next) {
+    h += '<div class="pm-line"><span class="t">🎯 ' + pt_('next') + ': ' + next.l.title + '</span>'
+      + '<button class="btn btn-secondary btn-sm" onclick="closeModal(\'progress-modal\');openLesson(\'' + next.l.id + '\')">' + pt_('open') + '</button></div>';
+  }
+  h += '</div>';
+  h += '<div class="pm-card"><h4>📚 ' + pt_('read') + ' (' + doneCount + ')</h4>';
+  if (read.length) {
+    read.forEach(r => {
+      const chXp = r.done.reduce((s, d) => s + d.xp, 0);
+      h += '<div style="margin-bottom:12px;"><div style="font-size:13px;font-weight:700;color:var(--primary-light);margin-bottom:6px;">' + r.ch.title
+        + ' <span style="color:var(--text-muted);font-weight:400;">— ' + pt_('chapterXp') + ': ' + chXp + '</span></div>';
+      r.done.forEach(d => {
+        h += '<div class="pm-line"><span class="t">✅ ' + d.l.title + '</span><span class="s">'
+          + (d.p.score != null ? pt_('score') + ': ' + d.p.score + '% · ' : '') + '+' + d.xp + ' XP</span></div>';
+      });
+      h += '</div>';
+    });
+  } else {
+    h += '<div class="pm-empty"><i class="fa-solid fa-book-open"></i><div>' + pt_('noProgress') + '</div>'
+      + '<button class="btn btn-primary" style="margin-top:12px;" onclick="closeModal(\'progress-modal\');scrollToChapters()">' + pt_('startNow') + '</button></div>';
+  }
+  h += '</div>';
+  h += '<div class="pm-card"><h4>🏆 ' + pt_('levelXp') + '</h4>';
+  const colors = { A1: '#10b981', A2: '#06b6d4', B1: '#7c3aed', B2: '#f59e0b' };
+  const names = PROG_I18N.lvNames[currentLang()] || PROG_I18N.lvNames.ar;
+  ['A1', 'A2', 'B1', 'B2'].forEach((code, idx) => {
+    const s = lv[code] || { earned: 0, total: 0, done: 0, lessons: 0 };
+    const p = s.lessons ? Math.round(s.done / s.lessons * 100) : 0;
+    h += '<div class="pm-lvl"><div class="code" style="color:' + colors[code] + ';border:2px solid ' + colors[code] + '55;">' + code + '</div>'
+      + '<div class="meta"><div class="row"><span>' + names[idx] + '</span><span>' + s.earned + ' / ' + s.total + ' XP</span></div>'
+      + '<div class="pm-bar"><div style="width:' + p + '%;background:linear-gradient(90deg,' + colors[code] + ',' + colors[code] + '99);"></div></div>'
+      + '<div class="row" style="margin-top:4px;margin-bottom:0;"><span>' + s.done + ' / ' + s.lessons + '</span><span>' + p + '%</span></div></div></div>';
+  });
+  h += '</div>';
+  body.innerHTML = h;
+  body.scrollTop = 0;
+}
+applyLanguage(currentLang());
 
 (function installSupabaseBackend() {
   const nativeFetch = window.fetch.bind(window);
@@ -3654,6 +4005,7 @@ function toggleUserDropdown(forceClose = false) {
   const dd = document.getElementById('user-dropdown');
   if (forceClose) dd.classList.remove('open');
   else dd.classList.toggle('open');
+  if (forceClose || !dd.classList.contains('open')) closeSettingsSub();
 }
 
 function showToast(type, message) {
