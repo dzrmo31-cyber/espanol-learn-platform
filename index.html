@@ -1344,6 +1344,11 @@
 <!-- Toast Container -->
 <div class="toast-container" id="toast-container"></div>
 
+<!-- زر التواصل العائم -->
+<button class="contact-fab" onclick="openContactModal()" title="تواصل مع الإدارة">
+  <span class="face">😊</span><span class="lbl">Contact</span>
+</button>
+
 <!-- XP Popup -->
 <div class="xp-popup" id="xp-popup">+10 XP 🌟</div>
 
@@ -1616,6 +1621,15 @@
   body.lang-ltr .pricing-features { text-align:left; }
   body.lang-ltr .lr-table th, body.lang-ltr .lr-table td { text-align:left; }
   body.lang-ltr .settings-sub { padding-right:0; padding-left:12px; border-right:0; border-left:2px solid rgba(124,58,237,0.35); }
+
+  /* ======== زر التواصل العائم ======== */
+  .contact-fab { position:fixed; bottom:22px; right:22px; z-index:1500; width:60px; height:60px; border-radius:50%;
+    background:linear-gradient(135deg,var(--primary),var(--secondary)); border:none; cursor:pointer;
+    box-shadow:0 10px 30px rgba(124,58,237,0.45); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    transition:var(--transition); color:#fff; font-family:var(--font); }
+  .contact-fab:hover { transform:translateY(-3px) scale(1.06); box-shadow:0 14px 38px rgba(124,58,237,0.6); }
+  .contact-fab .face { font-size:22px; line-height:1; }
+  .contact-fab .lbl { font-size:9px; font-weight:800; letter-spacing:.5px; }
 </style>
 <!-- ======================== LESSONS ROOM ======================== -->
 <section class="section" id="lessons-room">
@@ -2046,6 +2060,25 @@
           <i class="fa-solid fa-paper-plane"></i> إرسال طلب الدفع
         </button>
         <p style="font-size:12px;color:var(--text-muted);text-align:center;">سيتم مراجعة طلبك خلال 24 ساعة وتفعيل اشتراكك</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== CONTACT MODAL ======================== -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa-solid fa-comments" style="color:var(--secondary);"></i> تواصل معنا</div>
+      <button class="modal-close" onclick="closeModal('contact-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">مشكلة، اقتراح أو أي شيء؟ اكتب رسالتك وستصل مباشرة إلى إدارة الموقع.</p>
+      <form class="auth-form" onsubmit="submitContact(event)">
+        <div class="form-group"><label class="form-label">الاسم (اختياري)</label><input class="form-input" id="ct-name" placeholder="اسمك"></div>
+        <div class="form-group"><label class="form-label">بريدك الإلكتروني (اختياري — لنرد عليك)</label><input class="form-input" id="ct-email" type="email" placeholder="you@example.com" style="direction:ltr;text-align:left;"></div>
+        <div class="form-group"><label class="form-label">رسالتك *</label><textarea class="form-input" id="ct-msg" rows="4" placeholder="اكتب رسالتك هنا…" style="resize:vertical;"></textarea></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;" id="ct-send">📨 إرسال الرسالة</button>
       </form>
     </div>
   </div>
@@ -4024,6 +4057,31 @@ function showXpPopup(xp) {
   el.textContent = `+${xp} XP 🌟`;
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ==============================
+// زر التواصل العائم — إرسال رسالة للإدارة إلى جدول contact_messages
+// ==============================
+function openContactModal() { openModal('contact-modal'); }
+async function submitContact(e) {
+  e.preventDefault();
+  const name = document.getElementById('ct-name').value.trim();
+  const email = document.getElementById('ct-email').value.trim();
+  const message = document.getElementById('ct-msg').value.trim();
+  if (!message) { showToast('warning', 'اكتب رسالتك أولاً'); return; }
+  const btn = document.getElementById('ct-send');
+  btn.disabled = true; btn.textContent = 'جار الإرسال…';
+  const r = await sb.from('contact_messages').insert({ name: name || null, email: email || null, message: message });
+  btn.disabled = false; btn.textContent = '📨 إرسال الرسالة';
+  if (r.error) {
+    showToast('error', /does not exist|schema/i.test(r.error.message) ? 'صندوق الرسائل غير مفعّل بعد على الموقع' : 'تعذر إرسال الرسالة، حاول لاحقاً');
+    return;
+  }
+  showToast('success', 'وصلت رسالتك ✓ سنقرأها قريباً');
+  closeModal('contact-modal');
+  document.getElementById('ct-msg').value = '';
+  document.getElementById('ct-name').value = '';
+  document.getElementById('ct-email').value = '';
 }
 
 function scrollToChapters() {
