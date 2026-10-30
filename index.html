@@ -1425,11 +1425,11 @@
         </div>
         <div class="hero-stats">
           <div class="stat-item">
-          <div class="stat-number">12</div>
+          <div class="stat-number" id="hero-chapter-count">12</div>
           <div class="stat-label">فصول تعليمية</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number">75</div>
+          <div class="stat-number" id="hero-lesson-count">75</div>
           <div class="stat-label">درس تفاعلي</div>
         </div>
         <div class="stat-item">
@@ -1636,7 +1636,7 @@
     <div class="section-header">
       <div class="section-badge"><i class="fa-solid fa-book-open"></i> المنهج الكامل</div>
       <h2 class="section-title">الفصول التعليمية</h2>
-      <p class="section-subtitle">12 فصلاً شاملاً في 4 مستويات تأخذك من الصفر إلى الاحتراف</p>
+      <p class="section-subtitle" id="chapters-count-text">12 فصلاً شاملاً في 4 مستويات تأخذك من الصفر إلى الاحتراف</p>
     </div>
     <div class="level-filter" id="level-filter">
       <button class="filter-btn active" data-level="" onclick="filterByLevel(null)">كل المستويات</button>
@@ -2005,6 +2005,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="lessons-extra.js"></script>
 <script>
 // ==============================
 // CONFIG
@@ -2042,6 +2043,321 @@ async function signInWithGoogle(mode) {
     options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: 'select_account' } }
   });
   if (error) showToast('error', 'تعذر الاتصال بحساب Google');
+}
+
+// ==============================
+// الفصول الإضافية (المنهج المحلي) — تُدمج تلقائياً مع فصول قاعدة البيانات
+// الفصول 17-24 معرّفة هنا مباشرة، والفصول 25 فما فوق في الملف الخارجي lessons-extra.js
+// ==============================
+const LOCAL_CHAPTERS_BASE = [
+  {
+    level: 'A1 - المستوى المبتدئ', icon: '🧩', color: '#f472b6', xp: 30,
+    title: 'الفصل السابع عشر: بناء الجمل ١ (Construcción de Frases I)',
+    description: 'الأسماء والجمع والملكية والإشارة والأعداد الترتيبية وزمن المضارع',
+    lessons: [
+      { id:'lc-sustantivos', title:'الأسماء والجنس - Los Sustantivos', description:'المذكر والمؤنث والمفرد والجمع',
+        content:'كل اسم إسباني مذكر أو مؤنث، ويُحفظ دائماً مع أداته: el libro (الكتاب)، la mesa (الطاولة). القاعدة العامة: المنتهي بـ o مذكر والمنتهي بـ a مؤنث، مع استثناءات مشهورة يجب حفظها.',
+        vocabulary:[{es:'el libro',ar:'الكتاب'},{es:'la mesa',ar:'الطاولة'},{es:'la mano',ar:'اليد'},{es:'el día',ar:'اليوم'},{es:'la ciudad',ar:'المدينة'}],
+        examples:[{es:'El libro nuevo es de Ahmed.',ar:'الكتاب الجديد لأحمد.'},{es:'El día está soleado.',ar:'اليوم مشمس.'}],
+        quizzes:[{question:'أي كلمة مؤنثة رغم انتهائها بحرف o؟',options:['el libro','la mano','el día','el mapa'],correct_answer:'la mano',explanation:'la mano استثناء: مؤنثة رغم انتهائها بـ o، ودليلها أداة التعريف la.'}] },
+      { id:'lc-plural', title:'تكوين الجمع - El Plural', description:'تحويل المفرد إلى جمع',
+        content:'نضيف s بعد حرف العلة (libro → libros)، وes بعد الحرف الساكن (ciudad → ciudades)، والاسم المنتهي بـ z يتحول إلى ces عند الجمع (lápiz → lápices).',
+        vocabulary:[{es:'los libros',ar:'الكتب'},{es:'las ciudades',ar:'المدن'},{es:'los lápices',ar:'أقلام الرصاص'},{es:'las mujeres',ar:'النساء'}],
+        examples:[{es:'Una ciudad pequeña, dos ciudades grandes.',ar:'مدينة صغيرة، مدينتان كبيرتان.'}],
+        quizzes:[{question:'جمع كلمة ciudad هو:',options:['ciudads','ciudaded','cityes','ciudades'],correct_answer:'ciudades',explanation:'الاسم المنتهي بحرف ساكن يأخذ es في الجمع: ciudad → ciudades.'}] },
+      { id:'lc-posesivos', title:'صفات الملكية - Los Posesivos', description:'mi، tu، su، nuestros...',
+        content:'صفات الملكية تطابق الموصوف لا المالك: mi libro (كتابي)، mis libros (كتبي)، nuestra casa (بيتنا). وكلمة su تعني ملكه/ملكها/ملككم حسب السياق.',
+        vocabulary:[{es:'mi casa',ar:'بيتي'},{es:'tu coche',ar:'سيارتك'},{es:'su familia',ar:'عائلته'},{es:'nuestros amigos',ar:'أصدقاؤنا'}],
+        examples:[{es:'Mi casa es tu casa.',ar:'بيتي بيتك.'}],
+        quizzes:[{question:'أكمل: ___ hermanos son mayores (إخوتي):',options:['Mis','Mi','Su','Tus'],correct_answer:'Mis',explanation:'hermanos جمع، فتكون صفة الملكية mis وليس mi.'}] },
+      { id:'lc-demostrativos', title:'أسماء الإشارة - Los Demostrativos', description:'este، ese، aquel',
+        content:'este/esta للقريب من المتحدث، وese/esa للمتوسط البعد، وaquel/aquella للبعيد عن الطرفين: este libro (في يدي)، aquel libro (هناك بعيداً).',
+        vocabulary:[{es:'este libro',ar:'هذا الكتاب (قريب)'},{es:'esa casa',ar:'تلك الدار (متوسطة البعد)'},{es:'aquel árbol',ar:'تلك الشجرة (بعيدة)'},{es:'estos días',ar:'هذه الأيام'}],
+        examples:[{es:'Esta mesa es nueva, aquella es vieja.',ar:'هذه الطاولة جديدة وتلك البعيدة قديمة.'}],
+        quizzes:[{question:'للإشارة إلى شيء بعيد عن المتحدث والمخاطب معاً:',options:['este','ese','aquel','mi'],correct_answer:'aquel',explanation:'aquel للبعيد عن الطرفين، وese للمتوسط، وeste للقريب من المتحدث.'}] },
+      { id:'lc-ordinales', title:'الأعداد الترتيبية - Los Ordinales', description:'primero، segundo، tercero...',
+        content:'الأعداد الترتيبية: primero، segundo، tercero، cuarto، quinto... وتوضع قبل الاسم، ويفقد primero وtercero حرف o الأخير مع المذكر: el primer día، el tercer piso.',
+        vocabulary:[{es:'primero',ar:'الأول'},{es:'segundo',ar:'الثاني'},{es:'tercero',ar:'الثالث'},{es:'quinto',ar:'الخامس'}],
+        examples:[{es:'Vivo en el tercer piso.',ar:'أسكن في الطابق الثالث.'}],
+        quizzes:[{question:'أكمل: el ___ piso (الثالث):',options:['tres','tercero','tercera','trece'],correct_answer:'tercero',explanation:'العدد الترتيبي tercero يفقد الـ o قبل الاسم المذكر: el tercer piso أو el tercero.'}] },
+      { id:'lc-presente', title:'زمن المضارع - El Presente', description:'تصريف الأفعال في المضارع',
+        content:'المضارع يعبّر عن الحاضر والعادة: hablo (أتحدث)، estudiamos (ندرس). نهايات مجموعة -ar: o، as، a، amos، áis، an، ونحذف الضمير لأن النهاية تدل على الفاعل.',
+        vocabulary:[{es:'hablo',ar:'أتحدث'},{es:'estudiamos',ar:'ندرس'},{es:'trabaja',ar:'يعمل'},{es:'vives',ar:'تسكن'}],
+        examples:[{es:'Estudiamos español los lunes.',ar:'ندرس الإسبانية أيام الاثنين.'}],
+        quizzes:[{question:'تصريف vivir مع nosotros:',options:['vivemos','vivimos','viváis','viven'],correct_answer:'vivimos',explanation:'أفعال مجموعة -ir تأخذ نهاية imos مع nosotros: vivir → vivimos.'}] }
+    ]
+  },
+  {
+    level: 'A2 - المستوى الأساسي', icon: '🧱', color: '#38bdf8', xp: 35,
+    title: 'الفصل الثامن عشر: بناء الجمل ٢ (Construcción de Frases II)',
+    description: 'الأفعال المنتظمة والشاذة والنفي والأسئلة وHay والاختصارات وحروف الجر وظروف التكرار',
+    lessons: [
+      { id:'lc-regulares', title:'الأفعال المنتظمة - Verbos Regulares', description:'مجموعات ar و er و ir',
+        content:'تنقسم الأفعال المنتظمة إلى ثلاث مجموعات تنتهي بـ -ar و-er و-ir، ولكل منها نهايات ثابتة: comer → como، comes، come؛ vivir → vivo، vives، vive.',
+        vocabulary:[{es:'comer',ar:'يأكل'},{es:'vivir',ar:'يسكن'},{es:'bebo',ar:'أشرب'},{es:'aprendes',ar:'تتعلم'}],
+        examples:[{es:'Como a las dos y vivo cerca.',ar:'آكل في الثانية وأسكن قريباً.'}],
+        quizzes:[{question:'تصريف beber مع yo:',options:['bebo','bebes','bebe','beben'],correct_answer:'bebo',explanation:'أفعال مجموعة -er تأخذ نهاية o مع yo: beber → bebo.'}] },
+      { id:'lc-irregulares-pres', title:'الأفعال الشاذة في المضارع - Verbos Irregulares', description:'أهم الأفعال متغيرة الجذر',
+        content:'أشهر الأفعال الشاذة في المضارع: tener → tengo، hacer → hago، decir → digo، ver → veo، oír → oigo. تُحفظ كما هي لشيوعها في الكلام اليومي.',
+        vocabulary:[{es:'tengo',ar:'عندي'},{es:'hago',ar:'أفعل'},{es:'digo',ar:'أقول'},{es:'veo',ar:'أرى'}],
+        examples:[{es:'Hago mi tarea todos los días.',ar:'أنجز واجبي كل يوم.'}],
+        quizzes:[{question:'تصريف hacer مع yo:',options:['haco','hago','haces','hacer'],correct_answer:'hago',explanation:'hago فعل شاذ في المضارع: لا يتبع نهايات -er المنتظمة مع yo.'}] },
+      { id:'lc-negacion', title:'النفي - La Negación', description:'no، nunca، nada، nadie',
+        content:'نضع no قبل الفعل: No quiero. وعند النفي الشامل نستخدم nunca (أبداً) وnada (لا شيء) وnadie (لا أحد)، ولا نجمع أكثر من نفي في الجملة: No veo nada.',
+        vocabulary:[{es:'No quiero',ar:'لا أريد'},{es:'nunca',ar:'أبداً'},{es:'nada',ar:'لا شيء'},{es:'nadie',ar:'لا أحد'}],
+        examples:[{es:'No hay nada en la nevera.',ar:'لا يوجد شيء في الثلاجة.'}],
+        quizzes:[{question:'«لا أرى أحداً» بالإسبانية:',options:['No veo nadie','No veo nada','No nadie veo','Veo no nadie'],correct_answer:'No veo nadie',explanation:'nadie للمألوس (لا أحد)، وnada لغير العاقل (لا شيء): No veo a nadie.'}] },
+      { id:'lc-preguntas', title:'تكوين الأسئلة - Las Preguntas', description:'أدوات الاستفهام وترتيب الجملة',
+        content:'نفتتح السؤال بعلامة ¿ ونستخدم: ¿Qué? ماذا، ¿Dónde? أين، ¿Cuándo? متى، ¿Quién? من، ¿Cómo? كيف، ¿Cuánto? كم. ويمكن السؤال بالنبر وحده: ¿Hablas español?',
+        vocabulary:[{es:'¿Qué?',ar:'ماذا؟'},{es:'¿Dónde?',ar:'أين؟'},{es:'¿Cuándo?',ar:'متى؟'},{es:'¿Cuánto cuesta?',ar:'كم يكلف؟'}],
+        examples:[{es:'¿Dónde está la estación?',ar:'أين المحطة؟'}],
+        quizzes:[{question:'للسؤال عن المكان نستخدم:',options:['¿Quién?','¿Dónde?','¿Cuándo?','¿Qué?'],correct_answer:'¿Dónde?',explanation:'¿Dónde? أداة الاستفهام عن المكان.'}] },
+      { id:'lc-hay', title:'التعبير عن الوجود - Hay', description:'يوجد / توجد',
+        content:'hay ثابتة للمفرد والجمع ولا تتغير: Hay un problema، Hay dos problemas. ولا نضع بعدها أداة تعريف: Hay libros (توجد كتب). وفي الماضي: había.',
+        vocabulary:[{es:'Hay',ar:'يوجد'},{es:'¿Hay...?',ar:'هل يوجد...؟'},{es:'No hay',ar:'لا يوجد'},{es:'Había',ar:'كان يوجد'}],
+        examples:[{es:'¿Hay un banco por aquí?',ar:'هل يوجد بنك في الجوار؟'}],
+        quizzes:[{question:'«توجد مشكلة» بالإسبانية:',options:['Hay un problema','Es un problema','Está un problema','Hay el problema'],correct_answer:'Hay un problema',explanation:'hay تعبّر عن الوجود ويأتي بعدها نكرة: Hay un problema.'}] },
+      { id:'lc-contracciones', title:'الاختصاران Al و Del - Las Contracciones', description:'a+el=al و de+el=del',
+        content:'الاختصاران الوحيدان في الإسبانية: a + el = al (Voy al médico)، وde + el = del (el coche del vecino). ولا اختصار مع la ولا los ولا las.',
+        vocabulary:[{es:'Voy al mercado',ar:'أذهب إلى السوق'},{es:'el libro del profesor',ar:'كتاب الأستاذ'},{es:'al lado del parque',ar:'بجانب الحديقة'},{es:'delante del cine',ar:'أمام السينما'}],
+        examples:[{es:'Voy al banco del centro.',ar:'أذهب إلى بنك المركز.'}],
+        quizzes:[{question:'a + el =',options:['el','al','del','a el'],correct_answer:'al',explanation:'الاختصار الوحيد مع a + el هو al، ولا يجوز فصلهما.'}] },
+      { id:'lc-preposiciones', title:'حروف الجر - Las Preposiciones', description:'en، de، a، con، sin، para',
+        content:'أهم حروف الجر: en (في)، de (من/الخاصية)، a (إلى)، con (مع)، sin (بدون)، sobre (على/حول). مثال: el libro de Ahmed، café con leche sin azúcar.',
+        vocabulary:[{es:'en casa',ar:'في البيت'},{es:'de Madrid',ar:'من مدريد'},{es:'con amigos',ar:'مع أصدقاء'},{es:'sin azúcar',ar:'بدون سكر'}],
+        examples:[{es:'Un café con leche, sin azúcar, por favor.',ar:'قهوة بالحليب، بدون سكر، من فضلك.'}],
+        quizzes:[{question:'«قهوة بدون سكر» بالإسبانية:',options:['café sin azúcar','café con azúcar','café de azúcar','café en azúcar'],correct_answer:'café sin azúcar',explanation:'sin تعني «بدون»، أما con فتعني «مع».'}] },
+      { id:'lc-frecuencia', title:'ظروف التكرار - Adverbios de Frecuencia', description:'siempre، a veces، nunca...',
+        content:'ظروف التكرار توضع قبل الفعل المصرّف: Siempre estudio. والترتيب من الأكثر للأقل: siempre (دائماً)، a menudo (غالباً)، a veces (أحياناً)، casi nunca (نادراً)، nunca (أبداً).',
+        vocabulary:[{es:'siempre',ar:'دائماً'},{es:'a menudo',ar:'غالباً'},{es:'a veces',ar:'أحياناً'},{es:'nunca',ar:'أبداً'}],
+        examples:[{es:'A veces cocino, pero nunca lavo los platos.',ar:'أحياناً أطبخ، لكني لا أغسل الأواني أبداً.'}],
+        quizzes:[{question:'«أحياناً» بالإسبانية:',options:['siempre','a veces','nunca','a menudo'],correct_answer:'a veces',explanation:'a veces تعني أحياناً، وsiempre دائماً، وnunca أبداً.'}] }
+    ]
+  },
+  {
+    level: 'A2 - المستوى الأساسي', icon: '⏳', color: '#fbbf24', xp: 40,
+    title: 'الفصل التاسع عشر: قواعد الأزمنة ١ (Tiempos Verbales I)',
+    description: 'المضارع المستمر والماضي القريب والمستقبل القريب وصيغة الأمر',
+    lessons: [
+      { id:'lc-presente-continuo', title:'المضارع المستمر - El Presente Continuo', description:'estar + gerundio',
+        content:'نكوّنه بـ estar + اسم الفاعل: -ando لمجموعة -ar و-iendo لغيرها: Estoy estudiando (أنا أدرس الآن)، Está lloviendo (إنها تمطر الآن).',
+        vocabulary:[{es:'Estoy estudiando',ar:'أنا أدرس الآن'},{es:'está lloviendo',ar:'إنها تمطر'},{es:'están comiendo',ar:'هم يأكلون الآن'},{es:'estás escribiendo',ar:'أنت تكتب الآن'}],
+        examples:[{es:'No puedo salir, está lloviendo.',ar:'لا أستطيع الخروج، إنها تمطر.'}],
+        quizzes:[{question:'«أنا أدرس الآن» بالإسبانية:',options:['Estoy estudiar','Estoy estudiando','Estudiando estoy','Estoy estudio'],correct_answer:'Estoy estudiando',explanation:'estar بمعناه المصرّف + gerundio: estoy + estudiando.'}] },
+      { id:'lc-perfecto', title:'الماضي القريب - El Pretérito Perfecto', description:'he + participio',
+        content:'نكوّنه بـ haber + التصريف الثالث: He hablado، Has comido، Hemos visto. ويستعمل مع فترة زمنية لم تنته بعد: hoy، esta semana، este año.',
+        vocabulary:[{es:'He comido',ar:'أكلتُ'},{es:'Has visto',ar:'رأيتَ'},{es:'Hemos terminado',ar:'انتهينا'},{es:'Este año he viajado',ar:'هذه السنة سافرتُ'}],
+        examples:[{es:'Hoy he estudiado dos horas.',ar:'درستُ اليوم ساعتين.'}],
+        quizzes:[{question:'yo + hablar في الماضي القريب:',options:['he hablado','he hablar','hablo he','había hablado'],correct_answer:'he hablado',explanation:'he (فعل haber مع yo) + التصريف الثالث hablado.'}] },
+      { id:'lc-futuro-proximo', title:'المستقبل القريب - El Futuro Próximo', description:'ir a + مصدر',
+        content:'نكوّنه بـ فعل ir في المضارع + a + المصدر: Voy a estudiar (سأدرس)، Vamos a viajar (سنرحل). يعبّر عن خطط ونية قريبة مؤكدة.',
+        vocabulary:[{es:'Voy a estudiar',ar:'سأدرس'},{es:'Vas a trabajar',ar:'سوف تعمل'},{es:'Vamos a viajar',ar:'سنذهب في رحلة'},{es:'Va a llover',ar:'ستمطر'}],
+        examples:[{es:'Esta tarde voy a visitar a mi abuela.',ar:'بعد الظهر سأزور جدتي.'}],
+        quizzes:[{question:'«سنرحل غداً» بالإسبانية:',options:['Vamos a viajar mañana','Vamos viajar mañana','Viajamos a mañana','Ir a viajamos mañana'],correct_answer:'Vamos a viajar mañana',explanation:'vamos + a + المصدر viajar = المستقبل القريب.'}] },
+      { id:'lc-imperativo', title:'صيغة الأمر - El Imperativo', description:'الأوامر والطلبات',
+        content:'للمخاطب المفرد (tú): صيغة المضارع للإثبات ¡Habla! (تحدثْ)، ولا + صيغة subjuntivo للنهر: ¡No hables! ومن الشواذ: ¡Ven! (تعالْ)، ¡Hazlo! (افعله).',
+        vocabulary:[{es:'¡Habla!',ar:'تحدثْ!'},{es:'¡Escucha!',ar:'استمعْ!'},{es:'¡Ven aquí!',ar:'تعال هنا!'},{es:'¡No hables!',ar:'لا تتحدث!'}],
+        examples:[{es:'¡Ven aquí y escucha bien!',ar:'تعال هنا واستمع جيداً!'}],
+        quizzes:[{question:'أمر من hablar للمخاطب المفرد (tú):',options:['¡Hablas!','¡Hables!','¡Habla!','¡Hablar!'],correct_answer:'¡Habla!',explanation:'أمر tú الإثباتي يأخذ صيغة المضارع للغائب: habla.'}] }
+    ]
+  },
+  {
+    level: 'B1 - المستوى المتوسط', icon: '🧭', color: '#a78bfa', xp: 45,
+    title: 'الفصل العشرون: قواعد الأزمنة ٢ (Tiempos Verbales II)',
+    description: 'الأفعال النموذجية وفروق Ser/Estar وPor/Para وSaber/Conocer وضمائر المفعول والمقارنة',
+    lessons: [
+      { id:'lc-modales', title:'أفعال القدرة والوجوب - Verbos Modales', description:'poder، querer، deber، tener que',
+        content:'Puedo hablar (أستطيع التحدث)، Quiero aprender (أريد التعلم)، Debo/Tengo que trabajar (يجب أن أعمل). يتبع هذه الأفعالَ المصدرُ مباشرة دون حرف جر.',
+        vocabulary:[{es:'puedo',ar:'أستطيع'},{es:'quiero',ar:'أريد'},{es:'debo',ar:'يجب عليّ'},{es:'tengo que',ar:'يجب أن'}],
+        examples:[{es:'Tengo que estudiar, pero quiero dormir.',ar:'يجب أن أدرس، لكني أريد النوم.'}],
+        quizzes:[{question:'«يجب أن أعمل» بالإسبانية:',options:['Tengo trabajar','Tengo que trabajar','Debo a trabajar','Trabajo que tengo'],correct_answer:'Tengo que trabajar',explanation:'tener que + مصدر تعني «يجب أن».'}] },
+      { id:'lc-ser-estar', title:'فروق Ser و Estar - Ser y Estar', description:'متى نستخدم كل واحد',
+        content:'ser للهوية والصفات الدائمة والمهنة، وestar للمكان والحالة المؤقتة والنتيجة: Es aburrido (ممل بطبعه) ≠ Está aburrido (يشعر بملل)، La comida está buena (لذيذة الآن).',
+        vocabulary:[{es:'Soy médico',ar:'أنا طبيب (مهنة)'},{es:'Estoy cansado',ar:'أنا متعب (حالة)'},{es:'El libro es nuevo',ar:'الكتاب جديد (صفة دائمة)'},{es:'Está en casa',ar:'هو في البيت (مكان)'}],
+        examples:[{es:'La sopa está muy rica hoy.',ar:'الشوربة لذيذة جداً اليوم.'}],
+        quizzes:[{question:'«أشعر بالملل الآن» بالإسبانية:',options:['Estoy aburrido','Soy aburrido','Estoy aburrimiento','Soy aburrimiento'],correct_answer:'Estoy aburrido',explanation:'الملل شعور مؤقت فنستخدم estar: estoy aburrido.'}] },
+      { id:'lc-por-para', title:'الفرق بين Por و Para - Por y Para', description:'حرفان يظنهما المبتدئ واحداً',
+        content:'por للسبب والتبادل والمدة والمكان المرور: gracias por tu ayuda، por la mañana. وpara للغاية والمستقبل والمقابل: para ti، para mañana، estudio para aprender.',
+        vocabulary:[{es:'gracias por...',ar:'شكراً على...'},{es:'por la mañana',ar:'في الصباح'},{es:'para ti',ar:'لأجلك'},{es:'para mañana',ar:'لغدٍ'}],
+        examples:[{es:'Este regalo es para ti.',ar:'هذه الهدية لك.'}],
+        quizzes:[{question:'«هذه الهدية لك» بالإسبانية:',options:['por ti','para ti','a ti','con ti'],correct_answer:'para ti',explanation:'عند تحديد المستفيد/المقابل نستخدم para.'}] },
+      { id:'lc-saber-conocer', title:'Saber و Conocer - Saber y Conocer', description:'معرفة المعلومة أم معرفة الشخص',
+        content:'saber لمعلومة أو مهارة: Sé la respuesta (أعرف الجواب)، Sé nadar (أتقن السباحة). وconocer لشخص أو مكان عايشته: Conozco Madrid (أعرف مدريد بالخبرة).',
+        vocabulary:[{es:'No sé',ar:'لا أعرف (معلومة)'},{es:'Sé nadar',ar:'أتقن السباحة'},{es:'Conozco a tu hermano',ar:'أعرف أخاك'},{es:'¿Conoces España?',ar:'هل زرت/تعرف إسبانيا؟'}],
+        examples:[{es:'Sé hablar español y conozco Granada.',ar:'أتقن الإسبانية وأعرف غرناطة.'}],
+        quizzes:[{question:'«أعرف صديقك (شخصاً)» بالإسبانية:',options:['Sé a tu amigo','Sé tu amigo','Conozco tu saber','Conozco a tu amigo'],correct_answer:'Conozco a tu amigo',explanation:'معرفة الأشخاص تأخذ conocer + a الشخص: Conozco a tu amigo.'}] },
+      { id:'lc-objeto', title:'ضمائر المفعول به - Pronombres de Objeto', description:'me، te، lo، la، los، las',
+        content:'ضمائر المفعول تحل محل المفعول وتسبق الفعل المصرّف: ¿El libro? Lo tengo (أمتلكه). وتلحق المصدر مباشرة: Quiero verlo (أريد رؤيته).',
+        vocabulary:[{es:'Lo veo',ar:'أراه'},{es:'La conozco',ar:'أعرفها'},{es:'Me ayudas',ar:'تساعدني'},{es:'Escúchame',ar:'استمع إليّ'}],
+        examples:[{es:'¿Has visto a María? Sí, la he visto.',ar:'هل رأيت ماريا؟ نعم، رأيتها.'}],
+        quizzes:[{question:'«أراه (الكتاب)» بالإسبانية:',options:['Le veo','Lo veo','Veo lo','La veo'],correct_answer:'Lo veo',explanation:'الكتاب مذكر فضميره lo، ويوضع قبل الفعل المصرّف.'}] },
+      { id:'lc-comparativos', title:'المقارنة والتفضيل - Comparativos y Superlativos', description:'más...que والمفضّل',
+        content:'المقارنة: más/menos + صفة + que: Ahmed es más alto que Karim. والمساواة: tan...como. والتفضيل: el/la más + صفة، ومن الشواذ: mejor (أفضل) وpeor (أسوأ).',
+        vocabulary:[{es:'más alto que',ar:'أطول من'},{es:'tan rápido como',ar:'سريع مثله'},{es:'el más fácil',ar:'الأسهل'},{es:'mejor',ar:'أفضل'}],
+        examples:[{es:'Esta película es más interesante que aquella.',ar:'هذا الفيلم أكثر تشويقاً من ذاك.'}],
+        quizzes:[{question:'«أحمد أطول من كريم» بالإسبانية:',options:['Ahmed es más alto que Karim','Ahmed es más alto como Karim','Ahmed es tan alto que Karim','Ahmed es alto más que Karim'],correct_answer:'Ahmed es más alto que Karim',explanation:'المقارنة: más + الصفة + que.'}] }
+    ]
+  },
+  {
+    level: 'B1 - المستوى المتوسط', icon: '🎓', color: '#f43f5e', xp: 50,
+    title: 'الفصل الحادي والعشرون: القواعد المتقدمة ١ (Gramática Avanzada I)',
+    description: 'الأزمنة التامة والماضي التابع والجمل الشرطية والكلام غير المباشر والجمل الموصولة',
+    lessons: [
+      { id:'lc-pluscuamperfecto', title:'الماضي الأسبق - El Pluscuamperfecto', description:'había + participio',
+        content:'حدث اكتمل قبل حدث ماضٍ آخر: Cuando llegué, la película ya había empezado (عندما وصلت، كان الفيلم قد بدأ). تصريف haber في imperfecto: había، habías، había...',
+        vocabulary:[{es:'había comido',ar:'كنت قد أكلت'},{es:'había llegado',ar:'كان قد وصل'},{es:'habíamos visto',ar:'كنا قد رأينا'},{es:'ya había salido',ar:'كان قد خرج'}],
+        examples:[{es:'Cuando llegué a casa, mi familia ya había cenado.',ar:'عندما وصلت إلى البيت، كانت عائلتي قد تعشت.'}],
+        quizzes:[{question:'«كنت قد انتهيت» بالإسبانية:',options:['había terminado','hube terminado','había terminar','había terminando'],correct_answer:'había terminado',explanation:'había + التصريف الثالث terminado = الماضي الأسبق.'}] },
+      { id:'lc-futuro-perfecto', title:'المستقبل التام - El Futuro Perfecto', description:'habré + participio',
+        content:'ما سيكون قد اكتمل قبل لحظة مستقبلية: Para las ocho, habré terminado (بحلول الثامنة سأكون قد انتهيت).',
+        vocabulary:[{es:'habré terminado',ar:'سأكون قد انتهيت'},{es:'habrás comido',ar:'ستكون قد أكلت'},{es:'habrá llegado',ar:'سيكون قد وصل'},{es:'habremos visto',ar:'سنكون قد رأينا'}],
+        examples:[{es:'Para el lunes ya habré terminado el trabajo.',ar:'بحلول الاثنين سأكون قد أنهيت العمل.'}],
+        quizzes:[{question:'«سأكون قد وصلت» بالإسبانية:',options:['haber llegado','habré llegado','habría llegado','habré llegando'],correct_answer:'habré llegado',explanation:'habré (فعل haber في المستقبل) + التصريف الثالث llegado.'}] },
+      { id:'lc-condicional-compuesto', title:'الشرط المركب - El Condicional Compuesto', description:'habría + participio',
+        content:'نتيجة لم تتحقق في الماضي: Si hubiera estudiado, habría aprobado (لو كنت درست لكنت نجحت). يتركب من habría + التصريف الثالث.',
+        vocabulary:[{es:'habría ido',ar:'كنت سأذهب'},{es:'habría dicho',ar:'كنت سأقول'},{es:'habríamos ganado',ar:'كنا سنفوز'},{es:'habría comido',ar:'كنت سآكل'}],
+        examples:[{es:'Si hubiera tenido tiempo, habría viajado.',ar:'لو كان عندي وقت لكنت سافرت.'}],
+        quizzes:[{question:'yo + hablar في الشرط المركب:',options:['habría hablado','habré hablado','había hablado','habría hablar'],correct_answer:'habría hablado',explanation:'habría + التصريف الثالث: habría hablado.'}] },
+      { id:'lc-subjuntivo-pasado', title:'الماضي التابع - El Imperfecto de Subjuntivo', description:'tuviera / tuviese',
+        content:'يتكون من همزة الماضي البسيط: tuviera/tuviese، hablara/hablase. للأمنيات البعيدة والشرط غير الواقعي: Si tuviera dinero...، Ojalá pudiera (ليتني أستطيع).',
+        vocabulary:[{es:'si tuviera',ar:'لو كان عندي'},{es:'pudiera',ar:'لو استطعت'},{es:'quisiera',ar:'أودّ (بلطف)'},{es:'ojalá pudiera',ar:'ليتني أستطيع'}],
+        examples:[{es:'Si pudiera, viajaría por el mundo.',ar:'لو استطعت، لسافرت حول العالم.'}],
+        quizzes:[{question:'si + yo + tener في الشرط غير الواقعي:',options:['tengo','tendré','tuviera','tendría'],correct_answer:'tuviera',explanation:'الشرط الثاني يأخذ imperfecto de subjuntivo: tuviera.'}] },
+      { id:'lc-condicionales', title:'الجمل الشرطية - Oraciones Condicionales', description:'الأنواع الثلاثة للشرط',
+        content:'النوع 1 قابل للتحقق: Si estudio, aprobaré. النوع 2 افتراضي: Si estudiara, aprobaría. النوع 3 ماضٍ مستحيل: Si hubiera estudiado, habría aprobado.',
+        vocabulary:[{es:'Si estudio, aprobaré',ar:'إن أدرس سأنجح'},{es:'Si tuviera tiempo, iría',ar:'لو كان عندي وقت لذهبت'},{es:'Si hubiera sabido...',ar:'لو كنت علمت...'},{es:'aprobar',ar:'ينجح'}],
+        examples:[{es:'Si tengo tiempo mañana, te llamaré.',ar:'إن كان عندي وقت غداً، سأتصل بك.'}],
+        quizzes:[{question:'النوع الأول من الجمل الشرطية يتركب من:',options:['Si + مضارع، مستقبل','Si + ماضٍ، مضارع','Si + مصدر، أمر','Si + مستقبل، ماضٍ'],correct_answer:'Si + مضارع، مستقبل',explanation:'الشرط القابل للتحقق: Si + presente، والنتيجة futuro simple.'}] },
+      { id:'lc-estilo-indirecto', title:'الكلام غير المباشر - El Estilo Indirecto', description:'نقل كلام الآخرين',
+        content:'قال: «Estoy cansado» → Dijo que estaba cansado. الأزمنة تتراجع خطوة إلى الماضي، وسؤال نعم/لا يُنقل بـ si: Me preguntó si estaba cansado.',
+        vocabulary:[{es:'dijo que',ar:'قال إن'},{es:'me preguntó si',ar:'سألني هل'},{es:'me pidió que',ar:'طلب مني أن'},{es:'contestó que',ar:'أجاب بأن'}],
+        examples:[{es:'Me preguntó si quería café.',ar:'سألني هل أريد قهوة.'}],
+        quizzes:[{question:'نقل جملة «Estoy cansado» على لسان متكلم في الماضي:',options:['Dijo que estoy cansado','Dijo que estaba cansado','Dijo que estar cansado','Digo que estaba cansado'],correct_answer:'Dijo que estaba cansado',explanation:'الزمن يتراجع في الكلام غير المباشر: estoy → estaba.'}] },
+      { id:'lc-relativas', title:'الجمل الموصولة - Las Oraciones Relativas', description:'que، quien، donde، cuyo',
+        content:'que للأشياء والأشخاص: el libro que leo. وdonde للمكان: la ciudad donde vivo. وquien للأشخاص فقط، وcuyo/cuya للملكية وتطابق ما بعدها: el chico cuya madre es médico.',
+        vocabulary:[{es:'el libro que leo',ar:'الكتاب الذي أقرؤه'},{es:'la ciudad donde nací',ar:'المدينة التي وُلدت فيها'},{es:'la chica que habla',ar:'الفتاة التي تتحدث'},{es:'el amigo con quien salgo',ar:'الصديق الذي أخرج معه'}],
+        examples:[{es:'Ésta es la casa donde crecí.',ar:'هذا هو البيت الذي كبرت فيه.'}],
+        quizzes:[{question:'أكمل: la ciudad ___ vivo:',options:['que','quien','donde','cual'],correct_answer:'donde',explanation:'للمكان نستخدم الموصول donde.'}] }
+    ]
+  },
+  {
+    level: 'B2 - المستوى المتقدم', icon: '🏆', color: '#f97316', xp: 55,
+    title: 'الفصل الثاني والعشرون: القواعد المتقدمة ٢ (Gramática Avanzada II)',
+    description: 'المبني للمجهول والتراكيب الفعلية والمطابقة والنبر والأخطاء الشائعة',
+    lessons: [
+      { id:'lc-pasiva', title:'المبني للمجهول - La Voz Pasiva', description:'ser + participio',
+        content:'المبني للمجهول: ser + التصريف الثالث + por: El Quijote fue escrito por Cervantes. وفي الكلام اليومي يُفضَّل المجهول بـ se: Se habla español، Se venden casas.',
+        vocabulary:[{es:'fue escrito',ar:'كُتب'},{es:'es hecho',ar:'يُصنع'},{es:'fueron construidas',ar:'بُنيت'},{es:'Se habla español',ar:'تُتحدث الإسبانية'}],
+        examples:[{es:'La catedral fue construida en el siglo XVI.',ar:'بُنيت الكاتدرائية في القرن السادس عشر.'}],
+        quizzes:[{question:'المبني للمجهول يُكوَّن بـ:',options:['estar + participio','ser + participio','haber + participio','ir + participio'],correct_answer:'ser + participio',explanation:'المجهول الكلاسيكي: ser + التصريف الثالث + por.'}] },
+      { id:'lc-perifrasis', title:'التراكيب الفعلية - Las Perífrasis Verbales', description:'تركيبات تغيّر معنى الفعل',
+        content:'أشهرها: volver a + مصدر (التكرار): volví a llamarle، acabar de + مصدر (التوّ): acabo de llegar، llevar + gerundio (الاستمرار): llevo dos años estudiando.',
+        vocabulary:[{es:'volver a llamar',ar:'يعاود الاتصال'},{es:'acabar de llegar',ar:'يصل للتوّ'},{es:'llevar + gerundio',ar:'يستمر منذ'},{es:'seguir + gerundio',ar:'يواصل'}],
+        examples:[{es:'Acabo de llegar y ya quiero volver.',ar:'وصلتُ للتو وأريد العودة بالفعل.'}],
+        quizzes:[{question:'«وصل للتوّ» بالإسبانية:',options:['acaba de llegar','acaba llegando','acaba a llegar','acaba llegado'],correct_answer:'acaba de llegar',explanation:'acabar de + مصدر تعني «للتوّ فعل شيئاً».'}] },
+      { id:'lc-concordancia', title:'المطابقة النحوية - La Concordancia', description:'توافق الاسم والصفة والفعل',
+        content:'الصفة تطابق الاسم جنساً وعدداً: las flores rojas. والفعل يطابق فاعله: los niños juegan. وانتبه: كلمة la gente مفردة نحوياً: la gente es amable.',
+        vocabulary:[{es:'las flores rojas',ar:'الزهور الحمراء'},{es:'los niños juegan',ar:'الأطفال يلعبون'},{es:'la gente es amable',ar:'الناس لطيفون'},{es:'las casas blancas',ar:'البيوت البيضاء'}],
+        examples:[{es:'Las casas viejas son baratas.',ar:'البيوت القديمة رخيصة.'}],
+        quizzes:[{question:'أكمل: las flores ___ (blanco):',options:['blanco','blanca','blancos','blancas'],correct_answer:'blancas',explanation:'flores جمع مؤنث، فالصفة تأخذ جمع المؤنث blancas.'}] },
+      { id:'lc-acentos', title:'النبر والترقيم - Acentos y Puntuación', description:'علامات النبر والكتابة الصحيحة',
+        content:'علامة النبر تميّز المعنى: sí (نعم) ≠ si (إذا)، él (هو) ≠ el (الـ). والجملة الاستفهامية تبدأ بـ ¿ وتنتهي بعلامة الاستفهام، والتعجبية تبدأ بـ ¡.',
+        vocabulary:[{es:'sí',ar:'نعم'},{es:'si',ar:'إذا'},{es:'él',ar:'هو'},{es:'¡cuidado!',ar:'انتبه!'}],
+        examples:[{es:'¡Sí, quiero ir!',ar:'نعم، أريد الذهاب!'}],
+        quizzes:[{question:'الفرق بين sí و si:',options:['كلاهما بمعنى نعم','sí = إذا و si = نعم','كلاهما بمعنى إذا','sí = نعم و si = إذا'],correct_answer:'sí = نعم و si = إذا',explanation:'علامة النبر على sí تميّزها: sí نعم، وsi إذا شرطية.'}] },
+      { id:'lc-errores', title:'الأخطاء الشائعة - Errores Comunes', description:'احذر هذه الأخطاء',
+        content:'أشهر أخطاء المتعلمين العرب: «Soy de acuerdo» والصحيح Estoy de acuerdo، و«Me gusto» والصحيح Me gusta، نقول Tengo 20 años لا Soy 20، وla gente es لا la gente son.',
+        vocabulary:[{es:'Estoy de acuerdo',ar:'أنا موافق'},{es:'Me gusta',ar:'يعجبني'},{es:'Tengo 20 años',ar:'عمري 20 سنة'},{es:'La gente es amable',ar:'الناس لطيفون'}],
+        examples:[{es:'Estoy de acuerdo contigo.',ar:'أنا موافق معك.'}],
+        quizzes:[{question:'العبارة الصحيحة:',options:['Soy de acuerdo','Estoy de acuerdo','Estoy acuerdo','Soy acuerdo'],correct_answer:'Estoy de acuerdo',explanation:'de acuerdo حالة مؤقتة فتأخذ estar: Estoy de acuerdo.'}] }
+    ]
+  },
+  {
+    level: 'B1 - المستوى المتوسط', icon: '✍️', color: '#14b8a6', xp: 45,
+    title: 'الفصل الثالث والعشرون: مهارات اللغة (Destrezas del Idioma)',
+    description: 'الكتابة وفهم النصوص وفهم المسموع والنطق والمحادثة',
+    lessons: [
+      { id:'lc-escritura', title:'الكتابة والتعبير - La Escritura', description:'اكتب رسالة ووصفاً صحيحين',
+        content:'قوالب الرسالة: Estimado/a... للفتح وSaludos cordiales للختام. واربط أفكارك بأدوات الترتيب: en primer lugar (أولاً)، después (ثم)، finalmente (أخيراً).',
+        vocabulary:[{es:'Estimado',ar:'عزيزي (افتتاح رسالة)'},{es:'Saludos cordiales',ar:'تحياتي (ختام)'},{es:'en primer lugar',ar:'أولاً'},{es:'finalmente',ar:'أخيراً'}],
+        examples:[{es:'Estimado Sr. García: Le escribo para... / Saludos cordiales.',ar:'عزيزي السيد غارسيا: أكتب إليك لكي... / تحياتي.'}],
+        quizzes:[{question:'الختام المعتاد للرسالة الرسمية:',options:['Saludos cordial','Cordiales saludo','Muchas saludes','Saludos cordiales'],correct_answer:'Saludos cordiales',explanation:'الصيغة الثابتة للختام الرسمي: Saludos cordiales.'}] },
+      { id:'lc-lectora', title:'فهم النصوص - Comprensión Lectora', description:'استراتيجيات القراءة',
+        content:'اقرأ العنوان أولاً، وابحث عن la idea principal (الفكرة الرئيسة)، وخمّن معنى الكلمات الجديدة من السياق قبل الرجوع إلى القاموس.',
+        vocabulary:[{es:'el texto',ar:'النص'},{es:'la idea principal',ar:'الفكرة الرئيسة'},{es:'el título',ar:'العنوان'},{es:'el párrafo',ar:'الفقرة'}],
+        examples:[{es:'Lee el título y el primer párrafo antes de seguir.',ar:'اقرأ العنوان والفقرة الأولى قبل المتابعة.'}],
+        quizzes:[{question:'«الفكرة الرئيسة» بالإسبانية:',options:['la idea principale','el idea principal','la idea principal','la idea principada'],correct_answer:'la idea principal',explanation:'idea مؤنث فتأخذ la، وprincipal صفة لا تتغير.'}] },
+      { id:'lc-auditiva', title:'فهم المسموع - Comprensión Auditiva', description:'كيف تُنمّي أذنك الإسبانية',
+        content:'اطلب الإعادة والتبطيء: ¿Puedes repetir?، Más despacio, por favor. التقط الأرقام والأسماء أولاً فهي مفاتيح المعنى، وكرر الاستماع قصيراً ومكثفاً.',
+        vocabulary:[{es:'¿Puedes repetir?',ar:'هل يمكنك الإعادة؟'},{es:'más despacio',ar:'أبطأ قليلاً'},{es:'otra vez',ar:'مرة أخرى'},{es:'el sonido',ar:'الصوت'}],
+        examples:[{es:'¿Puedes repetir más despacio, por favor?',ar:'هل يمكنك الإعادة ببطء أكبر، من فضلك؟'}],
+        quizzes:[{question:'لطلب إعادة ما قيل:',options:['¿Puedes repite?','¿Puedes repetir?','¿Puedes repetiendo?','¿Puedes a repetir?'],correct_answer:'¿Puedes repetir?',explanation:'بعد poder يأتي المصدر مباشرة: ¿Puedes repetir?'}] },
+      { id:'lc-pronunciacion', title:'النطق والمحادثة - Pronunciación y Conversación', description:'تحدث بثقة ووضوح',
+        content:'قواعد ذهبية: الـ j تُنطق خاءً (trabajo)، والـ h صامتة (hola)، والـ rr مكررة قوية (perro). وحافظ على تيار الحوار بردود قصيرة: ¿y tú?، ¿de verdad?',
+        vocabulary:[{es:'el acento',ar:'النبر/اللهجة'},{es:'la pronunciación',ar:'النطق'},{es:'¿de verdad?',ar:'حقاً؟'},{es:'¿y tú?',ar:'وأنت؟'}],
+        examples:[{es:'Habla despacio, por favor.',ar:'تحدث ببطء، من فضلك.'}],
+        quizzes:[{question:'حرف H في الإسبانية:',options:['يُنطق هاء','يُنطق خاء','لا يُنطق (صامت)','يُنطق شيناً'],correct_answer:'لا يُنطق (صامت)',explanation:'حرف h صامت دائماً: hola تُنطق «أولا».'}] }
+    ]
+  },
+  {
+    level: 'A1 - المستوى المبتدئ', icon: '👕', color: '#dc2626', xp: 30,
+    title: 'الفصل الرابع والعشرون: مفردات الحياة اليومية (Vocabulario Diario)',
+    description: 'الملابس وجسم الإنسان',
+    lessons: [
+      { id:'lc-ropa', title:'الملابس - La Ropa', description:'مفردات اللبس والالتزام بالطقس',
+        content:'مفردات الملابس الأساسية، ونستخدم الفعل llevar (يلبس) لوصف ما نرتديه: Llevo una camisa blanca (ألبس قميصاً أبيض).',
+        vocabulary:[{es:'la camisa',ar:'القميص'},{es:'los pantalones',ar:'البنطال'},{es:'el vestido',ar:'الفستان'},{es:'los zapatos',ar:'الحذاء'},{es:'la chaqueta',ar:'الجاكيت'}],
+        examples:[{es:'Me pongo la chaqueta porque hace frío.',ar:'ألبس الجاكيت لأن الجو بارد.'}],
+        quizzes:[{question:'«الحذاء» بالإسبانية:',options:['los zapatos','la camisa','el sombrero','la falda'],correct_answer:'los zapatos',explanation:'los zapatos الحذاء، وla camisa القميص، وel sombrero القبعة.'}] },
+      { id:'lc-cuerpo', title:'جسم الإنسان - El Cuerpo Humano', description:'أجزاء الجسم والتعبير عن الألم',
+        content:'أجزاء الجسم، وللتعبير عن الألم نستخدم doler مع الضمير: Me duele la cabeza (رأسي يؤلمني)، Me duelen los pies (قدماي تؤلمني).',
+        vocabulary:[{es:'la cabeza',ar:'الرأس'},{es:'la mano',ar:'اليد'},{es:'el pie',ar:'القدم'},{es:'los ojos',ar:'العيون'},{es:'el estómago',ar:'المعدة'}],
+        examples:[{es:'Me duele la cabeza y los ojos.',ar:'رأسي وعيناي يؤلمني.'}],
+        quizzes:[{question:'«اليد» بالإسبانية:',options:['la mano','la pierna','la espalda','el hombro'],correct_answer:'la mano',explanation:'la mano اليد (استثناء مؤنث رغم انتهائها بـ o).' }] }
+    ]
+  }
+];
+
+// الدمج: الفصول الأساسية (17-24) + الفصول من الملف الخارجي lessons-extra.js (25-120)
+const LOCAL_CHAPTERS = LOCAL_CHAPTERS_BASE.concat(
+  Array.isArray(window.LOCAL_CHAPTERS_ALL) ? window.LOCAL_CHAPTERS_ALL : []
+);
+
+// فهرس الدروس المحلية + تجهيز الحقول المشتركة
+const LOCAL_LESSONS = {};
+LOCAL_CHAPTERS.forEach(ch => {
+  ch.lessons.forEach(l => {
+    if (!l.duration) l.duration = 15;
+    if (!l.xp_reward) l.xp_reward = ch.xp || 20;
+    LOCAL_LESSONS[l.id] = l;
+  });
+});
+
+// تقدّم الدروس المحلية يُحفظ في المتصفح (الدروس غير مخزنة في قاعدة البيانات)
+function readLocalProgress() {
+  try { return JSON.parse(localStorage.getItem('local_progress') || '{}'); } catch { return {}; }
+}
+
+function shapeLocalChapter(ch, orderNum) {
+  const lp = readLocalProgress();
+  const done = ch.lessons.filter(l => lp[l.id] && lp[l.id].completed).length;
+  return {
+    id: 'lch-' + orderNum,
+    title: ch.title, description: ch.description, level: ch.level,
+    icon: ch.icon, color: ch.color, is_free: true, order_num: orderNum,
+    lessons: ch.lessons.map(l => ({ id: l.id, title: l.title, description: l.description, duration: l.duration, xp_reward: l.xp_reward, locked: false })),
+    progress: ch.lessons.length ? Math.round((done / ch.lessons.length) * 100) : 0
+  };
+}
+
+// دمج فصول المنهج المحلي مع فصول قاعدة البيانات — يتجاهل أي فصل محلي
+// موجود بالفعل في القاعدة بالعنوان نفسه (بعد تطبيق supabase_data.sql)
+function mergeLocalChapters(remote) {
+  const remoteTitles = new Set((remote || []).map(c => c.title));
+  const local = LOCAL_CHAPTERS
+    .filter(c => !remoteTitles.has(c.title))
+    .map((ch, i) => shapeLocalChapter(ch, 100 + i));
+  return [...(remote || []), ...local];
 }
 
 (function installSupabaseBackend() {
@@ -2284,8 +2600,17 @@ async function loadUserProgress() {
     const data = await res.json();
     userProgress = {};
     data.progress.forEach(p => { userProgress[p.lesson_id] = p; });
+    // دمج تقدم الدروس المحلية (lc-*) مع تقدم الخادم
+    const lp = readLocalProgress();
+    Object.keys(lp).forEach(k => { if (k !== '__xp' && lp[k].completed && !userProgress[k]) userProgress[k] = lp[k]; });
     const stats = data.stats;
     const user = data.user;
+    const localDone = Object.keys(userProgress).filter(k => /^(lc|ex)-/.test(k) && userProgress[k].completed).length;
+    if (localDone) {
+      stats.totalLessons = (stats.totalLessons || 0) + Object.keys(LOCAL_LESSONS).length;
+      stats.completedLessons = (stats.completedLessons || 0) + localDone;
+      stats.percentage = stats.totalLessons ? Math.round((stats.completedLessons / stats.totalLessons) * 100) : 0;
+    }
     document.getElementById('stat-completed').textContent = stats.completedLessons;
     document.getElementById('stat-percentage').textContent = stats.percentage + '%';
     document.getElementById('main-progress-fill').style.width = stats.percentage + '%';
@@ -2293,7 +2618,7 @@ async function loadUserProgress() {
     if (user) {
       document.getElementById('stat-streak').textContent = user.streak || 0;
       document.getElementById('stat-level').textContent = user.level || 'مبتدئ';
-      document.getElementById('progress-xp').textContent = user.xp || 0;
+      document.getElementById('progress-xp').textContent = (user.xp || 0) + (lp.__xp || 0);
     }
     if (data.speaking) {
       document.getElementById('stat-speaking').textContent = data.speaking.attempts > 0 ? data.speaking.avgScore + '%' : '—';
@@ -2370,15 +2695,30 @@ function logout() {
 async function loadChapters() {
   const grid = document.getElementById('chapters-grid');
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;"><div class="loading-spinner"></div></div>';
+  let remote = [];
   try {
     const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
     const res = await fetch(`${API}/chapters`, { headers });
-    chapters = await res.json();
-    updateLevelCards();
-    renderChapters(getFilteredChapters());
-  } catch {
-    grid.innerHTML = '<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><h3>تعذر تحميل الفصول</h3><p>تأكد من تشغيل الخادم</p></div>';
-  }
+    const data = await res.json();
+    if (Array.isArray(data)) remote = data;
+  } catch (e) { console.warn('تعذر جلب فصول القاعدة — سيُعرض المنهج المحلي:', e); }
+  // دمج فصول المنهج المحلي مع فصول قاعدة البيانات (هنا وليس داخل طبقة Supabase)
+  chapters = mergeLocalChapters(remote).map(c => {
+    const ls = c.lessons || [];
+    if (!ls.some(l => /^(lc|ex)-/.test(String(l.id)))) return c;
+    const lpCh = readLocalProgress();
+    const done = ls.filter(l => lpCh[l.id] && lpCh[l.id].completed).length;
+    return { ...c, progress: ls.length ? Math.round((done / ls.length) * 100) : 0 };
+  });
+  // تحديث عدادات الواجهة بالأرقام الحقيقية (فصول + دروس)
+  const heroCh = document.getElementById('hero-chapter-count');
+  const heroLs = document.getElementById('hero-lesson-count');
+  if (heroCh) heroCh.textContent = chapters.length;
+  if (heroLs) heroLs.textContent = chapters.reduce((s, c) => s + (c.lessons || []).length, 0);
+  const cntText = document.getElementById('chapters-count-text');
+  if (cntText) cntText.textContent = chapters.length + ' فصلاً شاملاً في 4 مستويات تأخذك من الصفر إلى الاحتراف';
+  updateLevelCards();
+  renderChapters(getFilteredChapters());
 }
 
 function renderChapters(chapters) {
@@ -2481,6 +2821,15 @@ async function openLesson(lessonId) {
   document.getElementById('lesson-modal-title').textContent = 'جار التحميل...';
   openModal('lesson-modal');
   quizAnswers = {};
+  // دروس المنهج المحلي (lc-*/ex-*) تُعرض مباشرة من المتصفح دون الرجوع لقاعدة البيانات
+  if (LOCAL_LESSONS[lessonId]) {
+    const lp = readLocalProgress()[lessonId];
+    const data = { ...LOCAL_LESSONS[lessonId], userProgress: lp && lp.completed ? lp : null };
+    currentLesson = data;
+    document.getElementById('lesson-modal-title').textContent = data.title;
+    renderLessonView(data);
+    return;
+  }
   try {
     const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
     const res = await fetch(`${API}/lessons/${lessonId}`, { headers });
@@ -3164,6 +3513,33 @@ async function completeLesson() {
   const btn = document.getElementById('complete-btn');
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جار الحفظ...';
+  // دروس المنهج المحلي: يُحفظ تقدمها في متصفح المستخدم بدل قاعدة البيانات
+  if (/^(lc|ex)-/.test(String(currentLesson.id))) {
+    const totalQ = currentLesson.quizzes.length;
+    const correct = Object.values(quizAnswers).filter((v, i) => {
+      const q = currentLesson.quizzes[i];
+      return q && v === q.correct_answer;
+    }).length;
+    const score = totalQ > 0 ? Math.round((correct / totalQ) * 100) : 100;
+    const lp = readLocalProgress();
+    const prev = lp[currentLesson.id];
+    const xp = currentLesson.xp_reward || 20;
+    lp[currentLesson.id] = {
+      completed: 1,
+      score: Math.max((prev && prev.score) || 0, score),
+      last_attempt: new Date().toISOString()
+    };
+    if (!prev) lp.__xp = (lp.__xp || 0) + xp;
+    localStorage.setItem('local_progress', JSON.stringify(lp));
+    showXpPopup(xp);
+    showToast('success', `🎉 أحسنت! اكتسبت ${xp} نقطة XP!`);
+    userProgress[currentLesson.id] = { completed: 1, score };
+    await loadUserProgress();
+    await loadChapters();
+    btn.innerHTML = '<i class="fa-solid fa-check-circle"></i> تم الإكمال ✓';
+    btn.style.background = 'linear-gradient(135deg, var(--success), #34d399)';
+    return;
+  }
   try {
     const totalQ = currentLesson.quizzes.length;
     const correct = Object.values(quizAnswers).filter((v, i) => {
