@@ -1799,7 +1799,7 @@
           <li><i class="fa-solid fa-check"></i> حفظ التقدم</li>
           <li style="opacity:0.4;"><i class="fa-solid fa-xmark" style="color:var(--danger)"></i> الامتحانات الشاملة للمستويات</li>
         </ul>
-        <button class="btn btn-secondary" style="width:100%;" onclick="openAuthModal('register')">ابدأ مجاناً</button>
+        <button class="btn btn-secondary" style="width:100%;" onclick="startFreePlan()">ابدأ مجاناً</button>
       </div>
       <div class="pricing-card featured">
         <p class="pricing-plan" style="margin-top:24px;">الخطة المميزة</p>
@@ -1814,6 +1814,12 @@
         </ul>
         <button class="btn btn-primary" style="width:100%;" onclick="showPaymentModal()">اشترك الآن</button>
       </div>
+    </div>
+    <div style="text-align:center;margin-top:28px;">
+      <button class="btn btn-accent donate-btn" style="padding:12px 34px;border-radius:14px;font-weight:800;" onclick="donateRequest()">
+        <i class="fa-solid fa-heart"></i> ادعم الموقع بتبرع
+      </button>
+      <p class="donate-note" style="font-size:12px;color:var(--text-muted);margin-top:8px;">تبرعك يساعدنا على إضافة المزيد من الدروس والميزات مجاناً للجميع</p>
     </div>
   </div>
 </section>
@@ -2535,6 +2541,8 @@ const UI_TEXTS = {
   'اختر خطتك': { en:'Choose your plan', es:'Elige tu plan', pt:'Escolha seu plano', ru:'Выберите свой план' },
   'ابدأ مجاناً وطوّر نفسك بالخطة المميزة': { en:'Start free and grow with the premium plan', es:'Empieza gratis y mejora con el plan premium', pt:'Comece grátis e evolua com o plano premium', ru:'Начните бесплатно и развивайтесь с премиум-планом' },
   'الخطة المجانية': { en:'Free plan', es:'Plan gratuito', pt:'Plano gratuito', ru:'Бесплатный план' },
+  'ادعم الموقع بتبرع': { en:'Support the site with a donation', es:'Apoya el sitio con una donación', pt:'Apoie o site com uma doação', ru:'Поддержите сайт пожертвованием' },
+  'تبرعك يساعدنا على إضافة المزيد من الدروس والميزات مجاناً للجميع': { en:'Your donation helps us add more lessons and features free for everyone', es:'Tu donación nos ayuda a añadir más lecciones y funciones gratis para todos', pt:'Sua doação nos ajuda a adicionar mais lições e recursos grátis para todos', ru:'Ваше пожертвование помогает нам добавлять больше уроков и функций бесплатно для всех' },
   'الخطة المميزة': { en:'Premium plan', es:'Plan premium', pt:'Plano premium', ru:'Премиум-план' },
   'جميع الفصول والدروس (75 درساً)': { en:'All chapters and lessons (75 lessons)', es:'Todos los capítulos y lecciones (75 lecciones)', pt:'Todos os capítulos e lições (75 lições)', ru:'Все главы и уроки (75 уроков)' },
   'تمارين النطق مع التحليل التصحيحي': { en:'Speaking exercises with corrective analysis', es:'Ejercicios de pronunciación con análisis correctivo', pt:'Exercícios de pronúncia com análise corretiva', ru:'Упражнения на произношение с разбором ошибок' },
@@ -2583,7 +2591,7 @@ const LANGS = [
   { code: 'pt', name: 'Português', flag: '🇵🇹' },
   { code: 'ru', name: 'Русский', flag: '🇷🇺' }
 ];
-const I18N_SELECTOR = '.nav-links a, .mobile-menu a, #auth-buttons button, .user-dropdown .dropdown-item, .settings-sub .dropdown-item, .hero-badge, .hero-subtitle, .hero-actions button, .stat-label, .section-badge, .section-title, .section-subtitle:not(#chapters-count-text), .feature-title, .feature-desc, .pricing-plan, .pricing-features li, .footer-text:not([style]), .footer-text a, .level-name, .level-desc, .level-cta, .progress-stat-card .label, .progress-card p';
+const I18N_SELECTOR = '.donate-btn, .donate-note, .nav-links a, .mobile-menu a, #auth-buttons button, .user-dropdown .dropdown-item, .settings-sub .dropdown-item, .hero-badge, .hero-subtitle, .hero-actions button, .stat-label, .section-badge, .section-title, .section-subtitle:not(#chapters-count-text), .feature-title, .feature-desc, .pricing-plan, .pricing-features li, .footer-text:not([style]), .footer-text a, .level-name, .level-desc, .level-cta, .progress-stat-card .label, .progress-card p';
 
 // يستبدل النص مع الحفاظ على الأيقونات والعناصر الداخلية
 function translateEl(el, newText) {
@@ -4361,6 +4369,28 @@ function speakSlow(text) { speakWord(text, 'es-ES', 0.55); }
 function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
 function openAuthModal(tab = 'login') { openModal('auth-modal'); switchAuthTab(tab); }
+function donateRequest() {
+  // زر التبرع: يفتح مراسلة الدعم برسالة جاهزة توضح نية التبرع
+  closeModal('payment-modal');
+  closeModal('lesson-modal');
+  openContactModal();
+  const msg = document.getElementById('ct-msg');
+  if (msg && !msg.value.trim()) {
+    const who = currentUser ? ('\nاسم الحساب: ' + (currentUser.name || '')) : '';
+    msg.value = 'مرحباً، أرغب في دعم الموقع بتبرع 💛' + who + '\nالمرجو إخباري بطرق التبرع المتاحة. شكراً لكم!';
+    msg.focus();
+  }
+}
+
+function startFreePlan() {
+  if (currentUser) {
+    showToast('success', 'أنت مسجل بالفعل ولديك الخطة المجانية ✓ — إنها مفتوحة لجميع المستخدمين المسجلين، ابدأ من الفصول مباشرة');
+    scrollToChapters();
+    return;
+  }
+  openAuthModal('register');
+}
+
 function showPaymentModal() {
   if (!currentUser) { openAuthModal('login'); showToast('warning', 'يجب تسجيل الدخول أولاً'); return; }
   // الاشتراك يتم عبر مراسلة الدعم مباشرة من زر Contact
