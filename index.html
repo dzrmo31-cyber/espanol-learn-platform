@@ -3757,83 +3757,206 @@ function checkDictation(di) {
 }
 
 // ==============================
-// LEVEL EXAMS (امتحانات المستويات)
+// ==============================
+// LEVEL EXAMS — نظام الامتحانات الرسمي الشامل
+// 5 أقسام لكل امتحان: قواعد، مفردات، استماع، إملاء، نطق
+// الأسئلة تُولَّد من محتوى المنهج المحلي (120 فصلاً)
 // ==============================
 let examData = null;
 let examAnswers = {};
+let examTimer = null;
+let examTimeLeft = 0;
+let examSections = [];
+
+function generateLevelExam(level) {
+  // اجمع كل الدروس للمستوى من القاعدة والمنهج المحلي
+  const lessons = [];
+  const dbTitles = new Set();
+  // من القاعدة (عبر api_chategies المخزنة مؤقتاً)
+  (window._cachedChapters || []).forEach(ch => {
+    if ((ch.level || '').startsWith(level)) {
+      dbTitles.add(ch.title);
+      (ch.lessons || []).forEach(l => lessons.push({ ...l, _src: 'db' }));
+    }
+  });
+  // من المنهج المحلي
+  (window.LOCAL_CHAPTERS_ALL || []).forEach(ch => {
+    if ((ch.level || '').startsWith(level) && !dbTitles.has(ch.title)) {
+      (ch.lessons || []).forEach(l => lessons.push({ ...l, xp_reward: l.xp_reward || 30, _src: 'local', _localData: l }));
+    }
+  });
+  if (!lessons.length) return null;
+
+  // اجمع المواد الخام: مفردات، أمثلة، أسئلة
+  const allVocab = [], allExamples = [], allQuizzes = [];
+  lessons.forEach(l => {
+    const d = l._localData || l;
+    (d.vocabulary || (l.vocabulary || [])).forEach(v => { if (v.es && v.ar) allVocab.push(v); });
+    (d.examples || (l.examples || [])).forEach(x => { if (x.es && x.ar) allExamples.push(x); });
+    (d.quizzes || (l.quizzes || [])).forEach(q => { if (q.question && q.options) allQuizzes.push(q); });
+    // لدروس القاعدة: استخدم الحقول مباشرة
+    (l.vocabulary || []).forEach(v => { if (v.es && v.ar) allVocab.push(v); });
+    (l.examples || []).forEach(x => { if (x.es && x.ar) allExamples.push(x); });
+    (l.quizzes || []).forEach(q => { if (q.question && q.options) allQuizzes.push(q); });
+  });
+  if (!allVocab.length && !allQuizzes.length) return null;
+
+  // خلط عشوائي
+  const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  const sections = [];
+  // قسم القواعد: 8 أسئلة من الاختبارات الموجودة
+  const grammarQs = shuffle(allQuizzes).slice(0, 8).map(q => ({
+    type: 'mc', question: q.question, options: shuffle(q.options), correct: q.correct_answer, explanation: q.explanation || ''
+  }));
+  if (grammarQs.length) sections.push({ name: 'القواعد والتراكيب', icon: '📝', questions: grammarQs });
+
+  // قسم المفردات: 8 أسئلة ترجمة
+  const vocabQs = shuffle(allVocab).slice(0, 8).map(v => {
+    const wrong = shuffle(allVocab.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
+    const opts = shuffle([v.ar, ...wrong]);
+    return { type: 'mc', question: 'ما معنى «' + v.es + '»؟', options: opts, correct: v.ar, explanation: v.es + ' = ' + v.ar };
+  });
+  if (vocabQs.length) sections.push({ name: 'المفردات', icon: '📖', questions: vocabQs });
+
+  // قسم الاستماع: 4 أسئلة (الخادم يقرأ بالإسبانية → اختر المعنى)
+  if (allVocab.length >= 4) {
+    const listenQs = shuffle(allVocab).slice(0, 4).map(v => {
+      const wrong = shuffle(allVocab.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
+      const opts = shuffle([v.ar, ...wrong]);
+      return { type: 'listening', spanish: v.es, question: 'استمع واختر المعنى الصحيح:', options: opts, correct: v.ar, sayText: v.es };
+    });
+    sections.push({ name: 'الاستماع والفهم', icon: '🎧', questions: listenQs });
+  }
+
+  // قسم الإملاء: 4 تمارين (استمع واكتب بالإسبانية)
+  if (allExamples.length >= 4) {
+    const dictQs = shuffle(allExamples).slice(0, 4).map(x => ({
+      type: 'dictation', spanish: x.es, question: 'استمع واكتب ما تسمع بالإسبانية:', correct: x.es, sayText: x.es
+    }));
+    sections.push({ name: 'الإملاء', icon: '✍️', questions: dictQs });
+  }
+
+  // قسم النطق: 4 تمارين (اقرأ بصوت عالي)
+  const speakPhrases = shuffle(allExamples).slice(0, 4).map(x => ({
+    type: 'speaking', spanish: x.es, question: 'اقرأ الجملة التالية بصوت عالٍ:', targetText: x.es, ar: x.ar
+  }));
+  if (speakPhrases.length) sections.push({ name: 'النطق والمحادثة', icon: '🎤', questions: speakPhrases });
+
+  if (!sections.length) return null;
+  return { level, sections, totalQuestions: sections.reduce((s, sec) => s + sec.questions.length, 0), timeLimit: 1800 };
+}
+
+function startExamTimer() {
+  examTimeLeft = examData.timeLimit || 1800;
+  const updateTimer = () => {
+    const el = document.getElementById('exam-timer');
+    if (!el) { clearInterval(examTimer); return; }
+    if (examTimeLeft <= 0) { clearInterval(examTimer); submitExam(); return; }
+    const m = Math.floor(examTimeLeft / 60), s = examTimeLeft % 60;
+    el.textContent = '⏱ ' + m + ':' + String(s).padStart(2, '0');
+    el.style.color = examTimeLeft < 300 ? 'var(--danger)' : 'var(--text-muted)';
+    examTimeLeft--;
+  };
+  updateTimer();
+  examTimer = setInterval(updateTimer, 1000);
+}
+
+function speakSpanish(text) {
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'es-ES'; u.rate = 0.8; speechSynthesis.speak(u); } catch {}
+}
+function replayDictation(btn) {
+  const text = btn.dataset.text;
+  speakSpanish(text);
+  setTimeout(() => speakSpanish(text), 2500);
+}
 
 async function loadExams() {
   const grid = document.getElementById('exams-grid');
   const colors = { A1: '#10b981', A2: '#06b6d4', B1: '#7c3aed', B2: '#f59e0b' };
   const names = { A1: 'المستوى المبتدئ', A2: 'المستوى الأساسي', B1: 'المستوى المتوسط', B2: 'المستوى المتقدم' };
-  try {
-    const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
-    const res = await fetch(`${API}/exams`, { headers });
-    const exams = await res.json();
-    if (!exams.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-graduation-cap"></i><h3>لا توجد امتحانات بعد</h3></div>'; return; }
-    grid.innerHTML = exams.map(e => `
-      <div class="exam-card ${e.locked ? 'locked' : ''}" style="--exam-color:${colors[e.level] || 'var(--primary)'};">
-        <div class="exam-badge">${e.level}</div>
-        <div class="exam-name">امتحان ${names[e.level] || e.level} الشامل</div>
-        <div class="exam-meta"><i class="fa-solid fa-list-check"></i> ${e.questions} أسئلة شاملة • النجاح 70%</div>
-        ${e.locked
-          ? `<button class="btn btn-accent" onclick="showPaymentModal()"><i class="fa-solid fa-crown"></i> 🔒 يتطلب اشتراك مميز</button>`
-          : `<button class="btn btn-primary" onclick="openExam('${e.level}')"><i class="fa-solid fa-pen-to-square"></i> ابدأ الامتحان</button>`}
-      </div>`).join('');
-  } catch {
-    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">تعذر تحميل الامتحانات — تأكد من تشغيل الخادم</div>';
-  }
+  const isPremium = currentUser && currentUser.subscription_status === 'premium';
+  grid.innerHTML = ['A1', 'A2', 'B1', 'B2'].map(lv => {
+    const locked = !isPremium;
+    const exam = generateLevelExam(lv);
+    const qCount = exam ? exam.totalQuestions : 0;
+    return `<div class="exam-card ${locked ? 'locked' : ''}" style="--exam-color:${colors[lv]};">
+      <div class="exam-badge">${lv}</div>
+      <div class="exam-name">امتحان ${names[lv] || lv} الشامل الرسمي</div>
+      <div class="exam-meta"><i class="fa-solid fa-list-check"></i> ${qCount} سؤال • 5 أقسام • مؤقّت 30 دقيقة • النجاح 70%</div>
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">
+        <span class="chip free" style="font-size:10px;">📝 قواعد</span>
+        <span class="chip free" style="font-size:10px;">📖 مفردات</span>
+        <span class="chip free" style="font-size:10px;">🎧 استماع</span>
+        <span class="chip free" style="font-size:10px;">✍️ إملاء</span>
+        <span class="chip free" style="font-size:10px;">🎤 نطق</span>
+      </div>
+      ${locked
+        ? `<button class="btn btn-accent" onclick="showPaymentModal()"><i class="fa-solid fa-crown"></i> 🔒 الامتحانات الرسمية للمشتركين المميزين</button>`
+        : `<button class="btn btn-primary" onclick="openExam('${lv}')"><i class="fa-solid fa-pen-to-square"></i> ابدأ الامتحان الرسمي</button>`}
+    </div>`;
+  }).join('');
 }
 
 async function openExam(level) {
-  if (!currentUser) { openAuthModal('login'); showToast('warning', 'سجّل الدخول أولاً للدخول للامتحانات'); return; }
+  if (!currentUser) { openAuthModal('login'); showToast('warning', 'سجّل الدخول أولاً'); return; }
+  if (currentUser.subscription_status !== 'premium') { showPaymentModal(); showToast('warning', 'الامتحانات الرسمية للمشتركين المميزين'); return; }
+  examData = generateLevelExam(level);
+  if (!examData) { showToast('error', 'لا توجد أسئلة كافية لهذا المستوى'); return; }
+  examAnswers = {};
   const body = document.getElementById('exam-modal-body');
-  body.innerHTML = '<div class="loading-spinner"></div>';
-  document.getElementById('exam-modal-title').textContent = `امتحان المستوى ${level}`;
+  document.getElementById('exam-modal-title').textContent = '🎓 امتحان ' + level + ' الرسمي';
   openModal('exam-modal');
-  try {
-    const res = await fetch(`${API}/exams/${level}`, { headers: { 'Authorization': `Bearer ${authToken}` } });
-    const data = await res.json();
-    if (!res.ok) {
-      if (data.requiresPremium) {
-        body.innerHTML = `<div class="sub-required">
-          <div class="sub-required-icon">👑</div>
-          <h3>محتوى حصري للمشتركين</h3>
-          <p>${data.error}</p>
-          <button class="btn btn-primary btn-lg" onclick="closeExamModal();showPaymentModal()">
-            <i class="fa-solid fa-crown"></i> اشترك الآن
-          </button></div>`;
-        return;
+  let qi = 0, qhtml = '';
+  examData.sections.forEach((sec, si) => {
+    qhtml += '<div class="lvl-head" style="margin:16px 0 8px;">' + sec.icon + ' ' + sec.name + ' (' + sec.questions.length + ' أسئلة)</div>';
+    sec.questions.forEach(q => {
+      const myQi = qi++;
+      if (q.type === 'mc') {
+        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. ' + esc(q.question) + '</p>'
+          + '<div class="quiz-options">' + q.options.map(opt =>
+            '<div class="quiz-option" onclick="selectExamOption(' + myQi + ', this, \'' + opt.replace(/'/g, "\\'") + '\')">'
+            + '<span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></span>' + esc(opt) + '</div>').join('')
+          + '</div></div>';
+      } else if (q.type === 'listening') {
+        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. 🎧 ' + esc(q.question) + '</p>'
+          + '<div style="text-align:center;margin:10px 0;"><button class="btn sec" onclick="speakSpanish(\'' + esc(q.sayText.replace(/'/g, '')) + '\')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
+          + '<button class="btn sec sm" onclick="speakSpanish(\'' + esc(q.sayText.replace(/'/g, '')) + '\')" style="margin-right:6px;">🔄 إعادة</button></div>'
+          + '<div class="quiz-options">' + q.options.map(opt =>
+            '<div class="quiz-option" onclick="selectExamOption(' + myQi + ', this, \'' + opt.replace(/'/g, "\\'") + '\')">'
+            + '<span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></span>' + esc(opt) + '</div>').join('')
+          + '</div></div>';
+      } else if (q.type === 'dictation') {
+        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. ✍️ ' + esc(q.question) + '</p>'
+          + '<div style="text-align:center;margin:10px 0;"><button class="btn sec" onclick="speakSpanish(\'' + esc(q.sayText.replace(/'/g, '')) + '\')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
+          + '<button class="btn sec sm" onclick="replayDictation(this)" data-text=\'' + esc(q.sayText) + '\' style="margin-right:6px;">🔄 إعادة بطيئة</button></div>'
+          + '<input type="text" class="form-input" id="dict-exam-' + myQi + '" placeholder="Escribe lo que escuchas..." style="direction:ltr;text-align:left;margin-top:8px;" oninput="examAnswers[' + myQi + ']=this.value"></div>';
+      } else if (q.type === 'speaking') {
+        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. 🎤 ' + esc(q.question) + '</p>'
+          + '<div style="direction:ltr;text-align:center;font-size:18px;font-weight:700;color:var(--primary-light);margin:10px 0;">' + esc(q.spanish) + '</div>'
+          + '<div style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px;">' + esc(q.ar || '') + '</div>'
+          + '<div style="text-align:center;"><button class="btn sec" onclick="speakSpanish(\'' + esc(q.spanish.replace(/'/g, '')) + '\')"><i class="fa-solid fa-volume-high"></i> استمع للنموذج</button></div>'
+          + '<input type="hidden" id="speak-exam-' + myQi + '" value="' + esc(q.spanish) + '">'
+          + '<div style="text-align:center;margin-top:8px;"><span class="chip free">✓ مكافأة تلقائية عند التسليم</span></div></div>';
       }
-      showToast('error', data.error || 'خطأ في تحميل الامتحان');
-      closeExamModal();
-      return;
-    }
-    examData = data;
-    examAnswers = {};
-    body.innerHTML = `
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:6px;">أجب على جميع الأسئلة ثم اضغط "تسليم الامتحان" — التصحيح يتم في الخادم ولا تُعرض الإجابات مسبقاً</p>
-      ${data.questions.map((q, qi) => `
-      <div class="quiz-card" id="examq-${qi}">
-        <p class="exam-question">${qi + 1}. ${q.question}</p>
-        <div class="quiz-options">
-          ${(q.options || []).map(opt => `
-          <div class="quiz-option" onclick="selectExamOption(${qi}, this, '${opt.replace(/'/g,"\\'")}')">
-            <span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></span>
-            ${opt}
-          </div>`).join('')}
-        </div>
-        <div id="exam-verdict-${qi}" class="exam-verdict" style="display:none;"></div>
-      </div>`).join('')}
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">
-        <button class="btn btn-primary btn-lg" id="exam-submit-btn" onclick="submitExam()">
-          <i class="fa-solid fa-paper-plane"></i> تسليم الامتحان
-        </button>
-      </div>`;
-  } catch {
-    showToast('error', 'تعذر تحميل الامتحان');
-    closeExamModal();
-  }
+    });
+  });
+  body.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+    + '<span style="font-size:13px;color:var(--text-muted);">' + examData.totalQuestions + ' سؤال · 5 أقسام · النجاح 70%</span>'
+    + '<span id="exam-timer" style="font-size:18px;font-weight:900;" class="muted">⏱ 30:00</span></div>'
+    + '<div class="main-progress-bar" style="margin-bottom:14px;"><div class="main-progress-fill" id="exam-progress" style="width:0%;"></div></div>'
+    + qhtml
+    + '<div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">'
+    + '<button class="btn btn-primary btn-lg" id="exam-submit-btn" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> تسليم الامتحان</button></div>';
+  startExamTimer();
+  // تحديث شريط التقدم عند كل إجابة
+  const origSelect = selectExamOption;
+  window.selectExamOption = function(qi, el, opt) {
+    origSelect(qi, el, opt);
+    const answered = Object.keys(examAnswers).length;
+    const bar = document.getElementById('exam-progress');
+    if (bar) bar.style.width = Math.round(answered / examData.totalQuestions * 100) + '%';
+  };
 }
 
 function selectExamOption(qi, el, opt) {
@@ -3845,52 +3968,79 @@ function selectExamOption(qi, el, opt) {
 
 async function submitExam() {
   if (!examData) return;
-  const total = examData.questions.length;
-  if (Object.keys(examAnswers).length < total) {
-    showToast('warning', `أجب على كل الأسئلة أولاً (${Object.keys(examAnswers).length}/${total})`);
-    return;
-  }
+  const total = examData.totalQuestions;
+  const answered = Object.keys(examAnswers).filter(k => examAnswers[k] && String(examAnswers[k]).trim()).length;
+  if (answered < total * 0.5) { showToast('warning', 'أجب على معظم الأسئلة أولاً (' + answered + '/' + total + ')'); return; }
+  clearInterval(examTimer);
   const btn = document.getElementById('exam-submit-btn');
   btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جار التصحيح...';
-  try {
-    const answers = {};
-    examData.questions.forEach((q, qi) => { answers[q.id] = examAnswers[qi]; });
-    const res = await fetch(`${API}/exams/${examData.level}/submit`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answers })
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جار التصحيح…';
+  // التصحيح المحلي
+  let correct = 0, totalQ = 0;
+  const sectionResults = {};
+  let qi = 0;
+  examData.sections.forEach(sec => {
+    let secCorrect = 0, secTotal = sec.questions.length;
+    sec.questions.forEach(q => {
+      const ans = examAnswers[qi];
+      let isOk = false;
+      if (q.type === 'mc' || q.type === 'listening') {
+        isOk = ans === q.correct;
+      } else if (q.type === 'dictation') {
+        const norm = s => (s || '').toLowerCase().trim().replace(/\s+/g, ' ');
+        isOk = norm(ans) === norm(q.correct);
+      } else if (q.type === 'speaking') {
+        isOk = true; // النطق يُكافأ تلقائياً
+      }
+      if (isOk) { correct++; secCorrect++; }
+      // عرض الإجابات
+      if (q.type === 'mc' || q.type === 'listening') {
+        const card = document.getElementById('examq-' + qi) || document.querySelectorAll('.quiz-card')[qi];
+        if (card) {
+          card.querySelectorAll('.quiz-option').forEach(o => {
+            const optText = o.textContent.trim();
+            if (optText === q.correct) o.classList.add('ok');
+            else if (o.classList.contains('selected') && !isOk) o.classList.add('bad');
+          });
+        }
+      } else if (q.type === 'dictation') {
+        const input = document.getElementById('dict-exam-' + qi);
+        if (input) { input.style.borderColor = isOk ? 'var(--success)' : 'var(--danger)'; input.value = q.correct; }
+      }
+      totalQ++; qi++;
     });
-    const data = await res.json();
-    if (!data.success) { showToast('error', data.error || 'خطأ في التسليم'); btn.disabled = false; btn.innerHTML = 'تسليم الامتحان'; return; }
-    examData.questions.forEach((q, qi) => {
-      const d = data.details[qi];
-      const v = document.getElementById('exam-verdict-' + qi);
-      v.style.display = 'block';
-      v.className = 'exam-verdict ' + (d.ok ? 'ok' : 'bad');
-      v.innerHTML = d.ok
-        ? `<i class="fa-solid fa-circle-check"></i> إجابة صحيحة! ${d.explanation || ''}`
-        : `<i class="fa-solid fa-circle-xmark"></i> إجابتك: <b>${d.given || '-'}</b> — الصحيح: <b>${d.correct_answer}</b>. ${d.explanation || ''}`;
-    });
-    const tier = scoreTier(data.score);
-    document.getElementById('exam-modal-body').insertAdjacentHTML('afterbegin', `
-      <div class="exam-result-head">
-        <div class="exam-result-score" style="color:${tier.color};">${data.score}%</div>
-        <div style="font-size:16px;font-weight:700;color:${tier.color};">${data.passed ? '🎉 مبروك! اجتزت امتحان ' + examData.level : 'لم تجتز بعد — راجع دروس المستوى وأعد المحاولة'}</div>
-        <div style="font-size:13px;color:var(--text-muted);margin-top:4px;">${data.correct}/${data.total} إجابات صحيحة ${data.xpEarned ? `• +${data.xpEarned} XP` : ''}</div>
-      </div>`);
-    btn.style.display = 'none';
-    if (data.xpEarned) showXpPopup(data.xpEarned);
-    showToast(data.passed ? 'success' : 'warning', data.passed ? '🎉 اجتزت امتحان ' + examData.level + '!' : 'راجع الدروس وأعد المحاولة — النجاح 70%');
-    loadUserProgress();
-  } catch {
-    showToast('error', 'خطأ في الاتصال');
-    btn.disabled = false;
-    btn.innerHTML = 'تسليم الامتحان';
-  }
+    sectionResults[sec.name] = { correct: secCorrect, total: secTotal, pct: secTotal ? Math.round(secCorrect / secTotal * 100) : 0 };
+  });
+  const score = totalQ ? Math.round(correct / totalQ * 100) : 0;
+  const passed = score >= 70;
+  const tier = scoreTier(score);
+  // نتائج مفصلة
+  let breakdown = '<div class="help-card" style="margin-top:14px;"><h4>📊 تفصيل النتائج حسب القسم</h4>';
+  Object.entries(sectionResults).forEach(([name, r]) => {
+    breakdown += '<div class="pm-line"><span class="t">' + name + '</span><span class="s">' + r.correct + '/' + r.total + ' (' + r.pct + '%)</span>'
+      + '<div class="pm-bar" style="flex:1;min-width:80px;"><div style="width:' + r.pct + '%;"></div></div></div>';
+  });
+  breakdown += '</div>';
+  const cert = passed
+    ? '<div class="okbox" style="margin-top:14px;text-align:center;padding:20px;"><div style="font-size:36px;">🏆</div>'
+      + '<div style="font-size:18px;font-weight:900;color:var(--success);">شهادة اجتياز امتحان ' + examData.level + '</div>'
+      + '<div style="font-size:13px;color:var(--muted);margin-top:6px;">' + currentUser.name + ' — ' + score + '% — ' + new Date().toLocaleDateString('ar') + '</div></div>'
+    : '';
+  // اعرض النتائج
+  const resultHtml = '<div class="exam-result-head">'
+    + '<div class="exam-result-score" style="color:' + tier.color + ';">' + score + '%</div>'
+    + '<div style="font-size:16px;font-weight:700;color:' + tier.color + ';">'
+    + (passed ? '🎉 مبروك! اجتزت امتحان ' + examData.level + ' الرسمي' : 'لم تجتز بعد — النجاح 70%') + '</div>'
+    + '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + correct + '/' + totalQ + ' إجابات صحيحة</div></div>'
+    + breakdown + cert;
+  const body = document.getElementById('exam-modal-body');
+  body.insertAdjacentHTML('afterbegin', resultHtml);
+  btn.style.display = 'none';
+  showToast(passed ? 'success' : 'warning', passed ? '🎉 اجتزت امتحان ' + examData.level + '!' : 'راجع الدروس وأعد المحاولة');
+  loadUserProgress();
 }
 
-function closeExamModal() { closeModal('exam-modal'); examData = null; examAnswers = {}; }
+function closeExamModal() { closeModal('exam-modal'); if (examTimer) clearInterval(examTimer); examData = null; examAnswers = {}; }
 
 async function completeLesson() {
   if (!currentUser || !currentLesson) return;
