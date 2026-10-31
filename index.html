@@ -3757,98 +3757,214 @@ function checkDictation(di) {
 }
 
 // ==============================
+// LEVEL EXAMS — نظام الامتحانات الرسمي (بنك أسئلة مثبّت داخل الملف)
+// 5 أقسام لكل امتحان: قواعد، مفردات، استماع، إملاء، نطق — يعمل فوراً دون أي تحميل خارجي
 // ==============================
-// LEVEL EXAMS — نظام الامتحانات الرسمي الشامل
-// 5 أقسام لكل امتحان: قواعد، مفردات، استماع، إملاء، نطق
-// الأسئلة تُولَّد من محتوى المنهج المحلي (120 فصلاً)
-// ==============================
+if (typeof window.esc !== 'function') {
+  window.esc = function (s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  };
+}
+
 let examData = null;
+let examFlat = [];          // كل الأسئلة مسطّحة للوصول إليها بالرقم
 let examAnswers = {};
 let examTimer = null;
 let examTimeLeft = 0;
-let examSections = [];
+
+const EXAM_BANK = {
+  A1: {
+    grammar: [
+      { q: '¿Cómo ___ llamas?', opts: ['te', 'se', 'le', 'os'], c: 0, exp: '¿Cómo te llamas? = ما اسمك؟ — فعل انعكاسي مع te' },
+      { q: 'Yo ___ estudiante.', opts: ['soy', 'eres', 'es', 'son'], c: 0, exp: 'yo → soy (فعل ser)' },
+      { q: 'Ella ___ María.', opts: ['es', 'son', 'eres', 'soy'], c: 0, exp: 'ella / él / usted → es' },
+      { q: '___ mujer', opts: ['La', 'El', 'Los', 'Un'], c: 0, exp: 'مؤنث مفرد → la mujer' },
+      { q: '¿Cuánto es cinco + tres?', opts: ['ocho', 'siete', 'nueve', 'diez'], c: 0, exp: '5 + 3 = 8 = ocho' },
+      { q: '«Buenos días» نقولها في:', opts: ['الصباح', 'المساء', 'الليل', 'بعد الغروب'], c: 0, exp: 'Buenos días = صباح الخير' },
+      { q: '«Soy de Argelia» تعني:', opts: ['أنا من الجزائر', 'أنا في الجزائر', 'أنا أذهب إلى الجزائر', 'أنا أحب الجزائر'], c: 0, exp: 'ser de = أكون من (الأصل/الجنسية)' },
+      { q: '¿___ hijos tienes?', opts: ['Cuántos', 'Cuánto', 'Cuánta', 'Qué'], c: 0, exp: 'hijos مذكر جمع → cuántos' },
+      { q: 'Tú ___ muy amable.', opts: ['eres', 'soy', 'es', 'somos'], c: 0, exp: 'tú → eres' },
+      { q: 'Vosotros ___ españoles.', opts: ['sois', 'son', 'somos', 'eres'], c: 0, exp: 'vosotros → sois' }
+    ],
+    vocab: [
+      { es: 'libro', ar: 'كتاب' }, { es: 'casa', ar: 'بيت' }, { es: 'agua', ar: 'ماء' },
+      { es: 'pan', ar: 'خبز' }, { es: 'familia', ar: 'عائلة' }, { es: 'escuela', ar: 'مدرسة' },
+      { es: 'rojo', ar: 'أحمر' }, { es: 'perro', ar: 'كلب' }, { es: 'gato', ar: 'قط' }, { es: 'amigo', ar: 'صديق' }
+    ],
+    listening: [
+      { es: 'Hola, ¿qué tal?', ar: 'مرحباً، كيف حالك؟' },
+      { es: 'Buenos días', ar: 'صباح الخير' },
+      { es: 'Adiós, hasta mañana', ar: 'وداعاً، إلى الغد' },
+      { es: 'Muchas gracias', ar: 'شكراً جزيلاً' }
+    ],
+    dictation: [
+      { es: 'Me llamo Ana', ar: 'اسمي آنا' },
+      { es: 'Soy de Argelia', ar: 'أنا من الجزائر' },
+      { es: 'Hasta luego', ar: 'إلى اللقاء' }
+    ],
+    speaking: [
+      { es: 'Buenos días, señora', ar: 'صباح الخير سيدتي' },
+      { es: '¿Cómo estás?', ar: 'كيف حالك؟' },
+      { es: 'Mucho gusto', ar: 'تشرفت بمعرفتك' }
+    ]
+  },
+  A2: {
+    grammar: [
+      { q: 'Ayer yo ___ al mercado.', opts: ['fui', 'voy', 'iba', 'iré'], c: 0, exp: 'الماضي المحدد لـ ir → fui' },
+      { q: 'Ella ___ pizza ayer.', opts: ['comió', 'come', 'comía', 'comerá'], c: 0, exp: 'أمس → ماضٍ محدد: comió' },
+      { q: 'Estoy ___ un libro.', opts: ['leyendo', 'leo', 'leí', 'leeré'], c: 0, exp: 'المضارع المستمر: estar + gerundio' },
+      { q: 'Voy ___ estudiar español.', opts: ['a', 'en', 'por', 'de'], c: 0, exp: 'المستقبل القريب: ir + a + مصدر' },
+      { q: '¿___ hora es?', opts: ['Qué', 'Cómo', 'Dónde', 'Quién'], c: 0, exp: 'ما الساعة؟ → ¿Qué hora es?' },
+      { q: 'Tengo ___ años.', opts: ['veinte', 'veintena', 'ventes', 'dosiencia'], c: 0, exp: '20 = veinte' },
+      { q: 'Juan es ___ Pedro.', opts: ['más alto que', 'tan alto', 'el más alto', 'muy alto'], c: 0, exp: 'المقارنة: más + صفة + que' },
+      { q: '«Me gusta bailar» تعني:', opts: ['أحب الرقص', 'أكره الرقص', 'أرقص الآن', 'سأرقص غداً'], c: 0, exp: 'gustar + مصدر = أحب فعلاً ما' },
+      { q: 'La próxima semana ___ un examen.', opts: ['tendremos', 'tuvimos', 'teníamos', 'tenemos ayer'], c: 0, exp: 'المستقبل البسيط لـ tener → tendremos' },
+      { q: 'El pasado de «hacer» مع yo:', opts: ['hice', 'hago', 'hacía', 'haré'], c: 0, exp: 'yo hice = فعلت' }
+    ],
+    vocab: [
+      { es: 'desayuno', ar: 'فطور' }, { es: 'trabajo', ar: 'عمل' }, { es: 'mercado', ar: 'سوق' },
+      { es: 'coche', ar: 'سيارة' }, { es: 'semana', ar: 'أسبوع' }, { es: 'ayer', ar: 'أمس' },
+      { es: 'primavera', ar: 'ربيع' }, { es: 'billete', ar: 'تذكرة' }
+    ],
+    listening: [
+      { es: 'Voy al trabajo en coche', ar: 'أذهب إلى العمل بالسيارة' },
+      { es: '¿A qué hora te levantas?', ar: 'متى تستيقظ؟' },
+      { es: 'Ayer compré frutas', ar: 'أمس اشتريت فواكه' },
+      { es: 'El fin de semana voy al parque', ar: 'نهاية الأسبوع أذهب إلى الحديقة' }
+    ],
+    dictation: [
+      { es: 'Mi hermana trabaja en un hospital', ar: 'أختي تعمل في مستشفى' },
+      { es: 'Todos los días camino al parque', ar: 'كل يوم أمشي إلى الحديقة' },
+      { es: '¿Cuánto cuesta esto?', ar: 'بكم هذا؟' }
+    ],
+    speaking: [
+      { es: '¿Dónde está la estación?', ar: 'أين المحطة؟' },
+      { es: 'Quiero una habitación para dos personas', ar: 'أريد غرفة لشخصين' },
+      { es: 'La cuenta, por favor', ar: 'الحساب من فضلك' }
+    ]
+  },
+  B1: {
+    grammar: [
+      { q: 'Mañana ___ a Barcelona.', opts: ['viajaré', 'viajo', 'viajaba', 'viajaría'], c: 0, exp: 'المستقبل البسيط: viajaré' },
+      { q: 'Yo ___ un coche si tuviera dinero.', opts: ['compraría', 'compraré', 'compro', 'compraba'], c: 0, exp: 'الشرط غير الواقعي → condicional' },
+      { q: 'Espero que ___ a la fiesta.', opts: ['vengas', 'vienes', 'venir', 'venías'], c: 0, exp: 'بعد تعبير الأمل → subjuntivo' },
+      { q: 'Este regalo es ___ ti.', opts: ['para', 'por', 'de', 'sin'], c: 0, exp: 'para = لِـ (المستفيد)' },
+      { q: 'Cuando era niño, ___ al parque todos los días.', opts: ['jugaba', 'jugué', 'jugaré', 'juegue'], c: 0, exp: 'عادة في الماضي → pretérito imperfecto' },
+      { q: '«Hace dos años que vivo aquí» تعني:', opts: ['أعيش هنا منذ سنتين', 'عشت هنا يوماً واحداً', 'سأعيش هنا سنتين', 'كنت أعيش هنا سنتين'], c: 0, exp: 'hace + مدة + مضارع = منذ' },
+      { q: '¿Los libros? Ya ___ leí.', opts: ['los', 'las', 'lo', 'les'], c: 0, exp: 'ضمير مفعول جمع مذكر → los' },
+      { q: 'Me ___ los libros de historia.', opts: ['gustan', 'gusta', 'gusto', 'gustamos'], c: 0, exp: 'gustar مع جمع → gustan' },
+      { q: 'Si ___ más tiempo, iríamos contigo.', opts: ['tuviéramos', 'tenemos', 'tuvimos', 'tendremos'], c: 0, exp: 'شرط غير واقعي → subjuntivo imperfecto' },
+      { q: 'Es importante ___ deporte.', opts: ['hacer', 'haga', 'hago', 'hice'], c: 0, exp: 'بعد Es importante يأتي المصدر' }
+    ],
+    vocab: [
+      { es: 'conseguir', ar: 'يحصل على' }, { es: 'mejorar', ar: 'يُحسِّن' }, { es: 'el éxito', ar: 'نجاح' },
+      { es: 'la oportunidad', ar: 'فرصة' }, { es: 'darse cuenta', ar: 'يُدرك' }, { es: 'elegir', ar: 'يختار' },
+      { es: 'proponer', ar: 'يقترح' }, { es: 'la meta', ar: 'هدف' }
+    ],
+    listening: [
+      { es: 'Si tuviera más tiempo, viajaría por el mundo', ar: 'لو كان عندي وقت أكثر لسافرت حول العالم' },
+      { es: 'Me he dado cuenta de mi error', ar: 'أدركت خطئي' },
+      { es: 'Vamos a ponernos de acuerdo', ar: 'لِنتفق' },
+      { es: 'Me gustaría mejorar mi español', ar: 'أود تحسين إسبانيتي' }
+    ],
+    dictation: [
+      { es: 'Espero que vengas a la fiesta', ar: 'أتمنى أن تأتي إلى الحفلة' },
+      { es: 'Cuando termine el trabajo, saldremos', ar: 'عندما أنهي العمل سنخرج' },
+      { es: 'Es la mejor película que he visto', ar: 'إنها أفضل فيلم شاهدته' }
+    ],
+    speaking: [
+      { es: '¿Podrías repetirlo, por favor?', ar: 'هل يمكنك تكراره من فضلك؟' },
+      { es: 'Creo que tienes razón', ar: 'أعتقد أنك على حق' },
+      { es: 'Me pondré en contacto contigo pronto', ar: 'سأتواصل معك قريباً' }
+    ]
+  },
+  B2: {
+    grammar: [
+      { q: 'Si lo ___ sabido, habría venido.', opts: ['hubiera', 'había', 'habría', 'haya'], c: 0, exp: 'الشرط الماضي → pluscuamperfecto de subjuntivo' },
+      { q: 'No creo que ___ verdad.', opts: ['sea', 'es', 'era', 'fue'], c: 0, exp: 'بعد نفي الاعتقاد → subjuntivo' },
+      { q: '___ que llueva, iremos de excursión.', opts: ['Aunque', 'Por', 'De', 'Sin'], c: 0, exp: 'Aunque + subjuntivo عند الاحتمال' },
+      { q: 'El libro ___ escrito en 1990.', opts: ['fue', 'era', 'ha', 'es'], c: 0, exp: 'المبني للمجهول: ser + participio' },
+      { q: 'Dijo que ___ cansado.', opts: ['estaba', 'está', 'esté', 'estuvo'], c: 0, exp: 'الكلام المنقول: الحاضر يتحول إلى ماضٍ' },
+      { q: '«Meter la pata» تعني:', opts: ['يرتكب زلّة/خطأً', 'يضع قدمه', 'يقيس شيئاً', 'يمشي بسرعة'], c: 0, exp: 'تعبير اصطلاحي = يخطئ' },
+      { q: 'De ahí que ___ tan importante.', opts: ['sea', 'es', 'era', 'fue'], c: 0, exp: 'de ahí que + subjuntivo' },
+      { q: '«A pesar de» تعني:', opts: ['رغم', 'بسبب', 'من أجل', 'بدون'], c: 0, exp: 'a pesar de = رغم' },
+      { q: 'Ojalá ___ aprobado el examen.', opts: ['hubiera', 'había', 'habría', 'haya'], c: 0, exp: 'Ojalá + ماضٍ ناقص للتمني الماضي' },
+      { q: 'Si quieres aprobar, ___ las pilas.', opts: ['ponte', 'pon', 'poniendo', 'pondrás'], c: 0, exp: 'أمر tú لفعل انعكاسي → ponte' }
+    ],
+    vocab: [
+      { es: 'aprovechar', ar: 'يستغل / يستفيد من' }, { es: 'arriesgado', ar: 'خطِر / محفوف بالمخاطرة' }, { es: 'plantear', ar: 'يطرح' },
+      { es: 'echar una mano', ar: 'يساعد' }, { es: 'dar por sentado', ar: 'يفترض جازماً' }, { es: 'estar hecho polvo', ar: 'منهك تماماً' },
+      { es: 'ponerse las pilas', ar: 'يجتهد' }, { es: 'el reto', ar: 'تحدٍّ' }
+    ],
+    listening: [
+      { es: 'A pesar de las dificultades, seguimos adelante', ar: 'رغم الصعوبات نستمر قدماً' },
+      { es: 'No hay por qué preocuparse', ar: 'لا داعي للقلق' },
+      { es: 'Dio por sentado que llegaríamos a tiempo', ar: 'افترض جازماً أننا سنصل في الوقت المناسب' },
+      { es: 'Se lo tomó con calma', ar: 'تعامل مع الأمر بهدوء' }
+    ],
+    dictation: [
+      { es: 'Aunque me lo hubieras pedido, no lo habría hecho', ar: 'حتى لو طلبت مني ما كنت سأفعله' },
+      { es: 'De ahí que sea tan importante estudiar', ar: 'من هنا مدى أهمية الدراسة' },
+      { es: 'No me lo puedo ni imaginar', ar: 'لا أستطيع حتى تخيّل ذلك' }
+    ],
+    speaking: [
+      { es: 'Estoy hecho polvo después del viaje', ar: 'أنا منهك بعد الرحلة' },
+      { es: 'A ver si nos vemos pronto', ar: 'لعلنا نلتقي قريباً' },
+      { es: 'En resumen, no me convence', ar: 'باختصار، لا يقنعني' }
+    ]
+  }
+};
+
+function shuffleArr(a) {
+  const r = [...a];
+  for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; }
+  return r;
+}
 
 function generateLevelExam(level) {
-  // اجمع كل الدروس للمستوى من القاعدة والمنهج المحلي
-  const lessons = [];
-  const dbTitles = new Set();
-  // من القاعدة (عبر api_chategies المخزنة مؤقتاً)
-  (window._cachedChapters || []).forEach(ch => {
-    if ((ch.level || '').startsWith(level)) {
-      dbTitles.add(ch.title);
-      (ch.lessons || []).forEach(l => lessons.push({ ...l, _src: 'db' }));
-    }
-  });
-  // من المنهج المحلي
-  (window.LOCAL_CHAPTERS_ALL || []).forEach(ch => {
-    if ((ch.level || '').startsWith(level) && !dbTitles.has(ch.title)) {
-      (ch.lessons || []).forEach(l => lessons.push({ ...l, xp_reward: l.xp_reward || 30, _src: 'local', _localData: l }));
-    }
-  });
-  if (!lessons.length) return null;
-
-  // اجمع المواد الخام: مفردات، أمثلة، أسئلة
-  const allVocab = [], allExamples = [], allQuizzes = [];
-  lessons.forEach(l => {
-    const d = l._localData || l;
-    (d.vocabulary || (l.vocabulary || [])).forEach(v => { if (v.es && v.ar) allVocab.push(v); });
-    (d.examples || (l.examples || [])).forEach(x => { if (x.es && x.ar) allExamples.push(x); });
-    (d.quizzes || (l.quizzes || [])).forEach(q => { if (q.question && q.options) allQuizzes.push(q); });
-    // لدروس القاعدة: استخدم الحقول مباشرة
-    (l.vocabulary || []).forEach(v => { if (v.es && v.ar) allVocab.push(v); });
-    (l.examples || []).forEach(x => { if (x.es && x.ar) allExamples.push(x); });
-    (l.quizzes || []).forEach(q => { if (q.question && q.options) allQuizzes.push(q); });
-  });
-  if (!allVocab.length && !allQuizzes.length) return null;
-
-  // خلط عشوائي
-  const shuffle = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-
+  const bank = EXAM_BANK[level];
+  if (!bank) return null;
   const sections = [];
-  // قسم القواعد: 8 أسئلة من الاختبارات الموجودة
-  const grammarQs = shuffle(allQuizzes).slice(0, 8).map(q => ({
-    type: 'mc', question: q.question, options: shuffle(q.options), correct: q.correct_answer, explanation: q.explanation || ''
-  }));
-  if (grammarQs.length) sections.push({ name: 'القواعد والتراكيب', icon: '📝', questions: grammarQs });
-
-  // قسم المفردات: 8 أسئلة ترجمة
-  const vocabQs = shuffle(allVocab).slice(0, 8).map(v => {
-    const wrong = shuffle(allVocab.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
-    const opts = shuffle([v.ar, ...wrong]);
-    return { type: 'mc', question: 'ما معنى «' + v.es + '»؟', options: opts, correct: v.ar, explanation: v.es + ' = ' + v.ar };
+  // 1) القواعد
+  sections.push({
+    name: 'القواعد والتراكيب', icon: '📝',
+    questions: shuffleArr(bank.grammar).map(g => ({ type: 'mc', question: g.q, options: g.opts, correct: g.opts[g.c], explanation: g.exp }))
   });
-  if (vocabQs.length) sections.push({ name: 'المفردات', icon: '📖', questions: vocabQs });
-
-  // قسم الاستماع: 4 أسئلة (الخادم يقرأ بالإسبانية → اختر المعنى)
-  if (allVocab.length >= 4) {
-    const listenQs = shuffle(allVocab).slice(0, 4).map(v => {
-      const wrong = shuffle(allVocab.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
-      const opts = shuffle([v.ar, ...wrong]);
-      return { type: 'listening', spanish: v.es, question: 'استمع واختر المعنى الصحيح:', options: opts, correct: v.ar, sayText: v.es };
-    });
-    sections.push({ name: 'الاستماع والفهم', icon: '🎧', questions: listenQs });
-  }
-
-  // قسم الإملاء: 4 تمارين (استمع واكتب بالإسبانية)
-  if (allExamples.length >= 4) {
-    const dictQs = shuffle(allExamples).slice(0, 4).map(x => ({
-      type: 'dictation', spanish: x.es, question: 'استمع واكتب ما تسمع بالإسبانية:', correct: x.es, sayText: x.es
-    }));
-    sections.push({ name: 'الإملاء', icon: '✍️', questions: dictQs });
-  }
-
-  // قسم النطق: 4 تمارين (اقرأ بصوت عالي)
-  const speakPhrases = shuffle(allExamples).slice(0, 4).map(x => ({
-    type: 'speaking', spanish: x.es, question: 'اقرأ الجملة التالية بصوت عالٍ:', targetText: x.es, ar: x.ar
-  }));
-  if (speakPhrases.length) sections.push({ name: 'النطق والمحادثة', icon: '🎤', questions: speakPhrases });
-
-  if (!sections.length) return null;
-  return { level, sections, totalQuestions: sections.reduce((s, sec) => s + sec.questions.length, 0), timeLimit: 1800 };
+  // 2) المفردات
+  const vocab = shuffleArr(bank.vocab);
+  sections.push({
+    name: 'المفردات', icon: '📖',
+    questions: vocab.slice(0, 8).map(v => {
+      const wrong = shuffleArr(bank.vocab.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
+      return { type: 'mc', question: 'ما معنى «' + v.es + '»؟', options: shuffleArr([v.ar, ...wrong]), correct: v.ar, explanation: v.es + ' = ' + v.ar };
+    })
+  });
+  // 3) الاستماع
+  sections.push({
+    name: 'الاستماع والفهم', icon: '🎧',
+    questions: shuffleArr(bank.listening).map(v => {
+      const wrong = shuffleArr(bank.listening.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
+      return { type: 'listening', spanish: v.es, question: 'استمع واختر المعنى الصحيح:', options: shuffleArr([v.ar, ...wrong]), correct: v.ar, sayText: v.es };
+    })
+  });
+  // 4) الإملاء
+  sections.push({
+    name: 'الإملاء', icon: '✍️',
+    questions: shuffleArr(bank.dictation).map(x => ({ type: 'dictation', spanish: x.es, question: 'استمع واكتب ما تسمع بالإسبانية:', correct: x.es, sayText: x.es }))
+  });
+  // 5) النطق
+  sections.push({
+    name: 'النطق والمحادثة', icon: '🎤',
+    questions: shuffleArr(bank.speaking).map(x => ({ type: 'speaking', spanish: x.es, question: 'اقرأ الجملة التالية بصوت عالٍ:', targetText: x.es, ar: x.ar }))
+  });
+  const total = sections.reduce((s, sec) => s + sec.questions.length, 0);
+  return { level, sections, totalQuestions: total, timeLimit: 1800 };
 }
 
 function startExamTimer() {
-  examTimeLeft = examData.timeLimit || 1800;
+  examTimeLeft = (examData && examData.timeLimit) || 1800;
   const updateTimer = () => {
     const el = document.getElementById('exam-timer');
     if (!el) { clearInterval(examTimer); return; }
@@ -3863,12 +3979,32 @@ function startExamTimer() {
 }
 
 function speakSpanish(text) {
-  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'es-ES'; u.rate = 0.8; speechSynthesis.speak(u); } catch {}
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'es-ES'; u.rate = 0.8;
+    speechSynthesis.speak(u);
+  } catch {}
 }
-function replayDictation(btn) {
-  const text = btn.dataset.text;
-  speakSpanish(text);
-  setTimeout(() => speakSpanish(text), 2500);
+function examSpeak(i) { const q = examFlat[i]; if (q) speakSpanish(q.sayText || q.spanish || ''); }
+function examSpeakSlow(i) {
+  const q = examFlat[i]; if (!q) return;
+  const t = q.sayText || q.spanish || '';
+  speakSpanish(t);
+  setTimeout(() => speakSpanish(t), 2600);
+}
+
+function pickExamOpt(el) {
+  const qi = parseInt(el.dataset.qi, 10);
+  if (examAnswers[qi] !== undefined) return;
+  examAnswers[qi] = el.dataset.opt;
+  el.parentElement.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  updateExamProgress();
+}
+function updateExamProgress() {
+  const bar = document.getElementById('exam-progress');
+  if (bar && examData) bar.style.width = Math.round(Object.keys(examAnswers).length / examData.totalQuestions * 100) + '%';
 }
 
 async function loadExams() {
@@ -3900,53 +4036,56 @@ async function loadExams() {
 
 async function openExam(level) {
   if (!currentUser) { openAuthModal('login'); showToast('warning', 'سجّل الدخول أولاً'); return; }
-  // انتظر تحميل المنهج المحلي (قد يكون غير محمّل بعد)
-  let tries = 0;
-  while (!(window.LOCAL_CHAPTERS_ALL && window.LOCAL_CHAPTERS_ALL.length) && tries < 25) { await new Promise(r => setTimeout(r, 200)); tries++; }
+  if (examTimer) clearInterval(examTimer);
+  const body = document.getElementById('exam-modal-body');
+  const titleEl = document.getElementById('exam-modal-title');
+  if (!body) { showToast('error', 'خطأ: نافذة الامتحان غير موجودة في الصفحة'); return; }
   examData = generateLevelExam(level);
+  if (titleEl) titleEl.textContent = '🎓 امتحان ' + level + ' الرسمي';
   if (!examData || !examData.sections || !examData.sections.length) {
-    showToast('error', 'تعذر توليد الامتحان — تأكد أن المنهج محمّل');
-    closeExamModal();
+    body.innerHTML = '<div class="empty">تعذر تحميل الامتحان — أعد المحاولة</div>';
+    openModal('exam-modal');
     return;
   }
   examAnswers = {};
-  const body = document.getElementById('exam-modal-body');
-  document.getElementById('exam-modal-title').textContent = '🎓 امتحان ' + level + ' الرسمي';
+  examFlat = [];
+  examData.sections.forEach(sec => sec.questions.forEach(q => examFlat.push(q)));
   openModal('exam-modal');
   let qi = 0, qhtml = '';
-  examData.sections.forEach((sec, si) => {
-    qhtml += '<div class="lvl-head" style="margin:16px 0 8px;">' + sec.icon + ' ' + sec.name + ' (' + sec.questions.length + ' أسئلة)</div>';
-    sec.questions.forEach(q => {
-      const myQi = qi++;
-      if (q.type === 'mc') {
-        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. ' + esc(q.question) + '</p>'
-          + '<div class="quiz-options">' + q.options.map(opt =>
-            '<div class="quiz-option" onclick="selectExamOption(' + myQi + ', this, \'' + opt.replace(/'/g, "\\'") + '\')">'
+  try {
+    examData.sections.forEach(sec => {
+      qhtml += '<div class="lvl-head" style="margin:16px 0 8px;">' + sec.icon + ' ' + sec.name + ' (' + sec.questions.length + ' أسئلة)</div>';
+      sec.questions.forEach(q => {
+        const i = qi++;
+        if (q.type === 'mc' || q.type === 'listening') {
+          qhtml += '<div class="quiz-card" id="examq-' + i + '"><p class="exam-question">' + (i + 1) + '. ' + (q.type === 'listening' ? '🎧 ' : '') + esc(q.question) + '</p>';
+          if (q.type === 'listening') {
+            qhtml += '<div style="text-align:center;margin:10px 0;">'
+              + '<button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
+              + '<button class="btn sec sm" onclick="examSpeak(' + i + ')" style="margin-right:6px;">🔄 إعادة</button></div>';
+          }
+          qhtml += '<div class="quiz-options">' + q.options.map(opt =>
+            '<div class="quiz-option" data-qi="' + i + '" data-opt="' + esc(opt) + '" onclick="pickExamOpt(this)">'
             + '<span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></span>' + esc(opt) + '</div>').join('')
-          + '</div></div>';
-      } else if (q.type === 'listening') {
-        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. 🎧 ' + esc(q.question) + '</p>'
-          + '<div style="text-align:center;margin:10px 0;"><button class="btn sec" onclick="speakSpanish(\'' + esc(q.sayText.replace(/'/g, '')) + '\')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
-          + '<button class="btn sec sm" onclick="speakSpanish(\'' + esc(q.sayText.replace(/'/g, '')) + '\')" style="margin-right:6px;">🔄 إعادة</button></div>'
-          + '<div class="quiz-options">' + q.options.map(opt =>
-            '<div class="quiz-option" onclick="selectExamOption(' + myQi + ', this, \'' + opt.replace(/'/g, "\\'") + '\')">'
-            + '<span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></span>' + esc(opt) + '</div>').join('')
-          + '</div></div>';
-      } else if (q.type === 'dictation') {
-        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. ✍️ ' + esc(q.question) + '</p>'
-          + '<div style="text-align:center;margin:10px 0;"><button class="btn sec" onclick="speakSpanish(\'' + esc(q.sayText.replace(/'/g, '')) + '\')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
-          + '<button class="btn sec sm" onclick="replayDictation(this)" data-text=\'' + esc(q.sayText) + '\' style="margin-right:6px;">🔄 إعادة بطيئة</button></div>'
-          + '<input type="text" class="form-input" id="dict-exam-' + myQi + '" placeholder="Escribe lo que escuchas..." style="direction:ltr;text-align:left;margin-top:8px;" oninput="examAnswers[' + myQi + ']=this.value"></div>';
-      } else if (q.type === 'speaking') {
-        qhtml += '<div class="quiz-card"><p class="exam-question">' + (myQi + 1) + '. 🎤 ' + esc(q.question) + '</p>'
-          + '<div style="direction:ltr;text-align:center;font-size:18px;font-weight:700;color:var(--primary-light);margin:10px 0;">' + esc(q.spanish) + '</div>'
-          + '<div style="text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px;">' + esc(q.ar || '') + '</div>'
-          + '<div style="text-align:center;"><button class="btn sec" onclick="speakSpanish(\'' + esc(q.spanish.replace(/'/g, '')) + '\')"><i class="fa-solid fa-volume-high"></i> استمع للنموذج</button></div>'
-          + '<input type="hidden" id="speak-exam-' + myQi + '" value="' + esc(q.spanish) + '">'
-          + '<div style="text-align:center;margin-top:8px;"><span class="chip free">✓ مكافأة تلقائية عند التسليم</span></div></div>';
-      }
+            + '</div></div>';
+        } else if (q.type === 'dictation') {
+          qhtml += '<div class="quiz-card" id="examq-' + i + '"><p class="exam-question">' + (i + 1) + '. ✍️ ' + esc(q.question) + '</p>'
+            + '<div style="text-align:center;margin:10px 0;">'
+            + '<button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
+            + '<button class="btn sec sm" onclick="examSpeakSlow(' + i + ')" style="margin-right:6px;">🔄 إعادة بطيئة</button></div>'
+            + '<input type="text" class="form-input" id="dict-exam-' + i + '" placeholder="Escribe lo que escuchas..." style="direction:ltr;text-align:left;margin-top:8px;" oninput="examAnswers[' + i + ']=this.value;updateExamProgress()"></div>';
+        } else if (q.type === 'speaking') {
+          qhtml += '<div class="quiz-card" id="examq-' + i + '"><p class="exam-question">' + (i + 1) + '. 🎤 ' + esc(q.question) + '</p>'
+            + '<div style="direction:ltr;text-align:center;font-size:18px;font-weight:700;color:var(--primary-light);margin:10px 0;">' + esc(q.spanish) + '</div>'
+            + '<div style="text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:10px;">' + esc(q.ar || '') + '</div>'
+            + '<div style="text-align:center;"><button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> استمع للنموذج</button></div>'
+            + '<div style="text-align:center;margin-top:8px;"><span class="chip free">✓ مكافأة تلقائية عند التسليم</span></div></div>';
+        }
+      });
     });
-  });
+  } catch (e) {
+    qhtml += '<div class="err" style="padding:12px;">حدث خطأ أثناء العرض: ' + esc(e && e.message ? e.message : e) + '</div>';
+  }
   body.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
     + '<span style="font-size:13px;color:var(--text-muted);">' + examData.totalQuestions + ' سؤال · 5 أقسام · النجاح 70%</span>'
     + '<span id="exam-timer" style="font-size:18px;font-weight:900;" class="muted">⏱ 30:00</span></div>'
@@ -3955,72 +4094,48 @@ async function openExam(level) {
     + '<div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">'
     + '<button class="btn btn-primary btn-lg" id="exam-submit-btn" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> تسليم الامتحان</button></div>';
   startExamTimer();
-  // تحديث شريط التقدم عند كل إجابة
-  const origSelect = selectExamOption;
-  window.selectExamOption = function(qi, el, opt) {
-    origSelect(qi, el, opt);
-    const answered = Object.keys(examAnswers).length;
-    const bar = document.getElementById('exam-progress');
-    if (bar) bar.style.width = Math.round(answered / examData.totalQuestions * 100) + '%';
-  };
-}
-
-function selectExamOption(qi, el, opt) {
-  if (examAnswers[qi] !== undefined) return;
-  examAnswers[qi] = opt;
-  el.parentElement.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
+  body.scrollTop = 0;
 }
 
 async function submitExam() {
   if (!examData) return;
-  const total = examData.totalQuestions;
+  const totalQ = examData.totalQuestions;
   const answered = Object.keys(examAnswers).filter(k => examAnswers[k] && String(examAnswers[k]).trim()).length;
-  if (answered < total * 0.5) { showToast('warning', 'أجب على معظم الأسئلة أولاً (' + answered + '/' + total + ')'); return; }
+  if (answered === 0) { showToast('warning', 'أجب على أسئلة أولاً ثم سلّم'); return; }
   clearInterval(examTimer);
   const btn = document.getElementById('exam-submit-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جار التصحيح…';
-  // التصحيح المحلي
-  let correct = 0, totalQ = 0;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جار التصحيح…'; }
+  let correct = 0, qi = 0;
   const sectionResults = {};
-  let qi = 0;
   examData.sections.forEach(sec => {
-    let secCorrect = 0, secTotal = sec.questions.length;
+    let secCorrect = 0;
+    const secTotal = sec.questions.length;
     sec.questions.forEach(q => {
       const ans = examAnswers[qi];
       let isOk = false;
-      if (q.type === 'mc' || q.type === 'listening') {
-        isOk = ans === q.correct;
-      } else if (q.type === 'dictation') {
+      if (q.type === 'mc' || q.type === 'listening') isOk = ans === q.correct;
+      else if (q.type === 'dictation') {
         const norm = s => (s || '').toLowerCase().trim().replace(/\s+/g, ' ');
         isOk = norm(ans) === norm(q.correct);
-      } else if (q.type === 'speaking') {
-        isOk = true; // النطق يُكافأ تلقائياً
-      }
+      } else if (q.type === 'speaking') isOk = true; // النطق يُكافأ تلقائياً
       if (isOk) { correct++; secCorrect++; }
-      // عرض الإجابات
       if (q.type === 'mc' || q.type === 'listening') {
-        const card = document.getElementById('examq-' + qi) || document.querySelectorAll('.quiz-card')[qi];
-        if (card) {
-          card.querySelectorAll('.quiz-option').forEach(o => {
-            const optText = o.textContent.trim();
-            if (optText === q.correct) o.classList.add('ok');
-            else if (o.classList.contains('selected') && !isOk) o.classList.add('bad');
-          });
-        }
+        const card = document.getElementById('examq-' + qi);
+        if (card) card.querySelectorAll('.quiz-option').forEach(o => {
+          if (o.dataset.opt === q.correct) o.classList.add('ok');
+          else if (o.classList.contains('selected') && !isOk) o.classList.add('bad');
+        });
       } else if (q.type === 'dictation') {
         const input = document.getElementById('dict-exam-' + qi);
         if (input) { input.style.borderColor = isOk ? 'var(--success)' : 'var(--danger)'; input.value = q.correct; }
       }
-      totalQ++; qi++;
+      qi++;
     });
     sectionResults[sec.name] = { correct: secCorrect, total: secTotal, pct: secTotal ? Math.round(secCorrect / secTotal * 100) : 0 };
   });
   const score = totalQ ? Math.round(correct / totalQ * 100) : 0;
   const passed = score >= 70;
   const tier = scoreTier(score);
-  // نتائج مفصلة
   let breakdown = '<div class="help-card" style="margin-top:14px;"><h4>📊 تفصيل النتائج حسب القسم</h4>';
   Object.entries(sectionResults).forEach(([name, r]) => {
     breakdown += '<div class="pm-line"><span class="t">' + name + '</span><span class="s">' + r.correct + '/' + r.total + ' (' + r.pct + '%)</span>'
@@ -4030,9 +4145,8 @@ async function submitExam() {
   const cert = passed
     ? '<div class="okbox" style="margin-top:14px;text-align:center;padding:20px;"><div style="font-size:36px;">🏆</div>'
       + '<div style="font-size:18px;font-weight:900;color:var(--success);">شهادة اجتياز امتحان ' + examData.level + '</div>'
-      + '<div style="font-size:13px;color:var(--muted);margin-top:6px;">' + currentUser.name + ' — ' + score + '% — ' + new Date().toLocaleDateString('ar') + '</div></div>'
+      + '<div style="font-size:13px;color:var(--text-muted);margin-top:6px;">' + (currentUser.name || '') + ' — ' + score + '% — ' + new Date().toLocaleDateString('ar') + '</div></div>'
     : '';
-  // اعرض النتائج
   const resultHtml = '<div class="exam-result-head">'
     + '<div class="exam-result-score" style="color:' + tier.color + ';">' + score + '%</div>'
     + '<div style="font-size:16px;font-weight:700;color:' + tier.color + ';">'
@@ -4040,8 +4154,8 @@ async function submitExam() {
     + '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + correct + '/' + totalQ + ' إجابات صحيحة</div></div>'
     + breakdown + cert;
   const body = document.getElementById('exam-modal-body');
-  body.insertAdjacentHTML('afterbegin', resultHtml);
-  btn.style.display = 'none';
+  if (body) { body.insertAdjacentHTML('afterbegin', resultHtml); body.scrollTop = 0; }
+  if (btn) { btn.style.display = 'none'; btn.disabled = false; }
   showToast(passed ? 'success' : 'warning', passed ? '🎉 اجتزت امتحان ' + examData.level + '!' : 'راجع الدروس وأعد المحاولة');
   loadUserProgress();
 }
