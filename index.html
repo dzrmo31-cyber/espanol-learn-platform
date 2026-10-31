@@ -3875,7 +3875,7 @@ async function loadExams() {
   const grid = document.getElementById('exams-grid');
   const colors = { A1: '#10b981', A2: '#06b6d4', B1: '#7c3aed', B2: '#f59e0b' };
   const names = { A1: 'المستوى المبتدئ', A2: 'المستوى الأساسي', B1: 'المستوى المتوسط', B2: 'المستوى المتقدم' };
-  const isPremium = currentUser && currentUser.subscription_status === 'premium';
+  const isPremium = true; // مفتوح مؤقتاً للتجربة — أضف القيد لاحقاً عند الجاهزية للدفع
   grid.innerHTML = ['A1', 'A2', 'B1', 'B2'].map(lv => {
     const locked = !isPremium;
     const exam = generateLevelExam(lv);
@@ -3900,9 +3900,15 @@ async function loadExams() {
 
 async function openExam(level) {
   if (!currentUser) { openAuthModal('login'); showToast('warning', 'سجّل الدخول أولاً'); return; }
-  if (currentUser.subscription_status !== 'premium') { showPaymentModal(); showToast('warning', 'الامتحانات الرسمية للمشتركين المميزين'); return; }
+  // انتظر تحميل المنهج المحلي (قد يكون غير محمّل بعد)
+  let tries = 0;
+  while (!(window.LOCAL_CHAPTERS_ALL && window.LOCAL_CHAPTERS_ALL.length) && tries < 25) { await new Promise(r => setTimeout(r, 200)); tries++; }
   examData = generateLevelExam(level);
-  if (!examData) { showToast('error', 'لا توجد أسئلة كافية لهذا المستوى'); return; }
+  if (!examData || !examData.sections || !examData.sections.length) {
+    showToast('error', 'تعذر توليد الامتحان — تأكد أن المنهج محمّل');
+    closeExamModal();
+    return;
+  }
   examAnswers = {};
   const body = document.getElementById('exam-modal-body');
   document.getElementById('exam-modal-title').textContent = '🎓 امتحان ' + level + ' الرسمي';
