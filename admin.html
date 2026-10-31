@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إسبانيول — لوحة التحكم الخاصة</title>
+<style>
+  :root {
+    --bg:#0f0c29; --card:rgba(255,255,255,0.05); --border:rgba(255,255,255,0.1);
+    --text:#f1f5f9; --muted:#94a3b8; --primary:#7c3aed; --primary-light:#8b5cf6;
+    --secondary:#06b6d4; --success:#10b981; --danger:#ef4444; --warning:#f59e0b;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',Tahoma,Arial,sans-serif; min-height:100vh; }
+  a { color:var(--primary-light); }
+  .wrap { max-width:1200px; margin:0 auto; padding:24px 18px 60px; }
+  h1 { font-size:22px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .sub { color:var(--muted); font-size:13px; margin-top:4px; }
+  .pill { font-size:12px; padding:4px 12px; border-radius:100px; border:1px solid var(--border); }
+  .pill.ok { color:var(--success); border-color:rgba(16,185,129,0.4); }
+
+  .gate { max-width:640px; margin:60px auto; background:var(--card); border:1px solid var(--border); border-radius:18px; padding:28px; }
+  .gate h2 { font-size:19px; margin-bottom:10px; }
+  .gate p { color:var(--muted); font-size:14px; line-height:1.9; }
+  .gate ol { color:var(--muted); font-size:14px; line-height:2; margin:12px 24px 0 0; }
+  .warn { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.35); color:#fca5a5; border-radius:12px; padding:12px 14px; font-size:13px; margin-top:16px; line-height:1.8; }
+  .okbox { background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.35); color:#6ee7b7; border-radius:12px; padding:12px 14px; font-size:13px; margin-top:16px; }
+  .infobox { background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.35); color:#7dd3fc; border-radius:12px; padding:12px 14px; font-size:13px; margin-top:16px; line-height:1.9; }
+  input[type=password], input[type=text], input[type=email], textarea, select {
+    width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border); color:var(--text);
+    border-radius:10px; padding:12px 14px; font-size:14px; font-family:inherit; outline:none;
+  }
+  input:focus, textarea:focus { border-color:var(--primary); }
+  .btn { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,var(--primary),var(--primary-light));
+    color:#fff; border:none; border-radius:10px; padding:11px 20px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .btn:hover { transform:translateY(-1px); }
+  .btn.sec { background:var(--card); border:1px solid var(--border); color:var(--text); }
+  .btn.danger { background:linear-gradient(135deg,#dc2626,#ef4444); }
+  .btn.sm { padding:6px 12px; font-size:12px; border-radius:8px; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 18px; }
+  .tab { padding:10px 18px; border-radius:12px; background:var(--card); border:1px solid var(--border);
+    color:var(--muted); font-size:14px; font-weight:700; cursor:pointer; position:relative; font-family:inherit; }
+  .tab.active { background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; border-color:transparent; }
+  .tab .badge { position:absolute; top:-7px; left:-7px; background:var(--danger); color:#fff; font-size:10px;
+    min-width:19px; height:19px; border-radius:100px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
+  .room { background:var(--card); border:1px solid var(--border); border-radius:18px; padding:20px; min-height:220px; }
+  .room-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+  .room-head h3 { font-size:16px; }
+
+  .tbl-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:12px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; min-width:640px; }
+  th { background:rgba(124,58,237,0.18); padding:10px 12px; text-align:right; white-space:nowrap; }
+  td { padding:9px 12px; border-top:1px solid var(--border); vertical-align:middle; }
+  tr:hover td { background:rgba(255,255,255,0.03); }
+  .chip { font-size:11px; padding:3px 10px; border-radius:100px; font-weight:700; white-space:nowrap; display:inline-block; }
+  .chip.free { background:rgba(16,185,129,0.15); color:var(--success); border:1px solid rgba(16,185,129,0.35); }
+  .chip.premium { background:rgba(245,158,11,0.15); color:var(--warning); border:1px solid rgba(245,158,11,0.35); }
+  .chip.banned { background:rgba(239,68,68,0.15); color:var(--danger); border:1px solid rgba(239,68,68,0.35); }
+  select.rank { width:auto; padding:6px 10px; font-size:12px; border-radius:8px; background:#1a1440; color:var(--text); border:1px solid var(--border); }
+  select.rank option { background:#1a1440; color:var(--text); }
+  select option { background:#1a1440; color:var(--text); }
+  .muted { color:var(--muted); font-size:12px; }
+  .err { color:#fca5a5; font-size:13px; background:rgba(239,68,68,0.08); border:1px dashed rgba(239,68,68,0.4); border-radius:10px; padding:10px 12px; line-height:1.8; }
+  .empty { text-align:center; color:var(--muted); padding:30px 10px; font-size:14px; }
+
+  .switch-wrap { display:inline-flex; align-items:center; gap:12px; cursor:pointer; user-select:none; }
+  .sw-label { font-size:14px; font-weight:700; color:var(--muted); }
+  .switch-wrap.on .sw-label.on-l { color:var(--success); }
+  .sw-track { width:62px; height:30px; background:rgba(255,255,255,0.12); border-radius:100px; position:relative; transition:.25s; border:1px solid var(--border); }
+  .switch-wrap.on .sw-track { background:rgba(16,185,129,0.35); border-color:rgba(16,185,129,0.5); }
+  .sw-knob { position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#cbd5e1; transition:.25s; }
+  .switch-wrap.on .sw-knob { left:calc(100% - 25px); background:var(--success); }
+  .row-flex { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+  .statbox { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:10px 16px; font-size:13px; }
+  .statbox b { color:var(--primary-light); }
+
+  /* ====== بريد التواصل ====== */
+  .mail-grid { display:grid; grid-template-columns:320px 1fr; gap:14px; min-height:420px; }
+  @media (max-width:820px){ .mail-grid { grid-template-columns:1fr; } }
+  .mail-list { border:1px solid var(--border); border-radius:14px; overflow-y:auto; max-height:520px; }
+  .mail-item { padding:12px 14px; border-bottom:1px solid var(--border); cursor:pointer; transition:.15s; }
+  .mail-item:hover { background:rgba(255,255,255,0.04); }
+  .mail-item.sel { background:rgba(124,58,237,0.15); }
+  .mail-item.unread { border-right:3px solid var(--primary-light); }
+  .mail-item .who { font-weight:700; font-size:13px; display:flex; justify-content:space-between; gap:8px; }
+  .mail-item .prev { font-size:12px; color:var(--muted); margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mail-read { border:1px solid var(--border); border-radius:14px; padding:18px; overflow-y:auto; max-height:520px; }
+  .msg-body { font-size:14px; line-height:2; color:#e2e8f0; white-space:pre-wrap; }
+  .compose textarea { min-height:120px; resize:vertical; }
+  .emoji-bar { display:flex; flex-wrap:wrap; gap:4px; background:rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:10px; padding:8px; margin-bottom:8px; max-height:96px; overflow-y:auto; }
+  .emoji-bar button { background:none; border:none; font-size:18px; cursor:pointer; padding:2px 4px; border-radius:6px; }
+  .emoji-bar button:hover { background:rgba(255,255,255,0.1); }
+  .attach-chip { display:inline-flex; align-items:center; gap:6px; background:rgba(6,182,212,0.12); border:1px solid rgba(6,182,212,0.35);
+    color:#7dd3fc; border-radius:100px; padding:4px 12px; font-size:12px; margin:3px; }
+  .msg { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:14px; padding:14px 16px; margin-bottom:12px; }
+  .msg.unread { border-color:rgba(124,58,237,0.5); background:rgba(124,58,237,0.07); }
+  .msg-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; }
+  .code-box { background:#0b0820; border:1px solid var(--border); border-radius:12px; padding:14px; font-family:Consolas,monospace;
+    font-size:12px; direction:ltr; text-align:left; white-space:pre; overflow-x:auto; color:#a5f3fc; line-height:1.7; }
+  .lvl-head { font-size:15px; font-weight:800; margin:18px 0 8px; padding-right:10px; border-right:4px solid var(--primary-light); }
+  .ch-line { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); margin-bottom:6px; flex-wrap:wrap; }
+  .les-line { display:flex; align-items:center; gap:8px; padding:5px 10px 5px 0; font-size:13px; color:var(--muted); }
+  .help-card { background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; }
+  .help-card h4 { font-size:15px; margin-bottom:8px; color:var(--primary-light); }
+  .help-card p, .help-card li { font-size:13px; color:var(--muted); line-height:2; }
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:rgba(20,15,50,0.95);
+    border:1px solid var(--border); border-radius:12px; padding:12px 20px; font-size:14px; z-index:99; }
+  .toast.ok { border-color:rgba(16,185,129,0.5); } .toast.bad { border-color:rgba(239,68,68,0.5); }
+</style>
+</head>
+<body>
+
+<div class="gate" id="block-screen" style="display:none;">
+  <h2>🚫 تم إيقاف اللوحة</h2>
+  <p>هذه لوحة تحكم <b>خاصة بجهازك</b> ولا يجوز أن تعمل على استضافة عامة لأنها تتصل بصلاحيات كاملة.
+  شغّلها من ملفك المحلي: انقر نقراً مزدوجاً على <b>ابدأ اللوحة.bat</b> (يفتحها عبر localhost وتصبح كل المزايا متاحة) أو افتح admin.html مباشرة.</p>
+</div>
+
+<div class="wrap" id="panel" style="display:none;">
+  <h1>🔐 إسبانيول — لوحة التحكم الخاصة <span class="pill ok" id="conn-pill">متصل ✓</span></h1>
+  <div class="sub">متصلة مباشرة بقاعدة Supabase بصلاحيات كاملة — لا تشارك هذه الشاشة مع أحد · جدول المستخدمين: <b id="ut-name">…</b></div>
+  <div id="key-banner" style="display:none; margin-top:14px;" class="warn">
+    <b>لم يُدخل مفتاح service_role بعد</b> — غرف المستخدمين والنسخ والتواصل تحتاجه (غرفة المحتوى تعمل بدونه). أدخله مرة واحدة هنا:
+    <div class="row-flex" style="margin-top:10px;">
+      <input type="password" id="banner-key" placeholder="الصق مفتاح service_role (eyJ...)" style="flex:1;min-width:260px;direction:ltr;text-align:left;">
+      <button class="btn" onclick="saveInlineKey()">🔗 ربط وحفظ</button>
+    </div>
+    <span class="muted">يُحفظ في متصفحك، وثبّته داخل الملف من زر 📌 بالأعلى ليختفي هذا التنبيه للأبد</span>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="users" onclick="openTab('users')">👥 المستخدمون</button>
+    <button class="tab" data-tab="backup" onclick="openTab('backup')">💾 البيانات والنسخ</button>
+    <button class="tab" data-tab="content" onclick="openTab('content')">📚 المحتوى</button>
+    <button class="tab" data-tab="contact" onclick="openTab('contact')">📮 التواصل <span class="badge" id="msg-badge" style="display:none;">0</span></button>
+    <button class="tab" data-tab="setup" onclick="openTab('setup')">🧭 الإعداد والمساعدة</button>
+    <button class="tab" onclick="pinKeyLine()">📌 تثبيت المفتاح داخل الملف</button>
+    <button class="tab" onclick="downloadPinnedCopy()">⬇️ تنزيل نسخة مثبتة</button>
+    <button class="tab" style="margin-inline-start:auto;" onclick="wipeKey()">🚪 مسح المفتاح</button>
+  </div>
+  <div class="room" id="tab-content"><div class="empty">جار التحميل…</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = 'https://dsoqdwpanbegykprwgkk.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzb3Fkd3BhbmJlZ3lrcHJ3Z2trIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMwMzM1ODQsImV4cCI6MjEwODYwOTU4NH0.OaYTKE3BTzJ-DpbxrwJR-PYY4Q0YiBg7UV2JwvU6Zdg';
+const BACKUP_TABLES = ['users', 'chapters', 'lessons', 'quizzes', 'progress', 'payments', 'settings', 'contact_messages'];
+const BUCKET = 'espanol-admin-files';
+
+// ═════════════════════════════════════════════════════════════
+// التثبيت الدائم — للدخول دون كتابة المفتاح كل مرة:
+// الصق مفتاح service_role بين علامتي التنصيص في السطر التالي
+// واحفظ الملف (افتحه بالمفكرة ← Ctrl+F ابحث عن SAVED_KEY ← الصق ← حفظ)
+// مثال:  const SAVED_KEY = "eyJhbGciOi...";
+// ⚠️ بعد التثبيت يصبح هذا الملف مثل كلمة سر قاعدة بياناتك الكاملة
+//    — احفظه في مكان آمن ولا تشاركه ولا ترفعه إلى GitHub أبداً
+// ═════════════════════════════════════════════════════════════
+const SAVED_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzb3Fkd3BhbmJlZ3lrcHJ3Z2trIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MzAzMzU4NCwiZXhwIjoyMTA4NjA5NTg0fQ.B2ic_noqPYAneqSA9-YyELeCFVslZfg37-JezLKGk-M";
+
+// درع: تعمل من الجهاز فقط
+(function guard() {
+  const h = location.hostname;
+  const localOk = location.protocol === 'file:' || h === 'localhost' || h === '127.0.0.1' || h === '' || h === '0.0.0.0';
+  if (!localOk) {
+    document.getElementById('block-screen').style.display = 'block';
+    throw new Error('admin panel blocked on public host');
+  }
+})();
+
+// تحميل منهج الفصول المحلية (lessons-extra.js) من أي مسار محتمل بجانب اللوحة
+(function loadCurriculum() {
+  const paths = ['lessons-extra.js', 'espagnole/lessons-extra.js', 'لغة اسبانية - النسخة الكاملة/lessons-extra.js', '../lessons-extra.js'];
+  let i = 0;
+  (function tryNext() {
+    if (i >= paths.length) return;
+    const s = document.createElement('script');
+    s.src = paths[i++];
+    s.onerror = function () { this.remove(); tryNext(); };
+    document.head.appendChild(s);
+  })();
+})();
+
+let sbAdmin = null, sbPublic = null;
+let userTable = 'users';
+let userCols = [];
+let autoTimer = null, lastFp = null, autoDirHandle = null;
+let attachedFiles = [], mailSel = null;
+
+function toast(msg, ok) {
+  const t = document.createElement('div');
+  t.className = 'toast ' + (ok ? 'ok' : 'bad');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3400);
+}
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function stamp() {
+  const d = new Date(), p = n => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '_' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+}
+function fmtDate(v) { try { return v ? new Date(v).toLocaleString('ar') : '—'; } catch { return '—'; } }
+
+let currentTab = 'content';
+function showPanel() {
+  document.getElementById('block-screen').style.display = 'none';
+  document.getElementById('panel').style.display = 'block';
+}
+function showBanner(show) {
+  const b = document.getElementById('key-banner');
+  if (b) b.style.display = show ? 'block' : 'none';
+}
+function hasKey() { return !!sbAdmin; }
+async function bootKey(key) {
+  localStorage.setItem('admin_service_key', key);
+  sbAdmin = supabase.createClient(SUPABASE_URL, key, { auth: { persistSession: false } });
+  if (!sbPublic) sbPublic = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+  showBanner(false);
+  updateStatePill();
+  detectUserTable();
+  openTab(currentTab);
+}
+// مؤشر الحالة الدائم في الأعلى
+function updateStatePill() {
+  const pill = document.getElementById('conn-pill');
+  if (!pill) return;
+  if (typeof SAVED_KEY === 'string' && SAVED_KEY.trim().startsWith('eyJ')) {
+    pill.textContent = '🟢 مثبت داخل الملف — دائم ✓'; pill.className = 'pill ok';
+  } else if (sbAdmin) {
+    pill.textContent = '🟡 محفوظ في المتصفح — ثبّته من زر 📌'; pill.className = 'pill';
+    pill.style.color = 'var(--warning)'; pill.style.borderColor = 'rgba(245,158,11,0.4)';
+  } else {
+    pill.textContent = '🔴 غير مربوط'; pill.className = 'pill bad';
+  }
+}
+// نافذة خطوات التثبيت الدائم (تظهر تلقائياً بعد أول ربط)
+function showPinSteps() {
+  const o = document.createElement('div');
+  o.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:300;display:flex;align-items:center;justify-content:center;padding:16px;';
+  o.innerHTML = '<div style="background:#141032;border:1px solid rgba(124,58,237,0.5);border-radius:18px;max-width:560px;padding:26px;">'
+    + '<h3 style="font-size:18px;margin-bottom:12px;color:var(--primary-light);">📌 خطوة أخيرة — مرة واحدة في العمر</h3>'
+    + '<p style="font-size:14px;line-height:2.1;color:#e2e8f0;">نزّلنا لك ملف <b>admin.html</b> جديداً والمفتاح مثبت بداخله (في مجلد التنزيلات أو المكان الذي اخترته):'
+    + '<br>1️⃣ احذف ملف admin.html <b>القديم</b> من سطح المكتب'
+    + '<br>2️⃣ انقل الملف الجديد مكانه'
+    + '<br>3️⃣ افتحه — <b>لن يُطلب المفتاح أبداً</b> وستكون متصلاً بـ Supabase مباشرة في كل مرة</p>'
+    + '<div class="okbox">🟢 بعد هذه الخطوة: مؤشر الحالة بالأعلى يتحول إلى «مثبت داخل الملف — دائم»</div>'
+    + '<button class="btn" style="margin-top:16px;" onclick="this.closest(\'div\').parentElement.remove()">فهمت ✓</button></div>';
+  document.body.appendChild(o);
+}
+async function detectUserTable() {
+  for (const t of ['users', 'profiles']) {
+    const r = await sbAdmin.from(t).select('id', { count: 'exact', head: true });
+    if (!r.error) { userTable = t; break; }
+  }
+  const el = document.getElementById('ut-name');
+  if (el) el.textContent = userTable;
+}
+async function saveInlineKey() {
+  const el = document.getElementById('banner-key') || document.getElementById('setup-key') || document.getElementById('room-key');
+  const key = el ? el.value.trim() : '';
+  if (!key.startsWith('eyJ')) { toast('المفتاح لا يبدو صحيحاً — انسخ service_role كاملاً', false); return; }
+  // اختبار حقيقي: جرّب قراءة جدول users بالمفتاح الجديد
+  const test = supabase.createClient(SUPABASE_URL, key, { auth: { persistSession: false } });
+  const p1 = await test.from('users').select('id', { count: 'exact', head: true });
+  if (!p1.error) { userTable = 'users'; await bootKey(key); setTimeout(() => { downloadPinnedCopy(); showPinSteps(); }, 700); return; }
+  const p2 = await test.from('profiles').select('id', { count: 'exact', head: true });
+  if (!p2.error) { userTable = 'profiles'; await bootKey(key); setTimeout(() => { downloadPinnedCopy(); showPinSteps(); }, 700); return; }
+  // المفتاح فشل — اعرض الخطأ الفعلي
+  const errMsg = (p1.error || p2.error || {}).message || 'مفتاح غير صالح';
+  toast('❌ المفتاح مرفوض من Supabase: ' + errMsg, false);
+  if (el) { el.value = ''; el.placeholder = 'المفتاح مرفوض — انسخ service_role الصحيح من Settings ← API'; }
+}
+function wipeKey() {
+  localStorage.removeItem('admin_service_key');
+  if (autoTimer) clearInterval(autoTimer);
+  sbAdmin = null;
+  showBanner(true);
+  openTab('setup');
+}
+// نموذج مفتاح مدمج يظهر داخل الغرف التي تحتاج المفتاح
+function keyFormHTML(room) {
+  return '<div class="err">⚠️ غرفة «' + room + '» تحتاج مفتاح service_role — أدخله مرة واحدة (يُحفظ في متصفحك):'
+    + '<div class="row-flex" style="margin-top:10px;"><input type="password" id="room-key" placeholder="الصق المفتاح (eyJ...)" style="flex:1;min-width:240px;direction:ltr;text-align:left;">'
+    + '<button class="btn" onclick="saveInlineKey()">🔗 ربط وحفظ</button></div>'
+    + '<div class="muted">غرفة 📚 المحتوى تعمل بدون مفتاح</div></div>';
+}
+
+// ==============================
+// التثبيت الدائم للمفتاح داخل الملف
+// ==============================
+function activeKey() {
+  if (typeof SAVED_KEY === 'string' && SAVED_KEY.trim().startsWith('eyJ')) return SAVED_KEY.trim();
+  return localStorage.getItem('admin_service_key') || '';
+}
+function pinKeyLine() {
+  const key = activeKey();
+  if (!key) { toast('اربط القاعدة أولاً', false); return; }
+  const line = 'const SAVED_KEY = "' + key + '";';
+  navigator.clipboard.writeText(line).then(
+    () => toast('نُسخ سطر التثبيت ✓ افتح admin.html بالمفكرة، Ctrl+F ابحث عن SAVED_KEY، استبدل السطر بهذا، احفظ', true),
+    () => toast('تعذر النسخ — انسخ السطر يدوياً: ' + line.slice(0, 40) + '…', false));
+}
+async function downloadPinnedCopy() {
+  const key = activeKey();
+  if (!key) { toast('اربط القاعدة أولاً', false); return; }
+  try {
+    const res = await fetch('admin.html');
+    if (!res.ok) throw new Error('no fetch');
+    let src = await res.text();
+    if (src.includes('const SAVED_KEY = "";')) {
+      src = src.replace('const SAVED_KEY = "";', 'const SAVED_KEY = "' + key + '";');
+    }
+    const blob = new Blob([src], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'admin.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('نزلت نسخة مثبتة المفتاح ✓ استبدل بها ملفك القديم ولن يُطلب المفتاح مجدداً', true);
+  } catch (e) {
+    pinKeyLine(); // عند الفتح المباشر (file://) أعطه السطر جاهزاً للصق بالمفكرة
+  }
+}
+function openTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  const c = document.getElementById('tab-content');
+  c.innerHTML = '<div class="empty">جار التحميل…</div>';
+  if (name === 'users') loadUsersRoom();
+  if (name === 'backup') loadBackupRoom();
+  if (name === 'content') loadContentRoom();
+  if (name === 'contact') loadContactRoom();
+  if (name === 'setup') loadSetupRoom();
+}
+
+// ==============================
+// 1) المستخدمون — بدون ترتيب خادمي (أسماء الأعمدة تختلف) وترتيب محلي آمن
+// ==============================
+function pick(row, keys) { for (const k of keys) if (row[k] !== undefined && row[k] !== null && row[k] !== '') return row[k]; return null; }
+async function loadUsersRoom() {
+  const c = document.getElementById('tab-content');
+  if (!hasKey()) { c.innerHTML = keyFormHTML('المستخدمون'); return; }
+  const r = await sbAdmin.from(userTable).select('*').limit(1000);
+  if (r.error) { c.innerHTML = '<div class="err">تعذر جلب المستخدمين: ' + esc(r.error.message) + '</div>'; return; }
+  const rows = (r.data || []).slice().sort((a, b) => {
+    const da = pick(a, ['created_at', 'createdAt']) || '', db2 = pick(b, ['created_at', 'createdAt']) || '';
+    return db2.localeCompare(da);
+  });
+  userCols = rows.length ? Object.keys(rows[0]) : [];
+  let h = '<div class="room-head"><h3>👥 المستخدمون (' + rows.length + ')</h3>'
+    + '<span class="statbox">الأعمدة: ' + esc(userCols.join(' · ')) + '</span>'
+    + '<button class="btn sec sm" onclick="loadUsersRoom()">🔄 تحديث</button></div>';
+  if (!rows.length) { c.innerHTML = h + '<div class="empty">لا يوجد مستخدمون بعد — سيسجلون عبر الموقع وسيظهرون هنا مباشرة بعد التحديث</div>'; return; }
+  h += '<div class="tbl-wrap"><table><thead><tr><th>#</th><th>الاسم</th><th>البريد الإلكتروني</th><th>الرتبة</th><th>تغيير الرتبة</th><th>XP</th><th>الحالة</th><th>التسجيل</th></tr></thead><tbody>';
+  rows.forEach((row, i) => {
+    const id = pick(row, ['id', 'uid']) || i;
+    const name = pick(row, ['name', 'username', 'full_name', 'display_name']) || '—';
+    const email = pick(row, ['email', 'mail']) || '—';
+    const rank = pick(row, ['subscription_status', 'role', 'plan']) || 'free';
+    const xp = pick(row, ['xp', 'total_xp', 'points']) || 0;
+    const created = fmtDate(pick(row, ['created_at', 'createdAt']));
+    const chip = rank === 'premium' ? '<span class="chip premium">اشتراك</span>'
+      : rank === 'free' ? '<span class="chip free">عادي</span>'
+      : '<span class="chip premium">' + esc(rank) + '</span>';
+    let ban = '<span class="muted">—</span>';
+    if ('is_active' in row) {
+      const on = row.is_active !== false;
+      ban = '<button class="btn sm ' + (on ? 'sec' : 'danger') + '" onclick="toggleBan(\'' + id + '\',' + (!on) + ')">' + (on ? 'نشط' : 'محظور') + '</button>';
+    }
+    const extra = ['free', 'premium'].includes(rank) ? '' : '<option value="' + esc(rank) + '">' + esc(rank) + '</option>';
+    h += '<tr><td>' + (i + 1) + '</td><td><b>' + esc(name) + '</b></td><td style="direction:ltr;text-align:left;">' + esc(email) + '</td>'
+      + '<td>' + chip + '</td><td><select class="rank" onchange="setRank(\'' + id + '\', this.value)">'
+      + '<option value="free"' + (rank === 'free' ? ' selected' : '') + '>عادي</option>'
+      + '<option value="premium"' + (rank === 'premium' ? ' selected' : '') + '>اشتراك مميز</option>' + extra + '</select></td>'
+      + '<td>' + esc(xp) + '</td><td>' + ban + '</td><td class="muted">' + created + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  h += '<div id="pay-zone" style="margin-top:20px;"><div class="empty">جار جلب طلبات الاشتراك…</div></div>';
+  c.innerHTML = h;
+  loadPayments();
+}
+async function setRank(id, val) {
+  const r = await sbAdmin.from(userTable).update({ subscription_status: val }).eq('id', id);
+  toast(r.error ? 'فشل التغيير: ' + r.error.message : 'تم تغيير الرتبة ✓', !r.error);
+  loadUsersRoom();
+}
+async function toggleBan(id, active) {
+  const r = await sbAdmin.from(userTable).update({ is_active: active }).eq('id', id);
+  toast(r.error ? 'فشل: ' + r.error.message : (active ? 'تم تفعيل الحساب' : 'تم حظر الحساب'), !r.error);
+  loadUsersRoom();
+}
+async function loadPayments() {
+  const zone = document.getElementById('pay-zone');
+  if (!zone) return;
+  const r = await sbAdmin.from('payments').select('*').limit(50);
+  if (r.error) { zone.innerHTML = '<div class="muted">طلبات الاشتراك: ' + esc(r.error.message) + '</div>'; return; }
+  const rows = (r.data || []).sort((a, b) => (pick(b, ['created_at', 'createdAt']) || '').localeCompare(pick(a, ['created_at', 'createdAt']) || ''));
+  let h = '<div class="room-head"><h3>💳 طلبات الاشتراك (' + rows.length + ')</h3></div>';
+  if (!rows.length) { zone.innerHTML = h + '<div class="empty">لا توجد طلبات</div>'; return; }
+  h += '<div class="tbl-wrap"><table><thead><tr><th>المستخدم</th><th>المبلغ</th><th>الطريقة</th><th>المرجع</th><th>الحالة</th><th>التاريخ</th><th></th></tr></thead><tbody>';
+  rows.forEach(p => {
+    const st = pick(p, ['status']) || '—';
+    const chip = st === 'approved' || st === 'accepted' ? '<span class="chip free">مقبول</span>'
+      : st === 'pending' ? '<span class="chip premium">قيد المراجعة</span>' : '<span class="chip banned">' + esc(st) + '</span>';
+    const uid = pick(p, ['user_id', 'uid']);
+    const pid = pick(p, ['id']);
+    const act = (st === 'pending' && uid && pid) ? '<button class="btn sm" onclick="approvePayment(\'' + pid + '\',\'' + uid + '\')">✓ قبول وترقية</button>' : '';
+    h += '<tr><td>' + esc(pick(p, ['user_name', 'user_email']) || uid || '—') + '</td><td>' + esc(pick(p, ['amount']) || '—') + '</td>'
+      + '<td>' + esc(pick(p, ['payment_method', 'method']) || '—') + '</td>'
+      + '<td style="direction:ltr;text-align:left;">' + esc(pick(p, ['reference', 'ref']) || '—') + '</td><td>' + chip + '</td>'
+      + '<td class="muted">' + fmtDate(pick(p, ['created_at', 'createdAt'])) + '</td><td>' + act + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  zone.innerHTML = h;
+}
+async function approvePayment(pid, uid) {
+  const a = await sbAdmin.from('payments').update({ status: 'approved' }).eq('id', pid);
+  const b = await sbAdmin.from(userTable).update({ subscription_status: 'premium' }).eq('id', uid);
+  toast(!a.error && !b.error ? 'تم القبول وترقية المستخدم ✓' : 'فشل: ' + (((a.error || b.error) || {}).message || ''), !a.error && !b.error);
+  loadUsersRoom();
+}
+
+// ==============================
+// 2) البيانات والنسخ
+// ==============================
+async function buildBackup() {
+  const out = { generated_at: new Date().toISOString(), source: 'espanol-admin-panel', tables: {} };
+  for (const t of BACKUP_TABLES) {
+    const r = await sbAdmin.from(t).select('*');
+    out.tables[t] = r.error ? { error: r.error.message } : (r.data || []);
+  }
+  return out;
+}
+async function fingerprint() {
+  const fp = {};
+  for (const t of BACKUP_TABLES) {
+    const r = await sbAdmin.from(t).select('id', { count: 'exact', head: true });
+    fp[t] = r.error ? 'ERR' : (r.count || 0);
+  }
+  return JSON.stringify(fp);
+}
+function writeJson(name, text) {
+  const blob = new Blob([text], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function saveWithPicker(json, suggestedName) {
+  const picker = window.showSaveFilePicker;
+  if (picker) {
+    try {
+      const handle = await picker.call(window, {
+        suggestedName: suggestedName,
+        types: [{ description: 'نسخة احتياطية JSON', accept: { 'application/json': ['.json'] } }]
+      });
+      const w = await handle.createWritable(); await w.write(json); await w.close();
+      return { ok: true, picker: true };
+    } catch (e) {
+      if (e && e.name === 'AbortError') return { ok: false, picker: true };
+      // متصفح يدعم الميزة لكن رفضها — نكمل بالتنزيل العادي
+    }
+  }
+  writeJson(suggestedName, json);
+  return { ok: true, picker: false };
+}
+async function downloadBackupNow() {
+  const c = document.getElementById('backup-status');
+  if (c) c.innerHTML = '<div class="empty">جار جمع كل الجداول من القاعدة…</div>';
+  const data = await buildBackup();
+  const name = 'espanol-backup-' + stamp() + '.json';
+  const json = JSON.stringify(data, null, 1);
+  // محاولة الكتابة في المكان المختار سابقاً (من زر اختيار المكان)
+  try {
+    if (window._saveHandle) {
+      const w = await window._saveHandle.createWritable(); await w.write(json); await w.close();
+      const counts = Object.entries(data.tables).map(([t, v]) => t + ': ' + (Array.isArray(v) ? v.length : 'خطأ')).join(' · ');
+      if (c) c.innerHTML = '<div class="okbox">✅ تم التنزيل في المكان المختار (' + stamp() + ')<br>' + esc(counts) + '</div>';
+      lastFp = await fingerprint();
+      toast('تم تنزيل نسخة قاعدة البيانات ✓', true);
+      return;
+    }
+  } catch (e) { /* المقبض لم يعد صالحاً — نكمل بالتنزيل العادي */ }
+  // محاولة نافذة اختيار المكان (Chrome/Edge)
+  try {
+    if (window.showSaveFilePicker) {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: name,
+        types: [{ description: 'نسخة احتياطية JSON', accept: { 'application/json': ['.json'] } }]
+      });
+      const w = await handle.createWritable(); await w.write(json); await w.close();
+      const counts = Object.entries(data.tables).map(([t, v]) => t + ': ' + (Array.isArray(v) ? v.length : 'خطأ')).join(' · ');
+      if (c) c.innerHTML = '<div class="okbox">✅ تم التنزيل (' + stamp() + ')<br>' + esc(counts) + '</div>';
+      lastFp = await fingerprint();
+      toast('تم تنزيل نسخة قاعدة البيانات ✓', true);
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') { if (c) c.innerHTML = '<div class="empty">ألغيت عملية الحفظ</div>'; return; }
+  }
+  // تنزيل عادي لمجلد التنزيلات
+  writeJson(name, json);
+  const counts = Object.entries(data.tables).map(([t, v]) => t + ': ' + (Array.isArray(v) ? v.length : 'خطأ')).join(' · ');
+  if (c) c.innerHTML = '<div class="okbox">✅ تم التنزيل (' + stamp() + ') — في مجلد التنزيلات<br>' + esc(counts) + '</div>';
+  toast('تم تنزيل نسخة قاعدة البيانات ✓', true);
+  lastFp = await fingerprint();
+}
+async function loadBackupRoom() {
+  const c = document.getElementById('tab-content');
+  if (!hasKey()) { c.innerHTML = keyFormHTML('البيانات والنسخ'); return; }
+  const autoOn = localStorage.getItem('admin_auto_backup') === '1';
+  c.innerHTML = '<div class="room-head"><h3>💾 نسخ قاعدة البيانات</h3>'
+    + '<span class="statbox">الجداول: ' + BACKUP_TABLES.join(' · ') + '</span></div>'
+    + '<div class="row-flex">'
+    + '<button class="btn" onclick="chooseSaveLocation()">📁 اختيار مكان التنزيل</button>'
+    + '<button class="btn" onclick="downloadBackupNow()">⬇️ نزل الآن</button>'
+    + '</div>'
+    + '<div class="row-flex" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);">'
+    + '<div class="switch-wrap' + (autoOn ? ' on' : '') + '" id="auto-switch" onclick="toggleAuto()">'
+    + '<span class="sw-label on-l">مفعل</span><div class="sw-track"><div class="sw-knob"></div></div><span class="sw-label">غير مفعل</span>'
+    + '</div>'
+    + '<div><b>التنزيل التلقائي</b><div class="muted">فحص كل 60 ثانية — عند أي جديد (مستخدم، درس، رسالة…) تنزل نسخة محدثة تلقائياً</div></div>'
+    + '</div>'
+    + '<div id="backup-status"></div>';
+  if (autoOn) resumeAuto();
+  lastFp = await fingerprint();
+}
+// زر اختيار مكان التنزيل: يفتح نافذة الحفظ (Chrome/Edge) أو يشرح التفعيل
+async function chooseSaveLocation() {
+  const c = document.getElementById('backup-status');
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: 'espanol-backup-' + stamp() + '.json',
+        types: [{ description: 'نسخة احتياطية JSON', accept: { 'application/json': ['.json'] } }]
+      });
+      const w = await handle.createWritable(); await w.write(''); await w.close();
+      if (c) c.innerHTML = '<div class="okbox">✅ تم اختيار المكان — اضغط «نزل الآن» لتنزيل النسخة هناك</div>';
+      // احفظ المقبض للجلسة
+      window._saveHandle = handle;
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
+    }
+  } else {
+    if (c) c.innerHTML = '<div class="infobox">💡 متصفحك لا يدعم اختيار المكان مباشرة. الحل البسيط:<br>1. افتح إعدادات متصفحك (Chrome/Edge)<br>2. ابحث عن «المكان الذي تُحفظ به الملفات» أو «اسأل أين حفظ كل ملف»<br>3. فعّله — وبعدها كل تنزيل سيطلب منك اختيار المكان</div>';
+  }
+}
+async function toggleAuto() {
+  const sw = document.getElementById('auto-switch');
+  const turningOn = !sw.classList.contains('on');
+  sw.classList.toggle('on', turningOn);
+  localStorage.setItem('admin_auto_backup', turningOn ? '1' : '0');
+  if (turningOn) {
+    if (window.showDirectoryPicker) {
+      try { autoDirHandle = await window.showDirectoryPicker({ mode: 'readwrite' }); toast('ستُحفظ النسخ التلقائية في المجلد المختار', true); }
+      catch (e) { if (e && e.name === 'AbortError') { /* تنزيل عادي */ } }
+    }
+    lastFp = await fingerprint();
+    autoTimer = setInterval(autoTick, 60000);
+    toast('التنزيل التلقائي مفعل — فحص كل 60 ثانية', true);
+  } else {
+    if (autoTimer) clearInterval(autoTimer);
+    autoTimer = null;
+    toast('تم إيقاف التنزيل التلقائي', true);
+  }
+}
+function resumeAuto() {
+  const sw = document.getElementById('auto-switch');
+  if (sw) sw.classList.add('on');
+  autoTimer = setInterval(autoTick, 60000);
+}
+async function autoTick() {
+  try {
+    const fp = await fingerprint();
+    if (lastFp && fp !== lastFp) {
+      const data = await buildBackup();
+      const json = JSON.stringify(data, null, 1);
+      if (autoDirHandle) {
+        const fh = await autoDirHandle.getFileHandle('espanol-backup-auto.json', { create: true });
+        const w = await fh.createWritable(); await w.write(json); await w.close();
+        toast('🔄 جديد في القاعدة — حُدّثت النسخة التلقائية', true);
+      } else {
+        writeJson('espanol-backup-auto-' + stamp() + '.json', json);
+        toast('🔄 جديد في القاعدة — نزلت نسخة محدثة', true);
+      }
+    }
+    lastFp = fp;
+  } catch (e) { /* شبكة عابرة */ }
+}
+
+// ==============================
+// 3) المحتوى — قاعدة البيانات + المنهج المحلي: كل المستويات والفصول والدروس بمضمونها الكامل
+// ==============================
+window.__adminLessons = {};
+async function loadContentRoom() {
+  const c = document.getElementById('tab-content');
+  c.innerHTML = '<div class="empty">جار تحميل كل المحتوى (القاعدة + المنهج المحلي)…</div>';
+  window.__adminLessons = {};
+  // 1) فصول قاعدة البيانات
+  const ch = await sbPublic.rpc('api_chapters');
+  const dbChapters = Array.isArray(ch.data) ? ch.data : [];
+  const dbTitles = new Set(dbChapters.map(x => x.title));
+  // 2) فصول المنهج المحلي (المحتوى الكامل) — بدون تكرار الموجود في القاعدة
+  const localAll = window.LOCAL_CHAPTERS_ALL || [];
+  const localChapters = localAll
+    .filter(raw => !dbTitles.has(raw.title))
+    .map((raw, i) => ({
+      id: 'loc-' + i, title: raw.title, description: raw.description, level: raw.level,
+      icon: raw.icon, is_free: true, order_num: dbChapters.length + i + 1, _local: true,
+      lessons: raw.lessons.map(l => ({ id: l.id, title: l.title, order_num: 0, xp_reward: l.xp_reward || raw.xp || 30, duration: l.duration || 15, locked: false, _localData: l }))
+    }));
+  const all = [...dbChapters, ...localChapters];
+  const examClient = sbAdmin || sbPublic;
+  const ex = await examClient.rpc('api_exams');
+  const exams = Array.isArray(ex.data) ? ex.data : (Array.isArray(ex) ? ex : []);
+  let h = '<div class="room-head"><h3>📚 كل المحتوى — القاعدة + المنهج المحلي</h3>'
+    + '<span class="statbox">' + all.length + ' فصل · ' + all.reduce((s, x) => s + (x.lessons || []).length, 0) + ' درس · ' + exams.length + ' امتحانات</span>'
+    + '<button class="btn sec sm" onclick="loadContentRoom()">🔄 تحديث</button></div>';
+  ['A1', 'A2', 'B1', 'B2'].forEach(lv => {
+    const list = all.filter(x => (x.level || '').startsWith(lv));
+    if (!list.length) return;
+    const lessons = list.reduce((s, x) => s + (x.lessons || []).length, 0);
+    h += '<div class="lvl-head">' + lv + ' — ' + list.length + ' فصل · ' + lessons + ' درس</div>';
+    list.forEach(x => {
+      h += '<div class="ch-line"><span>' + (x.icon || '📚') + ' <b>' + esc(x.title) + '</b></span>'
+        + '<span class="chip ' + (x.is_free ? 'free">مجاني' : 'premium">مميز') + '</span>'
+        + '<span class="muted">' + (x.lessons || []).length + ' درس</span></div>'
+        + '<div style="margin:2px 0 12px;padding:2px 12px;">'
+        + (x.lessons || []).map(l => {
+            const lid = 'acx-' + l.id;
+            window.__adminLessons[lid] = l._localData ? { type: 'local', lesson: l._localData } : { type: 'db', id: l.id };
+            return '<div class="les-line"><span style="color:var(--primary-light);">' + (l.order_num || '•') + '.</span> '
+              + '<span style="flex:1;">' + esc(l.title) + ' <span class="muted">(' + (l.xp_reward || 10) + ' XP)</span></span>'
+              + '<button class="btn sec sm" onclick="toggleLessonFull(\'' + lid + '\', this)">📄 المضمون الكامل</button></div>'
+              + '<div id="' + lid + '" style="display:none;margin:4px 0 10px;"><div class="empty">جار التحميل…</div></div>';
+          }).join('')
+        + '</div>';
+    });
+  });
+  if (!all.length) h += '<div class="empty">لا يوجد محتوى</div>';
+  h += '<div class="lvl-head">🎓 الامتحانات — ' + exams.length + ' (اضغط «عرض المضمون» لكل سؤال بخياراته وإجابته)</div>';
+  if (exams.length) {
+    exams.forEach(e => {
+      const lvl = String(e.level || e.id || '').replace(/'/g, '');
+      const title = esc(e.title || e.name || 'امتحان ' + lvl);
+      h += '<div class="ch-line"><span>🎓 <b>' + title + '</b> <span class="muted">(' + lvl + ')</span></span>'
+        + '<button class="btn sec sm" onclick="showExamFull(\'' + lvl + '\', this)">📄 عرض المضمون الكامل</button></div>'
+        + '<div id="exam-full-' + lvl + '" style="display:none;margin:2px 0 12px;"><div class="empty">اضغط لعرض الأسئلة…</div></div>';
+    });
+  } else h += '<div class="empty">لا توجد امتحانات أو تعذر جلبها</div>';
+  c.innerHTML = h;
+}
+// عرض كامل مضمون الامتحان: كل سؤال بخياراته والإجابة الصحيحة
+async function showExamFull(level, btn) {
+  const box = document.getElementById('exam-full-' + level);
+  if (!box) return;
+  if (box.style.display === 'block') { box.style.display = 'none'; btn.textContent = '📄 عرض المضمون الكامل'; return; }
+  box.style.display = 'block';
+  btn.textContent = '🙈 إخفاء المضمون';
+  box.innerHTML = '<div class="empty">جار تحميل أسئلة الامتحان…</div>';
+  // تخطَّ RPC تماماً — اقرأ مباشرة من جدول الامتحانات بمفتاح service_role
+  const client = sbAdmin || sbPublic;
+  let exam = null;
+  for (const tbl of ['exams', 'exam', 'level_exams']) {
+    try {
+      const r = await client.from(tbl).select('*').eq('level', level);
+      if (!r.error && r.data && r.data.length) { exam = r.data[0]; break; }
+      if (!r.error && r.data && !r.data.length) continue;
+    } catch {}
+  }
+  if (!exam) {
+    // آخر محاولة: من جدول quizzes إن كان الامتحان مخزناً هناك
+    try {
+      const r = await client.from('quizzes').select('*').eq('lesson_id', level);
+      if (!r.error && r.data && r.data.length) exam = { level: level, questions: r.data };
+    } catch {}
+  }
+  if (!exam) { box.innerHTML = '<div class="err">لم أجد بيانات امتحان للمستوى ' + esc(level) + ' — تأكد أن الامتحان موجود في قاعدة البيانات</div>'; return; }
+  // ابحث عن الأسئلة بأي شكل ممكن — ثم اعرض النتيجة
+  let qs = [];
+  if (Array.isArray(exam)) { qs = exam; }
+  else if (typeof exam === 'object' && exam !== null) {
+    for (const k of ['questions', 'quiz', 'quizzes', 'exercises', 'items', 'exam_questions']) {
+      if (Array.isArray(exam[k]) && exam[k].length) { qs = exam[k]; break; }
+    }
+    if (!qs.length) {
+      for (const k of Object.keys(exam)) {
+        const v = exam[k];
+        if (Array.isArray(v) && v.length && typeof v[0] === 'object' && v[0] !== null && (v[0].question || v[0].q)) { qs = v; break; }
+      }
+    }
+  }
+  if (qs.length) {
+    let h = '<div class="exq"><div class="q">📋 ' + esc(exam.title || exam.level || level) + ' — ' + qs.length + ' سؤال</div></div>';
+    qs.forEach((q, i) => {
+      const opts = q.options || q.choices || [];
+      const correct = q.correct_answer || q.answer || q.correct || '';
+      h += '<div class="exq"><div class="q">' + (i + 1) + '. ' + esc(q.question || q.q || '') + '</div>'
+        + opts.map(o => '<div class="opt' + (o === correct ? ' correct' : '') + '">' + (o === correct ? '✓ ' : '') + esc(o) + '</div>').join('')
+        + (q.explanation ? '<div class="muted" style="margin-top:6px;">💡 ' + esc(q.explanation) + '</div>' : '')
+        + '</div>';
+    });
+    box.innerHTML = h;
+  } else {
+    // لا أسئلة بالشكل المتوقع — اعرض البيانات الخام كما وصلت
+    box.innerHTML = '<div class="exq"><div class="q">📋 بيانات الامتحان الخام (' + level + ')</div></div>'
+      + '<div class="code-box" style="max-height:400px;overflow-y:auto;">' + esc(JSON.stringify(exam, null, 2)) + '</div>';
+  }
+}
+// عرض المضمون الكامل للدرس: محلي (فوري) أو من القاعدة (api_lesson)
+async function toggleLessonFull(lid, btn) {
+  const box = document.getElementById(lid);
+  if (!box) return;
+  if (box.style.display === 'block') { box.style.display = 'none'; btn.textContent = '📄 المضمون الكامل'; return; }
+  box.style.display = 'block';
+  btn.textContent = '🙈 إخفاء المضمون';
+  const item = window.__adminLessons[lid];
+  if (!item) { box.innerHTML = '<div class="err">غير موجود</div>'; return; }
+  if (item.type === 'local') { box.innerHTML = renderLessonBody(item.lesson); return; }
+  box.innerHTML = '<div class="empty">جار التحميل من القاعدة…</div>';
+  const r = await sbPublic.rpc('api_lesson', { p_id: item.id });
+  const lesson = r.data;
+  box.innerHTML = lesson ? renderLessonBody(lesson) : '<div class="err">' + esc((r.error || {}).message || 'تعذر التحميل') + '</div>';
+}
+function renderLessonBody(l) {
+  let h = '<div style="padding:10px;">';
+  if (l.description) h += '<p style="font-size:13px;color:var(--muted);margin-bottom:6px;">' + esc(l.description) + '</p>';
+  if (l.content) h += '<p style="font-size:14px;line-height:2.1;margin:8px 0;">' + esc(l.content) + '</p>';
+  const vocab = l.vocabulary || [];
+  if (vocab.length) h += '<div class="muted" style="margin:10px 0 4px;font-weight:700;">📖 المفردات:</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px;">' + vocab.map(v => '<span class="attach-chip">' + esc(v.es) + ' = ' + esc(v.ar) + '</span>').join('') + '</div>';
+  const exs = l.examples || [];
+  if (exs.length) h += '<div class="muted" style="margin:10px 0 4px;font-weight:700;">💡 أمثلة:</div>'
+    + exs.map(x => '<div class="les-line" style="direction:ltr;text-align:left;">' + esc(x.es) + '</div><div class="les-line" style="padding-right:12px;">' + esc(x.ar) + '</div>').join('');
+  (l.quizzes || []).forEach(q => {
+    const correct = q.correct_answer || '';
+    h += '<div class="exq"><div class="q">❓ ' + esc(q.question) + '</div>'
+      + (q.options || []).map(o => '<div class="opt' + (o === correct ? ' correct' : '') + '">' + (o === correct ? '✓ ' : '') + esc(o) + '</div>').join('')
+      + (q.explanation ? '<div class="muted" style="margin-top:6px;">💡 ' + esc(q.explanation) + '</div>' : '')
+      + '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+// ==============================
+// 4) التواصل — شكل بريد: وارد + قراءة + كتابة بإيموجيات ومرفقات
+// ==============================
+const EMOJIS = ['😀','😊','😅','😂','🤩','😎','🤔','😉','😍','🥳','👍','👏','🙏','💪','🔥','⭐','🎉','❤️','💜','✅','❌','⚠️','📌','📧','📱','💰','🎓','📚','🇪🇸','🌟','🚀','💡','🍕','☕','🎮','✈️','🏝️','🎯','📊','🕐'];
+let mailItems = [];
+function insertEmoji(em) {
+  const ta = document.getElementById('cmp-body');
+  if (!ta) return;
+  const s = ta.selectionStart || ta.value.length, e = ta.selectionEnd || ta.value.length;
+  ta.value = ta.value.slice(0, s) + em + ta.value.slice(e);
+  ta.selectionStart = ta.selectionEnd = s + em.length;
+  ta.focus();
+}
+function renderEmojiBar() {
+  document.getElementById('emoji-bar').innerHTML = EMOJIS.map(e => '<button type="button" onclick="insertEmoji(\'' + e + '\')">' + e + '</button>').join('');
+}
+async function loadContactRoom() {
+  const c = document.getElementById('tab-content');
+  if (!hasKey()) { c.innerHTML = keyFormHTML('التواصل'); return; }
+  const r = await sbAdmin.from('contact_messages').select('*');
+  if (r.error) {
+    c.innerHTML = '<div class="err">صندوق الرسائل غير مهيأ بعد في القاعدة.<br>افتح تبويب «🧭 الإعداد والمساعدة» وانسخ SQL الجاهز ونفّذه مرة واحدة، ثم أعد فتح هذه الغرفة.</div>';
+    return;
+  }
+  mailItems = (r.data || []).sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''));
+  const unread = mailItems.filter(m => !m.is_read).length;
+  const badge = document.getElementById('msg-badge');
+  badge.style.display = unread ? 'flex' : 'none';
+  badge.textContent = unread;
+  let h = '<div class="room-head"><h3>📮 بريد التواصل (' + mailItems.length + ')</h3>'
+    + '<button class="btn sec sm" onclick="loadContactRoom()">🔄 تحديث</button>'
+    + '<button class="btn sm" onclick="showCompose()">✍️ رسالة جديدة</button></div>';
+  h += '<div class="mail-grid"><div class="mail-list" id="mail-list"></div><div class="mail-read" id="mail-read"></div></div>';
+  h += '<div id="compose-zone" style="display:none;margin-top:16px;"></div>';
+  h += '<div id="files-zone" style="margin-top:16px;"></div>';
+  c.innerHTML = h;
+  renderMailList();
+  renderEmojiBar();
+  renderFilesZone();
+  if (mailItems.length) selectMail(mailItems[0].id);
+  else document.getElementById('mail-read').innerHTML = '<div class="empty">الصندوق فارغ — ستظهر رسائل الزوار هنا</div>';
+}
+function renderMailList() {
+  const list = document.getElementById('mail-list');
+  if (!list) return;
+  list.innerHTML = mailItems.map(m =>
+    '<div class="mail-item ' + (mailSel === m.id ? 'sel ' : '') + (m.is_read ? '' : 'unread') + '" onclick="selectMail(\'' + m.id + '\')">'
+    + '<div class="who"><span>' + esc(m.name || 'زائر') + '</span><span class="muted">' + (m.created_at ? new Date(m.created_at).toLocaleDateString('ar') : '') + '</span></div>'
+    + '<div class="prev">' + esc((m.message || '').slice(0, 60)) + '</div></div>').join('')
+    || '<div class="empty">لا رسائل</div>';
+}
+function selectMail(id) {
+  mailSel = id;
+  renderMailList();
+  const m = mailItems.find(x => x.id === id);
+  const pane = document.getElementById('mail-read');
+  if (!m) { pane.innerHTML = '<div class="empty">اختر رسالة من القائمة</div>'; return; }
+  pane.innerHTML = '<div class="msg-head"><b style="font-size:15px;">' + esc(m.name || 'زائر') + '</b>'
+    + (m.email ? '<a class="muted" style="direction:ltr;" href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a>' : '')
+    + '<span class="muted">' + fmtDate(m.created_at) + '</span>'
+    + (m.is_read ? '<span class="chip free">مقروءة</span>' : '<span class="chip premium">جديدة</span>') + '</div>'
+    + '<div class="msg-body">' + esc(m.message) + '</div>'
+    + '<div class="row-flex" style="margin-top:14px;">'
+    + (m.email ? '<a class="btn sm" href="mailto:' + esc(m.email) + '?subject=رد من إسبانيول">↩️ رد بالبريد</a>' : '')
+    + (!m.is_read ? '<button class="btn sm sec" onclick="markRead(\'' + m.id + '\')">✓ تعليم كمقروءة</button>' : '')
+    + '<button class="btn sm sec" onclick="quoteToCompose(\'' + m.id + '\')">✍️ صياغة رد</button>'
+    + '<button class="btn sm danger" onclick="delMsg(\'' + m.id + '\')">🗑 حذف</button></div>';
+  if (!m.is_read) { sbAdmin.from('contact_messages').update({ is_read: true }).eq('id', id).then(() => { m.is_read = true; renderMailList(); }); }
+}
+function quoteToCompose(id) {
+  const m = mailItems.find(x => x.id === id);
+  if (!m) return;
+  showCompose();
+  document.getElementById('cmp-to').value = m.email || '';
+  document.getElementById('cmp-body').value = '\n\n──────────\nفي رد على رسالة «' + (m.message || '').slice(0, 80) + '» كتب ' + (m.name || 'الزائر') + ':';
+}
+function showCompose() {
+  const z = document.getElementById('compose-zone');
+  z.style.display = 'block';
+  if (!z.innerHTML) {
+    z.innerHTML = '<div class="pm-card compose"><h4>✍️ كتابة رسالة</h4>'
+      + '<div class="row-flex" style="gap:10px;"><input type="email" id="cmp-to" placeholder="إلى (بريد المستلم) — اختياري" style="direction:ltr;text-align:left;flex:1;min-width:200px;">'
+      + '<input type="text" id="cmp-subj" placeholder="الموضوع" style="flex:1;min-width:160px;"></div>'
+      + '<div class="emoji-bar" id="emoji-bar"></div>'
+      + '<textarea id="cmp-body" placeholder="اكتب رسالتك… استخدم الإيموجيات من الشريط أعلاه"></textarea>'
+      + '<div class="row-flex" style="margin-top:10px;">'
+      + '<label class="btn sec sm" style="cursor:pointer;">📎 إرفاق ملفات<input type="file" multiple style="display:none;" onchange="addFiles(this.files)"></label>'
+      + '<button class="btn sm" onclick="sendCompose()">📤 حفظ وإرسال بالبريد</button>'
+      + '<span class="muted">المرفقات تُرفع إلى تخزين Supabase وتظهر مع روابط تحميل تحت الرسالة</span></div>'
+      + '<div id="attach-list"></div>'
+      + '<div id="cmp-status"></div></div>';
+  }
+  renderEmojiBar();
+  renderAttachList();
+}
+function addFiles(fl) { attachedFiles = attachedFiles.concat([...fl]); renderAttachList(); }
+function removeAttach(i) { attachedFiles.splice(i, 1); renderAttachList(); }
+function renderAttachList() {
+  const el = document.getElementById('attach-list');
+  if (!el) return;
+  el.innerHTML = attachedFiles.map((f, i) => '<span class="attach-chip">📎 ' + esc(f.name) + ' (' + Math.round(f.size / 1024) + 'KB) <button type="button" style="background:none;border:none;color:#fca5a5;cursor:pointer;" onclick="removeAttach(' + i + ')">✕</button></span>').join('');
+}
+async function sendCompose() {
+  const to = document.getElementById('cmp-to').value.trim();
+  const subj = document.getElementById('cmp-subj').value.trim() || '(بدون موضوع)';
+  const body = document.getElementById('cmp-body').value.trim();
+  const st = document.getElementById('cmp-status');
+  if (!body && !attachedFiles.length) { st.innerHTML = '<div class="err">اكتب رسالة أو أرفق ملفاً أولاً</div>'; return; }
+  st.innerHTML = '<div class="empty">جار الرفع والحفظ…</div>';
+  let saveErr = null;
+  try {
+    let links = [];
+    for (const f of attachedFiles) {
+      const path = 'outbox/' + stamp() + '_' + f.name.replace(/[^\w.\-]/g, '_');
+      const up = await sbAdmin.storage.from(BUCKET).upload(path, f);
+      if (up.error) throw up.error;
+      const su = await sbAdmin.storage.from(BUCKET).createSignedUrl(path, 60 * 60 * 24 * 30);
+      links.push({ name: f.name, url: su.data ? su.data.signedUrl : null });
+    }
+    const ins = await sbAdmin.from('admin_outbox').insert({ to_email: to || null, subject: subj, body: body, files: links });
+    if (ins.error) throw ins.error;
+  } catch (e) { saveErr = e; }
+
+  if (to) window.open('mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body));
+  st.innerHTML = saveErr
+    ? '<div class="err">فُتح البريد، لكن تعذّر الحفظ: ' + esc(saveErr.message) + '</div>'
+    : '<div class="okbox">✅ حُفظت الرسالة وفُتح البريد</div>';
+  if (!saveErr) { attachedFiles = []; renderAttachList(); renderFilesZone(); }
+}
+async function renderFilesZone() {
+  const el = document.getElementById('files-zone');
+  if (!el) return;
+  const ls = await sbAdmin.storage.from(BUCKET).list('outbox', { limit: 50, sortBy: { column: 'created_at', order: 'desc' } });
+  if (ls.error) { el.innerHTML = '<div class="muted">الصادر: ' + esc(ls.error.message) + '</div>'; return; }
+  const items = (ls.data || []).filter(f => f.name !== '.emptyFolderPlaceholder');
+  el.innerHTML = '<div class="pm-card"><h4>📤 الصادر (' + items.length + ')</h4>'
+    + (items.length ? items.map(f => '<div class="pm-line"><span class="t">📄 ' + esc(f.name) + '</span>'
+      + '<span class="s">' + Math.round((f.metadata ? f.metadata.size : 0) / 1024) + ' KB</span></div>').join('')
+      : '<div class="empty">لا رسائل صادرة بعد</div>') + '</div>';
+}
+async function markRead(id) {
+  await sbAdmin.from('contact_messages').update({ is_read: true }).eq('id', id);
+  loadContactRoom();
+}
+async function delMsg(id) {
+  if (!confirm('حذف هذه الرسالة نهائياً؟')) return;
+  await sbAdmin.from('contact_messages').delete().eq('id', id);
+  loadContactRoom();
+}
+
+// ==============================
+// 5) المساعدة — صندوق الرسائل مفعّل دائماً (تحقق حي)
+// ==============================
+const SETUP_SQL = `-- SQL تفعيل صندوق الرسائل (آمن للتكرار)
+create table if not exists public.contact_messages (
+  id uuid primary key default gen_random_uuid(),
+  name text,
+  email text,
+  message text not null,
+  is_read boolean not null default false,
+  created_at timestamptz not null default now()
+);
+alter table public.contact_messages enable row level security;
+drop policy if exists "visitors can send messages" on public.contact_messages;
+create policy "visitors can send messages"
+  on public.contact_messages for insert
+  to anon, authenticated
+  with check (true);`;
+const EXAM_PERM_SQL = `-- ⚠️ SQL ضروري: منح صلاحية تنفيذ لدوال الامتحانات
+-- انسخ كل الأسطر ونفّذه في: Supabase Dashboard ← SQL Editor ← Run
+GRANT EXECUTE ON FUNCTION api_exam TO anon, service_role;
+GRANT EXECUTE ON FUNCTION api_exams TO anon, service_role;
+GRANT EXECUTE ON FUNCTION api_chapters TO anon, service_role;
+GRANT EXECUTE ON FUNCTION api_lesson TO anon, service_role;`;
+async function loadSetupRoom() {
+  const c = document.getElementById('tab-content');
+  // تحقق حي: هل صلاحية api_exam ممنوحة؟
+  let examPermOk = false;
+  try {
+    const r = await sbPublic.rpc('api_exam', { p_level: 'A1' });
+    examPermOk = !r.error || !/permission denied/i.test(r.error.message || '');
+  } catch {}
+  // تحقق حي: هل جدول الرسائل جاهز؟
+  const probe = await sbAdmin.from('contact_messages').select('id', { count: 'exact', head: true });
+  const contactOk = !probe.error;
+  c.innerHTML = (hasKey() ? '' : '<div class="help-card"><h4>🔑 إدخال مفتاح service_role (مرة واحدة)</h4>'
+    + '<p>الصق المفتاح هنا — يُحفظ في متصفحك، وثبّته داخل الملف من زر 📌 بالأعلى ليختفي الطلب للأبد.</p>'
+    + '<div class="row-flex"><input type="password" id="setup-key" placeholder="الصق المفتاح (eyJ...)" style="flex:1;min-width:240px;direction:ltr;text-align:left;">'
+    + '<button class="btn" onclick="saveInlineKey()">🔗 ربط وحفظ</button></div></div>')
+    + '<div class="room-head"><h3>🧭 المساعدة وحالة النظام</h3>'
+    + '<button class="btn sec sm" onclick="loadSetupRoom()">🔄 تحديث</button></div>'
+    + '<div class="help-card"><h4>' + (examPermOk ? '✅ صلاحية الامتحانات: ممنوحة ✓' : '❌ صلاحية الامتحانات: ناقصة — نفّذ SQL الأسفل') + '</h4>'
+    + (examPermOk
+      ? '<p>الصلاحية ممنوحة — الامتحانات تعرض مضمونها الكامل في غرفة المحتوى ✓</p>'
+      : '<p class="muted" style="margin-bottom:10px;">انسخ SQL ونفّذه في: Supabase Dashboard ← SQL Editor ← Run — بعدها اضغط «تحديث» وامتحانات ستظهر كاملة.</p>'
+        + '<div class="code-box" id="exam-sql">' + esc(EXAM_PERM_SQL) + '</div>'
+        + '<div class="row-flex" style="margin-top:12px;">'
+        + '<button class="btn" onclick="navigator.clipboard.writeText(document.getElementById(\'exam-sql\').textContent).then(()=>toast(\'تم نسخ SQL ✓\',true))">📋 نسخ SQL</button>'
+        + '<a class="btn sec" href="https://supabase.com/dashboard/project/dsoqdwpanbegykprwgkk/sql/new" target="_blank">فتح SQL Editor ↗</a>'
+        + '<button class="btn sec" onclick="loadSetupRoom()">تحقق بعد التنفيذ ↻</button></div>')
+    + '</div>'
+    + '<div class="help-card"><h4>' + (contactOk ? '✅ صندوق الرسائل: مفعّل ويعمل دائماً' : '❌ صندوق الرسائل: غير مفعّل') + '</h4>'
+    + (contactOk
+      ? '<p>الجدول جاهز (' + (probe.count || 0) + ' رسالة) — زر Contact في الموقع يوصل الرسائل تلقائياً.</p>'
+      : '<p>نفّذ SQL التفعيل من الأسفل.</p>'
+        + '<div class="code-box" id="setup-sql">' + esc(SETUP_SQL) + '</div>'
+        + '<div class="row-flex" style="margin-top:12px;">'
+        + '<button class="btn" onclick="navigator.clipboard.writeText(document.getElementById(\'setup-sql\').textContent).then(()=>toast(\'تم نسخ SQL ✓\',true))">📋 نسخ SQL</button>'
+        + '<a class="btn sec" href="https://supabase.com/dashboard/project/dsoqdwpanbegykprwgkk/sql/new" target="_blank">فتح SQL Editor ↗</a></div>')
+    + '</div>'
+    + '<div class="help-card"><h4>👥 المستخدمون</h4><p>كل من سجّل في موقعك: اسمه وبريده ورتبته (عادي / اشتراك مميز) ونقاطه. من هنا تغيّر رتبة أي مستخدم فوراً، وتحظر أو تفعّل حسابه، وتقبل طلبات الاشتراك.</p></div>'
+    + '<div class="help-card"><h4>💾 البيانات والنسخ</h4><p>«نزل الآن» يجمع كل الجداول وينزل النسخة تلقائياً.</p></div>'
+    + '<div class="help-card"><h4>📚 المحتوى</h4><p>كل المستويات والفصول والدروس مفتوحة، والامتحانات تعرض مضمونها الكامل.</p></div>'
+    + '<div class="help-card"><h4>📮 التواصل</h4><p>بريد رسائل الزوار: الوارد + القراءة + كتابة بإيموجيات ومرفقات.</p></div>'
+    + '<div class="help-card"><h4>🔐 المفتاح والأمان</h4><p>اللوحة تعمل بمفتاح service_role مثبّت داخل هذا الملف. <b>لا ترفع admin.html إلى GitHub ولا تشاركه.</b></p></div>';
+}
+
+// الإقلاع: اللوحة تفتح مباشرة — المحتوى يعمل بلا مفتاح، والباقي يطلب المفتاح من داخل اللوحة
+(function start() {
+  showPanel();
+  sbPublic = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+  const key = activeKey();
+  currentTab = key ? 'users' : 'content';
+  openTab(currentTab);
+  if (key) { bootKey(key); updateStatePill(); } else { showBanner(true); updateStatePill(); }
+})();
+</script>
+</body>
+</html>
