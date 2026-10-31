@@ -1391,6 +1391,7 @@
               <div class="dropdown-item" onclick="openLanguageModal()"><i class="fa-solid fa-globe"></i> لغة الموقع</div>
               <div class="dropdown-item danger" onclick="deleteAccount()"><i class="fa-solid fa-user-slash"></i> حذف الحساب نهائياً</div>
             </div>
+            <div class="dropdown-item" onclick="openInbox()"><i class="fa-solid fa-inbox"></i> صندوق الرسائل<span class="chip premium" id="inbox-badge" style="display:none;margin-inline-start:auto;font-size:10px;">0</span></div>
             <div class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</div>
           </div>
         </div>
@@ -1840,7 +1841,7 @@
 <div class="modal-overlay" id="auth-modal">
   <div class="modal" style="max-width:480px;">
     <div class="modal-header">
-      <h3 class="modal-title">الدخول إلى إسبانيول</h3>
+      <h3 class="modal-title i18n-t">الدخول إلى إسبانيول</h3>
       <button class="modal-close" onclick="closeModal('auth-modal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -1849,7 +1850,7 @@
         <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">إنشاء حساب</div>
       </div>
       <div id="google-login-box" style="text-align:center;padding:8px 0 4px;">
-        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">لديك حساب بالفعل؟ ادخل بنقرة واحدة باستخدام حساب Google</p>
+        <p class="i18n-t" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">لديك حساب بالفعل؟ ادخل بنقرة واحدة باستخدام حساب Google</p>
         <button type="button" class="btn btn-primary btn-lg" style="width:100%;" onclick="signInWithGoogle('login')">
           <i class="fa-brands fa-google"></i> تسجيل الدخول باستخدام Google
         </button>
@@ -1858,7 +1859,7 @@
         <div id="no-account-notice" style="display:none;background:rgba(245,158,11,0.12);border:1px solid var(--warning);color:var(--warning);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.8;margin-bottom:16px;text-align:right;">
           <i class="fa-solid fa-circle-info"></i> لا يوجد حساب مسجّل بحساب Google هذا. أنشئ حساباً جديداً أولاً بالزر أدناه، وبعدها يمكنك تسجيل الدخول متى شئت.
         </div>
-        <p style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أنشئ حسابك المجاني بنقرة واحدة باستخدام حساب Google</p>
+        <p class="i18n-t" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أنشئ حسابك المجاني بنقرة واحدة باستخدام حساب Google</p>
         <button type="button" class="btn btn-secondary btn-lg" style="width:100%;" onclick="signInWithGoogle('register')">
           <i class="fa-brands fa-google"></i> إنشاء حساب باستخدام Google
         </button>
@@ -1913,7 +1914,7 @@
       <button class="modal-close" id="profile-close-btn" onclick="closeModal('profile-modal')" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <p id="profile-intro" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أهلاً بك 👋 أكمل بياناتك لنبدأ رحلتك. جميع الحقول إلزامية.</p>
+      <p id="profile-intro" class="i18n-t" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أهلاً بك 👋 أكمل بياناتك لنبدأ رحلتك. جميع الحقول إلزامية.</p>
       <form id="profile-form" class="auth-form" onsubmit="saveProfile(event)">
         <div class="form-group">
           <label class="form-label">البريد الإلكتروني (من حساب Google)</label>
@@ -2080,23 +2081,34 @@
 <div class="modal-overlay" id="contact-modal">
   <div class="modal" style="max-width:560px;">
     <div class="modal-header">
-      <div class="modal-title"><i class="fa-solid fa-headset" style="color:var(--secondary);"></i> مراسلة الدعم</div>
+      <div class="modal-title i18n-t"><i class="fa-solid fa-headset" style="color:var(--secondary);"></i> مراسلة الدعم</div>
       <button class="modal-close" onclick="closeContactComposer()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
       <div id="ct-from" style="margin-bottom:12px;"></div>
       <textarea class="form-input" id="ct-msg" rows="4" placeholder="اكتب رسالتك هنا..." style="margin-bottom:10px;"></textarea>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
-        <button type="button" class="btn sec" onclick="document.getElementById('ct-file-input').click()"><i class="fa-solid fa-paperclip"></i> إرفاق ملفات</button>
-        <button type="button" class="btn sec" id="ct-rec-btn" onclick="ctToggleRecord()"><i class="fa-solid fa-microphone"></i> تسجيل صوتي</button>
+        <button type="button" class="btn sec i18n-t" onclick="document.getElementById('ct-file-input').click()"><i class="fa-solid fa-paperclip"></i> إرفاق ملفات</button>
+        <button type="button" class="btn sec i18n-t" id="ct-rec-btn" onclick="ctToggleRecord()"><i class="fa-solid fa-microphone"></i> تسجيل صوتي</button>
         <span id="ct-rec-status" style="font-size:12px;color:var(--danger);font-weight:700;"></span>
       </div>
       <input type="file" id="ct-file-input" multiple style="display:none;" onchange="ctPickFiles(this)">
       <div id="ct-files" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
       <div id="ct-audio" style="margin-bottom:10px;"></div>
-      <button type="button" class="btn btn-primary" style="width:100%;" id="ct-send" onclick="submitContact(event)"><i class="fa-solid fa-paper-plane"></i> إرسال الرسالة</button>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:center;">رسالتك ومرفقاتك وتسجيلك الصوتي تصل مباشرة إلى إدارة الموقع باسم حسابك.</p>
+      <button type="button" class="btn btn-primary i18n-t" style="width:100%;" id="ct-send" onclick="submitContact(event)"><i class="fa-solid fa-paper-plane"></i> إرسال الرسالة</button>
+      <p class="i18n-t" style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:center;">رسالتك ومرفقاتك وتسجيلك الصوتي تصل مباشرة إلى إدارة الموقع باسم حسابك.</p>
     </div>
+  </div>
+</div>
+
+<!-- ======================== INBOX MODAL ======================== -->
+<div class="modal-overlay" id="inbox-modal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <h3 class="modal-title i18n-t"><i class="fa-solid fa-inbox" style="color:var(--secondary);"></i> صندوق الرسائل</h3>
+      <button class="modal-close" onclick="closeModal('inbox-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="inbox-body" style="max-height:65vh;overflow-y:auto;"></div>
   </div>
 </div>
 
@@ -2542,6 +2554,80 @@ const UI_TEXTS = {
   'ابدأ مجاناً وطوّر نفسك بالخطة المميزة': { en:'Start free and grow with the premium plan', es:'Empieza gratis y mejora con el plan premium', pt:'Comece grátis e evolua com o plano premium', ru:'Начните бесплатно и развивайтесь с премиум-планом' },
   'الخطة المجانية': { en:'Free plan', es:'Plan gratuito', pt:'Plano gratuito', ru:'Бесплатный план' },
   'ادعم الموقع بتبرع': { en:'Support the site with a donation', es:'Apoya el sitio con una donación', pt:'Apoie o site com uma doação', ru:'Поддержите сайт пожертвованием' },
+  'صندوق الرسائل': { en:'Message inbox', es:'Buzón de mensajes', pt:'Caixa de mensagens', ru:'Входящие сообщения' },
+  // ===== ترجمة الواجهة الشاملة =====
+  'المفردات': { en:'Vocabulary', es:'Vocabulario', pt:'Vocabulário', ru:'Словарь' },
+  'أمثلة': { en:'Examples', es:'Ejemplos', pt:'Exemplos', ru:'Примеры' },
+  'اختبر نفسك': { en:'Test yourself', es:'Ponte a prueba', pt:'Teste-se', ru:'Проверь себя' },
+  'تمرين النطق الصوتي': { en:'Voice pronunciation drill', es:'Ejercicio de pronunciación', pt:'Exercício de pronúncia', ru:'Тренировка произношения' },
+  'إملاء النصوص': { en:'Text dictation', es:'Dictado de textos', pt:'Ditado de textos', ru:'Диктант текстов' },
+  'استمع': { en:'Listen', es:'Escucha', pt:'Ouça', ru:'Прослушать' },
+  'استمع للنموذج': { en:'Listen to the model', es:'Escucha el modelo', pt:'Ouça o modelo', ru:'Послушать образец' },
+  'سجّل نطقك': { en:'Record your pronunciation', es:'Graba tu pronunciación', pt:'Grave a sua pronúncia', ru:'Запишите своё произношение' },
+  'استمع للنص': { en:'Listen to the text', es:'Escucha el texto', pt:'Ouça o texto', ru:'Прослушать текст' },
+  'استمع ببطء': { en:'Listen slowly', es:'Escucha despacio', pt:'Ouça devagar', ru:'Прослушать медленно' },
+  'صحّح الإملاء': { en:'Check dictation', es:'Corregir el dictado', pt:'Corrigir o ditado', ru:'Проверить диктант' },
+  'اعرض الترجمة': { en:'Show translation', es:'Mostrar la traducción', pt:'Mostrar a tradução', ru:'Показать перевод' },
+  'العودة': { en:'Back', es:'Volver', pt:'Voltar', ru:'Назад' },
+  'تمت المراجعة': { en:'Reviewed', es:'Repasado', pt:'Revisto', ru:'Повторено' },
+  'إكمال الدرس': { en:'Complete lesson', es:'Completar lección', pt:'Concluir a lição', ru:'Завершить урок' },
+  'سجل دخولك لحفظ تقدمك': { en:'Sign in to save your progress', es:'Inicia sesión para guardar tu progreso', pt:'Inicie sessão para guardar o progresso', ru:'Войдите, чтобы сохранять прогресс' },
+  'استمع للجملة ثم اضغط "سجّل نطقك" وانطقها — <b>النظام نفسه يصحح نطقك آلياً</b> كلمة بكلمة ويعطيك درجة فورية. محرك التحليل يعمل داخل جهازك ويُحمَّل مرة واحدة فقط (≈60MB).': { en:'Listen to the sentence, press "Record your pronunciation" and say it — <b>the system itself grades your pronunciation automatically</b> word by word with an instant score. The analysis engine runs on your device and loads only once (≈60MB).', es:'Escucha la frase, pulsa "Graba tu pronunciación" y dila — <b>el propio sistema corrige tu pronunciación automáticamente</b> palabra por palabra con nota instantánea. El motor de análisis funciona en tu dispositivo y se carga solo una vez (≈60MB).', pt:'Ouça a frase, pressione "Grave a sua pronúncia" e pronuncie-a — <b>o próprio sistema corrige a sua pronúncia automaticamente</b> palavra por palavra com nota instantânea. O motor de análise roda no seu dispositivo e carrega apenas uma vez (≈60MB).', ru:'Прослушайте фразу, нажмите «Запишите своё произношение» и произнесите её — <b>система сама оценивает произношение автоматически</b> по словам и сразу даёт оценку. Модуль анализа работает на вашем устройстве и загружается лишь один раз (≈60MB).' },
+  'سجّل الدخول لحفظ نتائجك.': { en:'Sign in to save your results.', es:'Inicia sesión para guardar tus resultados.', pt:'Inicie sessão para guardar os resultados.', ru:'Войдите, чтобы сохранять результаты.' },
+  'استمع للنص ثم اكتب ما تسمعه — سيصحح النظام إملاءك كلمة بكلمة ويعرض الترجمة': { en:'Listen to the text and write what you hear — the system checks your dictation word by word and shows the translation', es:'Escucha el texto y escribe lo que oyes — el sistema corrige tu dictado palabra por palabra y muestra la traducción', pt:'Ouça o texto e escreva o que ouve — o sistema corrige o seu ditado palavra por palavra e mostra a tradução', ru:'Прослушайте текст и напишите услышанное — система проверит диктант по словам и покажет перевод' },
+  'استمع جيداً ثم اكتب الجملة الإسبانية كما سمعتها': { en:'Listen carefully and write the Spanish sentence as you heard it', es:'Escucha con atención y escribe la frase en español tal como la oíste', pt:'Ouça com atenção e escreva a frase em espanhol como ouviu', ru:'Внимательно прослушайте и напишите испанскую фразу, как услышали' },
+  'ما معنى «{w}»؟': { en:'What does «{w}» mean?', es:'¿Qué significa «{w}»?', pt:'O que significa «{w}»?', ru:'Что означает «{w}»?' },
+  'استمع واختر المعنى الصحيح:': { en:'Listen and choose the correct meaning:', es:'Escucha y elige el significado correcto:', pt:'Ouça e escolha o significado correto:', ru:'Прослушайте и выберите правильное значение:' },
+  'استمع واكتب ما تسمع بالإسبانية:': { en:'Listen and write what you hear in Spanish:', es:'Escucha y escribe lo que oyes en español:', pt:'Ouça e escreva o que ouve em espanhol:', ru:'Прослушайте и напишите услышанное по-испански:' },
+  'اقرأ الجملة التالية بصوت عالٍ:': { en:'Read the following sentence aloud:', es:'Lee la siguiente frase en voz alta:', pt:'Leia a frase seguinte em voz alta:', ru:'Прочитайте следующее предложение вслух:' },
+  'إعادة': { en:'Replay', es:'Repetir', pt:'Repetir', ru:'Повтор' },
+  'إعادة بطيئة': { en:'Slow replay', es:'Repetir despacio', pt:'Repetir devagar', ru:'Медленный повтор' },
+  '✓ مكافأة تلقائية عند التسليم': { en:'✓ Credited automatically on submission', es:'✓ Se acredita automáticamente al entregar', pt:'✓ Creditado automaticamente ao entregar', ru:'✓ Засчитывается автоматически при сдаче' },
+  'تسليم الامتحان': { en:'Submit exam', es:'Entregar el examen', pt:'Entregar o exame', ru:'Сдать экзамен' },
+  'جار التصحيح…': { en:'Grading…', es:'Corrigiendo…', pt:'Corrigindo…', ru:'Проверка…' },
+  'أجب على أسئلة أولاً ثم سلّم': { en:'Answer some questions first, then submit', es:'Responde primero a las preguntas y luego entrega', pt:'Responda primeiro às perguntas e depois entregue', ru:'Сначала ответьте на вопросы, затем сдавайте' },
+  '🎉 مبروك! اجتزت امتحان {lv} الرسمي': { en:'🎉 Congrats! You passed the official {lv} exam', es:'🎉 ¡Felicidades! Aprobaste el examen oficial de {lv}', pt:'🎉 Parabéns! Passou no exame oficial de {lv}', ru:'🎉 Поздравляем! Вы сдали официальный экзамен {lv}' },
+  'لم تجتز بعد — النجاح 70%': { en:'Not passed yet — the pass mark is 70%', es:'Aún sin aprobar — se aprueba con 70%', pt:'Ainda sem aprovação — aprova com 70%', ru:'Пока не сдано — проходной балл 70%' },
+  'إجابات صحيحة': { en:'correct answers', es:'respuestas correctas', pt:'respostas corretas', ru:'правильных ответов' },
+  'تفصيل النتائج حسب القسم': { en:'Results by section', es:'Resultados por sección', pt:'Resultados por seção', ru:'Результаты по разделам' },
+  'شهادة اجتياز امتحان {lv}': { en:'{lv} Exam Completion Certificate', es:'Certificado de aprobación del examen {lv}', pt:'Certificado de conclusão do exame {lv}', ru:'Сертификат о сдаче экзамена {lv}' },
+  '🎉 اجتزت امتحان {lv}!': { en:'🎉 You passed the {lv} exam!', es:'🎉 ¡Aprobaste el examen de {lv}!', pt:'🎉 Passou no exame de {lv}!', ru:'🎉 Вы сдали экзамен {lv}!' },
+  'راجع الدروس وأعد المحاولة': { en:'Review the lessons and try again', es:'Repasa las lecciones e inténtalo de nuevo', pt:'Reveja as lições e tente novamente', ru:'Повторите уроки и попробуйте снова' },
+  'إرسال الرسالة': { en:'Send message', es:'Enviar mensaje', pt:'Enviar mensagem', ru:'Отправить сообщение' },
+  'جار رفع المرفقات…': { en:'Uploading attachments…', es:'Subiendo adjuntos…', pt:'A enviar anexos…', ru:'Загрузка вложений…' },
+  'جار إرسال الرسالة…': { en:'Sending…', es:'Enviando…', pt:'A enviar…', ru:'Отправка…' },
+  'اكتب رسالتك أو أضف مرفقاً أو تسجيلاً أولاً': { en:'Write a message or add an attachment/recording first', es:'Escribe un mensaje o añade un adjunto o grabación primero', pt:'Escreva uma mensagem ou adicione um anexo ou gravação primeiro', ru:'Сначала напишите сообщение или добавьте вложение/запись' },
+  'وصلت رسالتك ✓ سنقرأها قريباً': { en:'Message received ✓ we will read it soon', es:'Mensaje recibido ✓ lo leeremos pronto', pt:'Mensagem recebida ✓ leremos em breve', ru:'Сообщение получено ✓ скоро прочитаем' },
+  'إرفاق ملفات': { en:'Attach files', es:'Adjuntar archivos', pt:'Anexar ficheiros', ru:'Прикрепить файлы' },
+  'تسجيل صوتي': { en:'Record voice', es:'Grabar voz', pt:'Gravar voz', ru:'Записать голос' },
+  'رسالتك ومرفقاتك وتسجيلك الصوتي تصل مباشرة إلى إدارة الموقع باسم حسابك.': { en:'Your message, attachments and voice note reach the site administration directly under your account name.', es:'Tu mensaje, adjuntos y nota de voz llegan directamente a la administración del sitio con el nombre de tu cuenta.', pt:'A sua mensagem, anexos e gravação de voz chegam diretamente à administração do site com o nome da sua conta.', ru:'Ваше сообщение, вложения и голосовая запись напрямую доставляются администрации сайта с именем вашего аккаунта.' },
+  'مراسلة الدعم': { en:'Contact support', es:'Contactar con soporte', pt:'Contactar o suporte', ru:'Связь с поддержкой' },
+  'صندوقك فارغ': { en:'Your inbox is empty', es:'Tu buzón está vacío', pt:'A sua caixa está vazia', ru:'Ваш ящик пуст' },
+  'ردود الإدارة على رسائلك ورسائلها إليك ستظهر هنا': { en:'Admin replies to your messages will appear here', es:'Las respuestas de la administración aparecerán aquí', pt:'As respostas da administração aparecerão aqui', ru:'Ответы администрации будут появляться здесь' },
+  'تعذر تحديد حسابك — أعد تسجيل الدخول': { en:'Could not identify your account — sign in again', es:'No se pudo identificar tu cuenta — inicia sesión de nuevo', pt:'Não foi possível identificar a sua conta — inicie sessão novamente', ru:'Не удалось определить ваш аккаунт — войдите снова' },
+  'صندوق الرسائل غير مفعّل بعد': { en:'Message inbox is not enabled yet', es:'El buzón de mensajes aún no está activado', pt:'A caixa de mensagens ainda não está ativada', ru:'Ящик сообщений ещё не включён' },
+  'يلزم تنفيذ user_inbox.sql في قاعدة البيانات': { en:'run user_inbox.sql in the database', es:'ejecuta user_inbox.sql en la base de datos', pt:'execute user_inbox.sql na base de dados', ru:'выполните user_inbox.sql в базе данных' },
+  'تسجيل الدخول': { en:'Sign in', es:'Iniciar sesión', pt:'Iniciar sessão', ru:'Вход' },
+  'إنشاء حساب': { en:'Create account', es:'Crear cuenta', pt:'Criar conta', ru:'Регистрация' },
+  'الدخول إلى إسبانيول': { en:'Sign in to Espanyol', es:'Iniciar sesión en Espanyol', pt:'Entrar no Espanyol', ru:'Вход в Espanyol' },
+  'البريد الإلكتروني': { en:'Email', es:'Correo electrónico', pt:'E-mail', ru:'Электронная почта' },
+  'كلمة المرور': { en:'Password', es:'Contraseña', pt:'Palavra-passe', ru:'Пароль' },
+  'كلمة المرور (6 أحرف على الأقل)': { en:'Password (at least 6 characters)', es:'Contraseña (6 caracteres como mínimo)', pt:'Palavra-passe (mínimo 6 caracteres)', ru:'Пароль (минимум 6 символов)' },
+  'الاسم الكامل': { en:'Full name', es:'Nombre completo', pt:'Nome completo', ru:'Полное имя' },
+  'لديك حساب بالفعل؟ ادخل بنقرة واحدة باستخدام حساب Google': { en:'Already have an account? Sign in with one click using Google', es:'¿Ya tienes cuenta? Entra con un clic usando Google', pt:'Já tem conta? Entre com um clique usando o Google', ru:'Уже есть аккаунт? Войдите одним кликом через Google' },
+  'أنشئ حسابك المجاني بنقرة واحدة باستخدام حساب Google': { en:'Create your free account with one click using Google', es:'Crea tu cuenta gratis con un clic usando Google', pt:'Crie a sua conta grátis com um clique usando o Google', ru:'Создайте бесплатный аккаунт одним кликом через Google' },
+  'أكمل ملفك الشخصي': { en:'Complete your profile', es:'Completa tu perfil', pt:'Complete o seu perfil', ru:'Завершите свой профиль' },
+  'أهلاً بك 👋 أكمل بياناتك لنبدأ رحلتك. جميع الحقول إلزامية.': { en:'Welcome 👋 Complete your details to start your journey. All fields are required.', es:'¡Bienvenido 👋 Completa tus datos para empezar tu camino. Todos los campos son obligatorios.', pt:'Bem-vindo 👋 Complete os seus dados para começar a sua jornada. Todos os campos são obrigatórios.', ru:'Добро пожаловать 👋 Заполните свои данные, чтобы начать путь. Все поля обязательны.' },
+  'البريد الإلكتروني (من حساب Google)': { en:'Email (from your Google account)', es:'Correo electrónico (de tu cuenta de Google)', pt:'E-mail (da sua conta Google)', ru:'Эл. почта (из аккаунта Google)' },
+  'شعار الحساب (صورتك) *': { en:'Profile picture *', es:'Foto de perfil *', pt:'Foto de perfil *', ru:'Фото профиля *' },
+  'اسم المستخدم *': { en:'Username *', es:'Nombre de usuario *', pt:'Nome de usuário *', ru:'Имя пользователя *' },
+  'تاريخ الميلاد *': { en:'Date of birth *', es:'Fecha de nacimiento *', pt:'Data de nascimento *', ru:'Дата рождения *' },
+  'البلد *': { en:'Country *', es:'País *', pt:'País *', ru:'Страна *' },
+  'المدينة *': { en:'City *', es:'Ciudad *', pt:'Cidade *', ru:'Город *' },
+  'ما هدفك من تعلم اللغة الإسبانية؟ *': { en:'What is your goal in learning Spanish? *', es:'¿Cuál es tu objetivo al aprender español? *', pt:'Qual é o seu objetivo ao aprender espanhol? *', ru:'Какова ваша цель изучения испанского? *' },
+  'لا توجد فصول بعد': { en:'No chapters yet', es:'Aún no hay capítulos', pt:'Ainda não há capítulos', ru:'Глав пока нет' },
+  'لا توجد دروس بعد': { en:'No lessons yet', es:'Aún no hay lecciones', pt:'Ainda não há lições', ru:'Уроков пока нет' },
+  'محتوى مميز': { en:'Premium content', es:'Contenido premium', pt:'Conteúdo premium', ru:'Премиум-контент' },
   'تبرعك يساعدنا على إضافة المزيد من الدروس والميزات مجاناً للجميع': { en:'Your donation helps us add more lessons and features free for everyone', es:'Tu donación nos ayuda a añadir más lecciones y funciones gratis para todos', pt:'Sua doação nos ajuda a adicionar mais lições e recursos grátis para todos', ru:'Ваше пожертвование помогает нам добавлять больше уроков и функций бесплатно для всех' },
   'الخطة المميزة': { en:'Premium plan', es:'Plan premium', pt:'Plano premium', ru:'Премиум-план' },
   'جميع الفصول والدروس (75 درساً)': { en:'All chapters and lessons (75 lessons)', es:'Todos los capítulos y lecciones (75 lecciones)', pt:'Todos os capítulos e lições (75 lições)', ru:'Все главы и уроки (75 уроков)' },
@@ -2591,7 +2677,7 @@ const LANGS = [
   { code: 'pt', name: 'Português', flag: '🇵🇹' },
   { code: 'ru', name: 'Русский', flag: '🇷🇺' }
 ];
-const I18N_SELECTOR = '.donate-btn, .donate-note, .nav-links a, .mobile-menu a, #auth-buttons button, .user-dropdown .dropdown-item, .settings-sub .dropdown-item, .hero-badge, .hero-subtitle, .hero-actions button, .stat-label, .section-badge, .section-title, .section-subtitle:not(#chapters-count-text), .feature-title, .feature-desc, .pricing-plan, .pricing-features li, .footer-text:not([style]), .footer-text a, .level-name, .level-desc, .level-cta, .progress-stat-card .label, .progress-card p';
+const I18N_SELECTOR = '.i18n-t, .auth-tab, .form-label, .empty-state h3, .donate-btn, .donate-note, .nav-links a, .mobile-menu a, #auth-buttons button, .user-dropdown .dropdown-item, .settings-sub .dropdown-item, .hero-badge, .hero-subtitle, .hero-actions button, .stat-label, .section-badge, .section-title, .section-subtitle:not(#chapters-count-text), .feature-title, .feature-desc, .pricing-plan, .pricing-features li, .footer-text:not([style]), .footer-text a, .level-name, .level-desc, .level-cta, .progress-stat-card .label, .progress-card p';
 
 // يستبدل النص مع الحفاظ على الأيقونات والعناصر الداخلية
 function translateEl(el, newText) {
@@ -2600,6 +2686,12 @@ function translateEl(el, newText) {
   textNodes.forEach((n, i) => { n.textContent = (i === textNodes.length - 1) ? ' ' + newText : ''; });
 }
 function currentLang() { return localStorage.getItem('site_lang') || 'ar'; }
+function uiText(s) {
+  const lang = currentLang();
+  if (!lang || lang === 'ar') return s;
+  const e = UI_TEXTS[s];
+  return (e && e[lang]) ? e[lang] : s;
+}
 function applyLanguage(lang) {
   lang = LANGS.some(l => l.code === lang) ? lang : 'ar';
   localStorage.setItem('site_lang', lang);
@@ -3004,6 +3096,7 @@ function updateHeroButtons() {
 
 function updateUserUI() {
   updateHeroButtons();
+  refreshInboxBadge();
   if (!currentUser) return;
   document.getElementById('auth-buttons').style.display = 'none';
   document.getElementById('user-menu').style.display = 'flex';
@@ -3116,7 +3209,7 @@ function logout() {
 async function deleteAccount() {
   if (!currentUser) { openAuthModal('login'); return; }
   const who = currentUser.name || 'حسابك';
-  if (!confirm('⚠️ حذف الحساب نهائياً؟\nسيُحذف «' + who + '» مع كل التقدم والنقاط والاشتراك من قاعدة البيانات.\nلا يمكن التراجع عن هذه الخطوة.')) return;
+  if (!confirm('⚠️ حذف الحساب نهائياً؟\nسيُحذف «' + who + '» مع كل التقدم والنقاط والاشتراك ورسائله ومرفقاته من قاعدة البيانات،\nوستصل الإدارة ملاحظة بالحذف. لا يمكن التراجع عن هذه الخطوة.')) return;
   if (!confirm('تأكيد أخير: هل أنت متأكد تماماً من الحذف النهائي؟')) return;
   toggleUserDropdown(true);
   let ok = false, errMsg = '';
@@ -3147,6 +3240,69 @@ async function deleteAccount() {
   loadExams();
   updateHeroButtons();
   showToast('success', 'تم حذف حسابك نهائياً من قاعدة البيانات');
+}
+
+// ==============================
+// صندوق رسائل المستخدم — ردود الإدارة تصل إلى حسابه هنا
+// ==============================
+async function getMyUid() {
+  if (currentUser && currentUser.id) return currentUser.id;
+  try { const g = await sb.auth.getUser(); return (g.data && g.data.user && g.data.user.id) || null; } catch (e) { return null; }
+}
+
+async function refreshInboxBadge() {
+  const badge = document.getElementById('inbox-badge');
+  if (!badge || !currentUser) return;
+  const uid = await getMyUid();
+  if (!uid) { badge.style.display = 'none'; return; }
+  const r = await sb.from('user_inbox').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('is_read', false);
+  const n = (!r.error && r.count) || 0;
+  badge.style.display = n ? 'inline-flex' : 'none';
+  badge.textContent = n;
+}
+
+async function openInbox() {
+  if (!currentUser) { openAuthModal('login'); return; }
+  toggleUserDropdown(true);
+  const body = document.getElementById('inbox-body');
+  body.innerHTML = '<div class="loading-spinner"></div>';
+  openModal('inbox-modal');
+  const uid = await getMyUid();
+  if (!uid) { body.innerHTML = '<div class="empty">' + uiText('تعذر تحديد حسابك — أعد تسجيل الدخول') + '</div>'; return; }
+  const r = await sb.from('user_inbox').select('*').eq('user_id', uid).order('created_at', { ascending: false });
+  if (r.error) {
+    body.innerHTML = '<div class="empty">📭 ' + uiText('صندوق الرسائل غير مفعّل بعد') + (/schema|does not exist/i.test(r.error.message || '') ? ' — ' + uiText('يلزم تنفيذ user_inbox.sql في قاعدة البيانات') : '') + '</div>';
+    return;
+  }
+  const items = r.data || [];
+  if (!items.length) {
+    body.innerHTML = '<div class="empty" style="padding:30px 10px;"><div style="font-size:34px;margin-bottom:8px;">📭</div>' + uiText('صندوقك فارغ') + '<br><span style="font-size:13px;">' + uiText('ردود الإدارة على رسائلك ورسائلها إليك ستظهر هنا') + '</span></div>';
+    refreshInboxBadge();
+    return;
+  }
+  body.innerHTML = items.map(m =>
+    '<div class="quiz-card" id="ibx-' + m.id + '" style="cursor:pointer;" onclick="toggleInboxMsg(\'' + m.id + '\')">'
+    + '<p class="exam-question" style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
+    + '<span>' + (m.is_read ? '' : '<span class="chip premium" style="font-size:10px;">جديدة</span> ') + esc(m.title || 'رسالة من الإدارة') + '</span>'
+    + '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + (m.created_at ? new Date(m.created_at).toLocaleDateString('ar') : '') + '</span></p>'
+    + '<div style="display:none;margin-top:8px;font-size:14px;line-height:1.9;white-space:pre-wrap;">' + esc(m.body || '') + '</div>'
+    + '</div>').join('');
+  refreshInboxBadge();
+}
+
+async function toggleInboxMsg(id) {
+  const card = document.getElementById('ibx-' + id);
+  if (!card) return;
+  const content = card.querySelector('div');
+  if (!content) return;
+  const opening = content.style.display === 'none';
+  content.style.display = opening ? 'block' : 'none';
+  if (opening) {
+    const chip = card.querySelector('.chip');
+    if (chip) chip.remove();
+    await sb.from('user_inbox').update({ is_read: true }).eq('id', id);
+    refreshInboxBadge();
+  }
 }
 
 // ==============================
@@ -3347,7 +3503,7 @@ function renderLessonView(lesson) {
   if (vocab.length) {
     html += `
     <div class="vocabulary-section">
-      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">📖 المفردات</h3>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">📖 ${uiText('المفردات')}</h3>
       ${lesson.pronunciation ? `<p style="font-size:13px;color:var(--secondary);margin-bottom:12px;direction:ltr;">${lesson.pronunciation}</p>` : ''}
       <div class="vocab-grid">
         ${vocab.map(v => `
@@ -3355,7 +3511,7 @@ function renderLessonView(lesson) {
           <div class="vocab-es">${v.es}</div>
           <div class="vocab-ar">${v.ar}</div>
           ${v.pron ? `<div class="vocab-pron">${v.pron}</div>` : ''}
-          <div class="speak-btn"><i class="fa-solid fa-volume-high"></i> استمع</div>
+          <div class="speak-btn"><i class="fa-solid fa-volume-high"></i> ${uiText('استمع')}</div>
         </div>`).join('')}
       </div>
     </div>`;
@@ -3364,13 +3520,13 @@ function renderLessonView(lesson) {
   if (examples.length) {
     html += `
     <div class="examples-section">
-      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">💡 أمثلة</h3>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">💡 ${uiText('أمثلة')}</h3>
       ${examples.map(ex => `
       <div class="example-card">
         <div class="example-es">${ex.es}</div>
         <div class="example-ar">${ex.ar}</div>
         ${ex.pron ? `<div style="font-size:12px;color:var(--secondary);margin-top:6px;direction:ltr;">${ex.pron}</div>` : ''}
-        <button class="speak-btn" onclick="speakWord('${ex.es.replace(/'/g,"\\'")}', 'es-ES')"><i class="fa-solid fa-volume-high"></i> استمع</button>
+        <button class="speak-btn" onclick="speakWord('${ex.es.replace(/'/g,"\\'")}', 'es-ES')"><i class="fa-solid fa-volume-high"></i> ${uiText('استمع')}</button>
       </div>`).join('')}
     </div>`;
   }
@@ -3378,7 +3534,7 @@ function renderLessonView(lesson) {
   if (quizzes.length) {
     html += `
     <div class="quiz-section">
-      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">✏️ اختبر نفسك</h3>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:12px;">✏️ ${uiText('اختبر نفسك')}</h3>
       ${quizzes.map((q, qi) => `
       <div class="quiz-card" id="quiz-${qi}">
         <p class="quiz-question">${qi + 1}. ${q.question}</p>
@@ -3399,15 +3555,15 @@ function renderLessonView(lesson) {
     window._currentSpeakingEx = speakingEx;
     html += `
     <div class="speaking-section">
-      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">🎤 تمرين النطق الصوتي</h3>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">استمع للجملة ثم اضغط "سجّل نطقك" وانطقها — <b>النظام نفسه يصحح نطقك آلياً</b> كلمة بكلمة ويعطيك درجة فورية. محرك التحليل يعمل داخل جهازك ويُحمَّل مرة واحدة فقط (≈60MB). ${currentUser ? '' : '<span style="color:var(--warning);">سجّل الدخول لحفظ نتائجك.</span>'}</p>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">🎤 ${uiText('تمرين النطق الصوتي')}</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">${uiText('استمع للجملة ثم اضغط "سجّل نطقك" وانطقها — <b>النظام نفسه يصحح نطقك آلياً</b> كلمة بكلمة ويعطيك درجة فورية. محرك التحليل يعمل داخل جهازك ويُحمَّل مرة واحدة فقط (≈60MB).')}${currentUser ? '' : '<span style="color:var(--warning);">' + uiText('سجّل الدخول لحفظ نتائجك.') + '</span>'}</p>
       ${speakingEx.map((sp, si) => `
       <div class="speak-ex-card" id="spk-${si}">
         <div class="speak-target">${sp.text}</div>
         <div class="speak-ar">${sp.ar || ''}</div>
         <div class="speak-controls">
-          <button class="speak-btn" onclick="speakSpeakingTarget(${si})"><i class="fa-solid fa-volume-high"></i> استمع للنموذج</button>
-          <button class="rec-btn" id="rec-btn-${si}" onclick="toggleRecording(${si})"><i class="fa-solid fa-microphone"></i> سجّل نطقك</button>
+          <button class="speak-btn" onclick="speakSpeakingTarget(${si})"><i class="fa-solid fa-volume-high"></i> ${uiText('استمع للنموذج')}</button>
+          <button class="rec-btn" id="rec-btn-${si}" onclick="toggleRecording(${si})"><i class="fa-solid fa-microphone"></i> ${uiText('سجّل نطقك')}</button>
         </div>
         <div class="speak-result" id="spk-result-${si}"></div>
       </div>`).join('')}
@@ -3419,20 +3575,20 @@ function renderLessonView(lesson) {
     window._currentDictation = dictTexts;
     html += `
     <div class="dictation-section" style="margin-bottom:28px;">
-      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">✍️ إملاء النصوص</h3>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">استمع للنص ثم اكتب ما تسمعه — سيصحح النظام إملاءك كلمة بكلمة ويعرض الترجمة</p>
+      <h3 style="font-size:18px;font-weight:700;margin-bottom:4px;">✍️ ${uiText('إملاء النصوص')}</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">${uiText('استمع للنص ثم اكتب ما تسمعه — سيصحح النظام إملاءك كلمة بكلمة ويعرض الترجمة')}</p>
       ${dictTexts.map((d, di) => `
       <div class="dict-card">
         <div class="speak-target" style="display:none;">${d.text}</div>
-        <div class="dict-hint"><i class="fa-solid fa-headphones"></i> استمع جيداً ثم اكتب الجملة الإسبانية كما سمعتها</div>
+        <div class="dict-hint"><i class="fa-solid fa-headphones"></i> ${uiText('استمع جيداً ثم اكتب الجملة الإسبانية كما سمعتها')}</div>
         <div class="speak-controls" style="margin-bottom:12px;">
-          <button class="speak-btn" onclick="speakDictation(${di})"><i class="fa-solid fa-volume-high"></i> استمع للنص</button>
-          <button class="speak-btn" onclick="speakDictationSlow(${di})"><i class="fa-solid fa-snail"></i> استمع ببطء</button>
+          <button class="speak-btn" onclick="speakDictation(${di})"><i class="fa-solid fa-volume-high"></i> ${uiText('استمع للنص')}</button>
+          <button class="speak-btn" onclick="speakDictationSlow(${di})"><i class="fa-solid fa-snail"></i> ${uiText('استمع ببطء')}</button>
         </div>
         <textarea class="dict-input" id="dict-input-${di}" placeholder="Escribe aquí lo que escuchas..." rows="2"></textarea>
         <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn btn-primary btn-sm" onclick="checkDictation(${di})"><i class="fa-solid fa-spell-check"></i> صحّح الإملاء</button>
-          <button class="btn btn-secondary btn-sm" onclick="showDictationTranslation(${di})"><i class="fa-solid fa-language"></i> اعرض الترجمة</button>
+          <button class="btn btn-primary btn-sm" onclick="checkDictation(${di})"><i class="fa-solid fa-spell-check"></i> ${uiText('صحّح الإملاء')}</button>
+          <button class="btn btn-secondary btn-sm" onclick="showDictationTranslation(${di})"><i class="fa-solid fa-language"></i> ${uiText('اعرض الترجمة')}</button>
         </div>
         <div class="speak-result" id="dict-result-${di}"></div>
         <div class="dict-translation" id="dict-trans-${di}">${d.ar || ''}</div>
@@ -3442,11 +3598,11 @@ function renderLessonView(lesson) {
 
   html += `
     <div class="lesson-actions">
-      <button class="btn btn-secondary" onclick="closeModal('lesson-modal')"><i class="fa-solid fa-arrow-right"></i> العودة</button>
+      <button class="btn btn-secondary" onclick="closeModal('lesson-modal')"><i class="fa-solid fa-arrow-right"></i> ${uiText('العودة')}</button>
       ${currentUser ? `<button class="btn btn-primary btn-lg" id="complete-btn" onclick="completeLesson()">
-        <i class="fa-solid fa-check-circle"></i> ${isCompleted ? 'تمت المراجعة' : 'إكمال الدرس'}
+        <i class="fa-solid fa-check-circle"></i> ${isCompleted ? uiText('تمت المراجعة') : uiText('إكمال الدرس')}
       </button>` : `<button class="btn btn-primary btn-lg" onclick="openAuthModal('login')">
-        <i class="fa-solid fa-right-to-bracket"></i> سجل دخولك لحفظ تقدمك
+        <i class="fa-solid fa-right-to-bracket"></i> ${uiText('سجل دخولك لحفظ تقدمك')}
       </button>`}
     </div>`;
 
@@ -4015,7 +4171,7 @@ function generateLevelExam(level) {
     name: 'المفردات', icon: '📖',
     questions: vocab.slice(0, 8).map(v => {
       const wrong = shuffleArr(bank.vocab.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
-      return { type: 'mc', question: 'ما معنى «' + v.es + '»؟', options: shuffleArr([v.ar, ...wrong]), correct: v.ar, explanation: v.es + ' = ' + v.ar };
+      return { type: 'mc', question: uiText('ما معنى «{w}»؟').replace('{w}', v.es), options: shuffleArr([v.ar, ...wrong]), correct: v.ar, explanation: v.es + ' = ' + v.ar };
     })
   });
   // 3) الاستماع
@@ -4023,18 +4179,18 @@ function generateLevelExam(level) {
     name: 'الاستماع والفهم', icon: '🎧',
     questions: shuffleArr(bank.listening).map(v => {
       const wrong = shuffleArr(bank.listening.filter(x => x.ar !== v.ar)).slice(0, 3).map(x => x.ar);
-      return { type: 'listening', spanish: v.es, question: 'استمع واختر المعنى الصحيح:', options: shuffleArr([v.ar, ...wrong]), correct: v.ar, sayText: v.es };
+      return { type: 'listening', spanish: v.es, question: uiText('استمع واختر المعنى الصحيح:'), options: shuffleArr([v.ar, ...wrong]), correct: v.ar, sayText: v.es };
     })
   });
   // 4) الإملاء
   sections.push({
     name: 'الإملاء', icon: '✍️',
-    questions: shuffleArr(bank.dictation).map(x => ({ type: 'dictation', spanish: x.es, question: 'استمع واكتب ما تسمع بالإسبانية:', correct: x.es, sayText: x.es }))
+    questions: shuffleArr(bank.dictation).map(x => ({ type: 'dictation', spanish: x.es, question: uiText('استمع واكتب ما تسمع بالإسبانية:'), correct: x.es, sayText: x.es }))
   });
   // 5) النطق
   sections.push({
     name: 'النطق والمحادثة', icon: '🎤',
-    questions: shuffleArr(bank.speaking).map(x => ({ type: 'speaking', spanish: x.es, question: 'اقرأ الجملة التالية بصوت عالٍ:', targetText: x.es, ar: x.ar }))
+    questions: shuffleArr(bank.speaking).map(x => ({ type: 'speaking', spanish: x.es, question: uiText('اقرأ الجملة التالية بصوت عالٍ:'), targetText: x.es, ar: x.ar }))
   });
   const total = sections.reduce((s, sec) => s + sec.questions.length, 0);
   return { level, sections, totalQuestions: total, timeLimit: 1800 };
@@ -4138,8 +4294,8 @@ async function openExam(level) {
           qhtml += '<div class="quiz-card" id="examq-' + i + '"><p class="exam-question">' + (i + 1) + '. ' + (q.type === 'listening' ? '🎧 ' : '') + esc(q.question) + '</p>';
           if (q.type === 'listening') {
             qhtml += '<div style="text-align:center;margin:10px 0;">'
-              + '<button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
-              + '<button class="btn sec sm" onclick="examSpeak(' + i + ')" style="margin-right:6px;">🔄 إعادة</button></div>';
+              + '<button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> ' + uiText('استمع') + '</button>'
+              + '<button class="btn sec sm" onclick="examSpeak(' + i + ')" style="margin-right:6px;">🔄 ' + uiText('إعادة') + '</button></div>';
           }
           qhtml += '<div class="quiz-options">' + q.options.map(opt =>
             '<div class="quiz-option" data-qi="' + i + '" data-opt="' + esc(opt) + '" onclick="pickExamOpt(this)">'
@@ -4148,15 +4304,15 @@ async function openExam(level) {
         } else if (q.type === 'dictation') {
           qhtml += '<div class="quiz-card" id="examq-' + i + '"><p class="exam-question">' + (i + 1) + '. ✍️ ' + esc(q.question) + '</p>'
             + '<div style="text-align:center;margin:10px 0;">'
-            + '<button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> استمع</button>'
-            + '<button class="btn sec sm" onclick="examSpeakSlow(' + i + ')" style="margin-right:6px;">🔄 إعادة بطيئة</button></div>'
+            + '<button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> ' + uiText('استمع') + '</button>'
+            + '<button class="btn sec sm" onclick="examSpeakSlow(' + i + ')" style="margin-right:6px;">🔄 ' + uiText('إعادة بطيئة') + '</button></div>'
             + '<input type="text" class="form-input" id="dict-exam-' + i + '" placeholder="Escribe lo que escuchas..." style="direction:ltr;text-align:left;margin-top:8px;" oninput="examAnswers[' + i + ']=this.value;updateExamProgress()"></div>';
         } else if (q.type === 'speaking') {
           qhtml += '<div class="quiz-card" id="examq-' + i + '"><p class="exam-question">' + (i + 1) + '. 🎤 ' + esc(q.question) + '</p>'
             + '<div style="direction:ltr;text-align:center;font-size:18px;font-weight:700;color:var(--primary-light);margin:10px 0;">' + esc(q.spanish) + '</div>'
             + '<div style="text-align:center;color:var(--text-muted);font-size:13px;margin-bottom:10px;">' + esc(q.ar || '') + '</div>'
-            + '<div style="text-align:center;"><button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> استمع للنموذج</button></div>'
-            + '<div style="text-align:center;margin-top:8px;"><span class="chip free">✓ مكافأة تلقائية عند التسليم</span></div></div>';
+            + '<div style="text-align:center;"><button class="btn sec" onclick="examSpeak(' + i + ')"><i class="fa-solid fa-volume-high"></i> ' + uiText('استمع للنموذج') + '</button></div>'
+            + '<div style="text-align:center;margin-top:8px;"><span class="chip free">' + uiText('✓ مكافأة تلقائية عند التسليم') + '</span></div></div>';
         }
       });
     });
@@ -4164,12 +4320,12 @@ async function openExam(level) {
     qhtml += '<div class="err" style="padding:12px;">حدث خطأ أثناء العرض: ' + esc(e && e.message ? e.message : e) + '</div>';
   }
   body.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-    + '<span style="font-size:13px;color:var(--text-muted);">' + examData.totalQuestions + ' سؤال · 5 أقسام · النجاح 70%</span>'
+    + '<span style="font-size:13px;color:var(--text-muted);">' + examData.totalQuestions + ' ' + TW('سؤال') + ' · 5 ' + TW('أقسام') + ' · ' + TW('النجاح') + ' 70%</span>'
     + '<span id="exam-timer" style="font-size:18px;font-weight:900;" class="muted">⏱ 30:00</span></div>'
     + '<div class="main-progress-bar" style="margin-bottom:14px;"><div class="main-progress-fill" id="exam-progress" style="width:0%;"></div></div>'
     + qhtml
     + '<div style="display:flex;gap:10px;justify-content:center;margin-top:20px;">'
-    + '<button class="btn btn-primary btn-lg" id="exam-submit-btn" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> تسليم الامتحان</button></div>';
+    + '<button class="btn btn-primary btn-lg" id="exam-submit-btn" onclick="submitExam()"><i class="fa-solid fa-paper-plane"></i> ' + uiText('تسليم الامتحان') + '</button></div>';
   startExamTimer();
   body.scrollTop = 0;
 }
@@ -4178,10 +4334,10 @@ async function submitExam() {
   if (!examData) return;
   const totalQ = examData.totalQuestions;
   const answered = Object.keys(examAnswers).filter(k => examAnswers[k] && String(examAnswers[k]).trim()).length;
-  if (answered === 0) { showToast('warning', 'أجب على أسئلة أولاً ثم سلّم'); return; }
+  if (answered === 0) { showToast('warning', uiText('أجب على أسئلة أولاً ثم سلّم')); return; }
   clearInterval(examTimer);
   const btn = document.getElementById('exam-submit-btn');
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جار التصحيح…'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + uiText('جار التصحيح…'); }
   let correct = 0, qi = 0;
   const sectionResults = {};
   examData.sections.forEach(sec => {
@@ -4213,7 +4369,7 @@ async function submitExam() {
   const score = totalQ ? Math.round(correct / totalQ * 100) : 0;
   const passed = score >= 70;
   const tier = scoreTier(score);
-  let breakdown = '<div class="help-card" style="margin-top:14px;"><h4>📊 تفصيل النتائج حسب القسم</h4>';
+  let breakdown = '<div class="help-card" style="margin-top:14px;"><h4>📊 ' + uiText('تفصيل النتائج حسب القسم') + '</h4>';
   Object.entries(sectionResults).forEach(([name, r]) => {
     breakdown += '<div class="pm-line"><span class="t">' + name + '</span><span class="s">' + r.correct + '/' + r.total + ' (' + r.pct + '%)</span>'
       + '<div class="pm-bar" style="flex:1;min-width:80px;"><div style="width:' + r.pct + '%;"></div></div></div>';
@@ -4221,19 +4377,19 @@ async function submitExam() {
   breakdown += '</div>';
   const cert = passed
     ? '<div class="okbox" style="margin-top:14px;text-align:center;padding:20px;"><div style="font-size:36px;">🏆</div>'
-      + '<div style="font-size:18px;font-weight:900;color:var(--success);">شهادة اجتياز امتحان ' + examData.level + '</div>'
+      + '<div style="font-size:18px;font-weight:900;color:var(--success);">' + uiText('شهادة اجتياز امتحان {lv}').replace('{lv}', examData.level) + '</div>'
       + '<div style="font-size:13px;color:var(--text-muted);margin-top:6px;">' + (currentUser.name || '') + ' — ' + score + '% — ' + new Date().toLocaleDateString('ar') + '</div></div>'
     : '';
   const resultHtml = '<div class="exam-result-head">'
     + '<div class="exam-result-score" style="color:' + tier.color + ';">' + score + '%</div>'
     + '<div style="font-size:16px;font-weight:700;color:' + tier.color + ';">'
-    + (passed ? '🎉 مبروك! اجتزت امتحان ' + examData.level + ' الرسمي' : 'لم تجتز بعد — النجاح 70%') + '</div>'
-    + '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + correct + '/' + totalQ + ' إجابات صحيحة</div></div>'
+    + (passed ? uiText('🎉 مبروك! اجتزت امتحان {lv} الرسمي').replace('{lv}', examData.level) : uiText('لم تجتز بعد — النجاح 70%')) + '</div>'
+    + '<div style="font-size:13px;color:var(--text-muted);margin-top:4px;">' + correct + '/' + totalQ + ' ' + uiText('إجابات صحيحة') + '</div></div>'
     + breakdown + cert;
   const body = document.getElementById('exam-modal-body');
   if (body) { body.insertAdjacentHTML('afterbegin', resultHtml); body.scrollTop = 0; }
   if (btn) { btn.style.display = 'none'; btn.disabled = false; }
-  showToast(passed ? 'success' : 'warning', passed ? '🎉 اجتزت امتحان ' + examData.level + '!' : 'راجع الدروس وأعد المحاولة');
+  showToast(passed ? 'success' : 'warning', passed ? uiText('🎉 اجتزت امتحان {lv}!').replace('{lv}', examData.level) : uiText('راجع الدروس وأعد المحاولة'));
   loadUserProgress();
 }
 
@@ -4529,7 +4685,7 @@ async function submitContact(e) {
   const emailEl = document.getElementById('ct-email');
   const name = currentUser ? (currentUser.name || 'مستخدم') : (nameEl ? nameEl.value.trim() : '');
   const email = currentUser ? (currentUser.email || null) : (emailEl ? emailEl.value.trim() : null);
-  if (!message && !ctFiles.length && !ctAudioBlob) { showToast('warning', 'اكتب رسالتك أو أضف مرفقاً أو تسجيلاً أولاً'); return; }
+  if (!message && !ctFiles.length && !ctAudioBlob) { showToast('warning', uiText('اكتب رسالتك أو أضف مرفقاً أو تسجيلاً أولاً')); return; }
   const btn = document.getElementById('ct-send');
   btn.disabled = true;
   const setBusy = t => { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + t; };
@@ -4538,7 +4694,7 @@ async function submitContact(e) {
     const attachments = [];
     const stamp = Date.now();
     if (ctFiles.length || ctAudioBlob) {
-      setBusy('جار رفع المرفقات…');
+      setBusy(uiText('جار رفع المرفقات…'));
       for (let i = 0; i < ctFiles.length; i++) {
         const f = ctFiles[i];
         const safe = f.name.replace(/[\\/:*?"<>|]+/g, '_');
@@ -4554,24 +4710,36 @@ async function submitContact(e) {
         else attachments.push({ path: vpath, name: 'تسجيل صوتي', size: ctAudioBlob.size, type: 'audio/webm', audio: true });
       }
     }
-    setBusy('جار إرسال الرسالة…');
-    const base = { name: name || null, email: email || null, message: message || '(بدون نص — انظر المرفقات)' };
+    setBusy(uiText('جار إرسال الرسالة…'));
+    let uid = null;
+    if (currentUser) {
+      uid = currentUser.id || await getMyUid();
+    }
+    const base = { name: name || null, email: email || null, message: message || '(بدون نص — انظر المرفقات)', user_id: uid };
     let r;
+    const tryInsert = async (payload) => {
+      let res = await sb.from('contact_messages').insert(payload);
+      if (res.error && /user_id/i.test(res.error.message || '')) {
+        const p2 = Object.assign({}, payload); delete p2.user_id;
+        res = await sb.from('contact_messages').insert(p2);
+      }
+      return res;
+    };
     if (attachments.length) {
-      r = await sb.from('contact_messages').insert(Object.assign({ attachments }, base));
+      r = await tryInsert(Object.assign({ attachments }, base));
       if (r.error) {
-        r = await sb.from('contact_messages').insert(Object.assign({}, base, {
+        r = await tryInsert(Object.assign({}, base, {
           message: (base.message || '') + '\n\n📎 [' + attachments.length + ' مرفقات — يلزم تنفيذ contact_files.sql لعرضها]'
         }));
         if (!r.error) storageWarn = storageWarn || 'attachments-column';
       }
     } else {
-      r = await sb.from('contact_messages').insert(base);
+      r = await tryInsert(base);
     }
     if (r.error) {
       showToast('error', /does not exist|schema/i.test(r.error.message || '') ? 'صندوق الرسائل غير مفعّل بعد على الموقع' : 'تعذر إرسال الرسالة، حاول لاحقاً');
     } else {
-      showToast('success', 'وصلت رسالتك ✓ سنقرأها قريباً');
+      showToast('success', uiText('وصلت رسالتك ✓ سنقرأها قريباً'));
       document.getElementById('ct-msg').value = '';
       ctFiles = []; ctAudioBlob = null;
       renderCtFiles(); renderCtAudio();
@@ -4582,7 +4750,7 @@ async function submitContact(e) {
     showToast('error', 'حدث خطأ غير متوقع أثناء الإرسال');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> إرسال الرسالة';
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> ' + uiText('إرسال الرسالة');
   }
 }
 
