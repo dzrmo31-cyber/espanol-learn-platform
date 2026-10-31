@@ -2628,6 +2628,23 @@ const UI_TEXTS = {
   'لا توجد فصول بعد': { en:'No chapters yet', es:'Aún no hay capítulos', pt:'Ainda não há capítulos', ru:'Глав пока нет' },
   'لا توجد دروس بعد': { en:'No lessons yet', es:'Aún no hay lecciones', pt:'Ainda não há lições', ru:'Уроков пока нет' },
   'محتوى مميز': { en:'Premium content', es:'Contenido premium', pt:'Conteúdo premium', ru:'Премиум-контент' },
+  'حذف الحساب نهائياً': { en:'Delete account permanently', es:'Eliminar la cuenta permanentemente', pt:'Eliminar a conta permanentemente', ru:'Удалить аккаунт навсегда' },
+  'سجّل الدخول أولاً': { en:'Sign in first', es:'Inicia sesión primero', pt:'Inicie sessão primeiro', ru:'Сначала войдите' },
+  'تم تسجيل الخروج': { en:'Signed out', es:'Sesión cerrada', pt:'Sessão terminada', ru:'Вы вышли из системы' },
+  'تم حذف حسابك نهائياً من قاعدة البيانات': { en:'Your account has been permanently deleted from the database', es:'Tu cuenta ha sido eliminada permanentemente de la base de datos', pt:'A sua conta foi eliminada permanentemente da base de dados', ru:'Ваш аккаунт навсегда удалён из базы данных' },
+  'تعذر تحميل الدرس': { en:'Could not load the lesson', es:'No se pudo cargar la lección', pt:'Não foi possível carregar a lição', ru:'Не удалось загрузить урок' },
+  'خطأ في تحميل الدرس': { en:'Error loading the lesson', es:'Error al cargar la lección', pt:'Erro ao carregar a lição', ru:'Ошибка загрузки урока' },
+  'جار التحميل...': { en:'Loading…', es:'Cargando…', pt:'A carregar…', ru:'Загрузка…' },
+  'جديدة': { en:'New', es:'Nueva', pt:'Nova', ru:'Новое' },
+  'أبطأ': { en:'Slower', es:'Más despacio', pt:'Mais devagar', ru:'Медленнее' },
+  'اسمك الكامل': { en:'Your full name', es:'Tu nombre completo', pt:'O seu nome completo', ru:'Ваше полное имя' },
+  'مثال: ahmed_09': { en:'e.g. ahmed_09', es:'p. ej. ahmed_09', pt:'ex.: ahmed_09', ru:'напр. ahmed_09' },
+  'اسم مدينتك': { en:'Your city', es:'Tu ciudad', pt:'A sua cidade', ru:'Ваш город' },
+  'اكتب هدفك هنا': { en:'Write your goal here', es:'Escribe tu objetivo aquí', pt:'Escreva o seu objetivo aqui', ru:'Напишите вашу цель здесь' },
+  'اكتب رسالتك هنا...': { en:'Write your message here…', es:'Escribe tu mensaje aquí…', pt:'Escreva a sua mensagem aqui…', ru:'Напишите ваше сообщение…' },
+  'اسمك': { en:'Your name', es:'Tu nombre', pt:'O seu nome', ru:'Ваше имя' },
+  'بريدك (اختياري — لنرد عليك)': { en:'Your email (optional — so we can reply)', es:'Tu correo (opcional — para responderte)', pt:'O seu e-mail (opcional — para respondermos)', ru:'Ваша почта (необязательно — для ответа)' },
+  'رسالة من الإدارة': { en:'Message from the administration', es:'Mensaje de la administración', pt:'Mensagem da administração', ru:'Сообщение от администрации' },
   'تبرعك يساعدنا على إضافة المزيد من الدروس والميزات مجاناً للجميع': { en:'Your donation helps us add more lessons and features free for everyone', es:'Tu donación nos ayuda a añadir más lecciones y funciones gratis para todos', pt:'Sua doação nos ajuda a adicionar mais lições e recursos grátis para todos', ru:'Ваше пожертвование помогает нам добавлять больше уроков и функций бесплатно для всех' },
   'الخطة المميزة': { en:'Premium plan', es:'Plan premium', pt:'Plano premium', ru:'Премиум-план' },
   'جميع الفصول والدروس (75 درساً)': { en:'All chapters and lessons (75 lessons)', es:'Todos los capítulos y lecciones (75 lecciones)', pt:'Todos os capítulos e lições (75 lições)', ru:'Все главы и уроки (75 уроков)' },
@@ -2703,6 +2720,13 @@ function applyLanguage(lang) {
     const entry = UI_TEXTS[el.dataset.arT];
     const target = (entry && entry[lang]) ? entry[lang] : el.dataset.arT;
     if (el.textContent.trim() !== target) translateEl(el, target);
+  });
+  // ترجمة الخانات التوضيحية
+  document.querySelectorAll('input[placeholder], textarea[placeholder]').forEach(el => {
+    if (el.dataset.arP === undefined) el.dataset.arP = el.placeholder;
+    const pe = UI_TEXTS[el.dataset.arP];
+    const ptarget = (pe && pe[lang]) ? pe[lang] : el.dataset.arP;
+    if (el.placeholder !== ptarget) el.placeholder = ptarget;
   });
   const ht = document.querySelector('.hero-title');
   if (ht) {
@@ -3283,7 +3307,7 @@ async function openInbox() {
   body.innerHTML = items.map(m =>
     '<div class="quiz-card" id="ibx-' + m.id + '" style="cursor:pointer;" onclick="toggleInboxMsg(\'' + m.id + '\')">'
     + '<p class="exam-question" style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
-    + '<span>' + (m.is_read ? '' : '<span class="chip premium" style="font-size:10px;">جديدة</span> ') + esc(m.title || 'رسالة من الإدارة') + '</span>'
+    + '<span>' + (m.is_read ? '' : '<span class="chip premium" style="font-size:10px;">' + uiText('جديدة') + '</span> ') + esc(m.title || 'رسالة من الإدارة') + '</span>'
     + '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + (m.created_at ? new Date(m.created_at).toLocaleDateString('ar') : '') + '</span></p>'
     + '<div style="display:none;margin-top:8px;font-size:14px;line-height:1.9;white-space:pre-wrap;">' + esc(m.body || '') + '</div>'
     + '</div>').join('');
@@ -4575,6 +4599,7 @@ function toggleUserDropdown(forceClose = false) {
 }
 
 function showToast(type, message) {
+  message = (typeof message === 'string' && typeof uiText === 'function') ? uiText(message) : message;
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
   const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
@@ -5469,9 +5494,9 @@ function lrQuizShow() {
   const prog = lrEl('div', 'lr-prog'); const bar = lrEl('div', 'lr-prog-bar'); bar.style.width = (100 * lrQ.i / lrQ.qs.length) + '%'; prog.appendChild(bar); box.appendChild(prog);
   box.appendChild(lrEl('p', 'lr-qtitle', 'استمع، ثم اختر المعنى الصحيح'));
   const ctr = lrEl('div', 'lr-bar'); ctr.style.justifyContent = 'center';
-  const play = lrEl('button', 'btn btn-primary'); play.innerHTML = '<i class="fa-solid fa-play"></i> استمع';
+  const play = lrEl('button', 'btn btn-primary'); play.innerHTML = '<i class="fa-solid fa-play"></i> ' + uiText('استمع');
   play.onclick = () => lrSay(q.es, 0.8);
-  const slow = lrEl('button', 'btn btn-secondary'); slow.innerHTML = '<i class="fa-solid fa-person-walking"></i> أبطأ';
+  const slow = lrEl('button', 'btn btn-secondary'); slow.innerHTML = '<i class="fa-solid fa-person-walking"></i> ' + uiText('أبطأ');
   slow.onclick = () => lrSay(q.es, 0.5);
   ctr.append(play, slow); box.appendChild(ctr);
   const wrong = lrShuffle(lrPairs.filter(p => p.ar !== q.ar)).slice(0, 3).map(p => p.ar);
