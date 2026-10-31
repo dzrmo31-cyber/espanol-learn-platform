@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>إسبانيول - تعلم اللغة الإسبانية</title>
+  <link rel="icon" type="image/svg+xml" href="flag-es.svg">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png">
+  <link rel="shortcut icon" href="favicon.ico">
+  <link rel="apple-touch-icon" href="favicon.png">
   <meta name="description" content="منصة إسبانيول لتعلم اللغة الإسبانية بطريقة سهلة وممتعة. فصول شاملة، دروس تفاعلية، اختبارات ونظام نقاط." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet" />
@@ -1357,7 +1361,7 @@
   <div class="container">
     <div class="nav-inner">
       <a href="#" class="logo">
-        <div class="logo-icon">🇪🇸</div>
+        <div class="logo-icon" style="padding:0;overflow:hidden;background:#F1BF00;"><img src="flag-es.svg" alt="علم إسبانيا" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
         <div class="logo-text">إسبانيول <span>ES</span></div>
       </a>
 
@@ -1385,6 +1389,7 @@
             <div class="settings-sub" id="settings-sub">
               <div class="dropdown-item" onclick="openProfileModal(false)"><i class="fa-solid fa-user-pen"></i> معلومات شخصية</div>
               <div class="dropdown-item" onclick="openLanguageModal()"><i class="fa-solid fa-globe"></i> لغة الموقع</div>
+              <div class="dropdown-item danger" onclick="deleteAccount()"><i class="fa-solid fa-user-slash"></i> حذف الحساب نهائياً</div>
             </div>
             <div class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</div>
           </div>
@@ -1427,7 +1432,7 @@
             <i class="fa-solid fa-rocket"></i>
             ابدأ التعلم الآن
           </button>
-          <button class="btn btn-secondary btn-lg" onclick="openAuthModal('register')">
+          <button class="btn btn-secondary btn-lg" id="hero-register-btn" onclick="openAuthModal('register')">
             <i class="fa-solid fa-user-plus"></i>
             إنشاء حساب مجاني
           </button>
@@ -1817,7 +1822,7 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-logo">إسبانيول <span>ES</span></div>
-    <p class="footer-text">منصة تعلم اللغة الإسبانية © 2024</p>
+    <p class="footer-text">منصة تعلم اللغة الإسبانية © 2026 · RMO</p>
     <p class="footer-text" style="margin-top:8px;"><a href="privacy.html" style="color:inherit;text-decoration:underline;">سياسة الخصوصية</a> · <a href="terms.html" style="color:inherit;text-decoration:underline;">شروط الاستخدام</a></p>
   </div>
 </footer>
@@ -2067,19 +2072,24 @@
 
 <!-- ======================== CONTACT MODAL ======================== -->
 <div class="modal-overlay" id="contact-modal">
-  <div class="modal" style="max-width:520px;">
+  <div class="modal" style="max-width:560px;">
     <div class="modal-header">
-      <div class="modal-title"><i class="fa-solid fa-comments" style="color:var(--secondary);"></i> تواصل معنا</div>
-      <button class="modal-close" onclick="closeModal('contact-modal')"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-title"><i class="fa-solid fa-headset" style="color:var(--secondary);"></i> مراسلة الدعم</div>
+      <button class="modal-close" onclick="closeContactComposer()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">مشكلة، اقتراح أو أي شيء؟ اكتب رسالتك وستصل مباشرة إلى إدارة الموقع.</p>
-      <form class="auth-form" onsubmit="submitContact(event)">
-        <div class="form-group"><label class="form-label">الاسم (اختياري)</label><input class="form-input" id="ct-name" placeholder="اسمك"></div>
-        <div class="form-group"><label class="form-label">بريدك الإلكتروني (اختياري — لنرد عليك)</label><input class="form-input" id="ct-email" type="email" placeholder="you@example.com" style="direction:ltr;text-align:left;"></div>
-        <div class="form-group"><label class="form-label">رسالتك *</label><textarea class="form-input" id="ct-msg" rows="4" placeholder="اكتب رسالتك هنا…" style="resize:vertical;"></textarea></div>
-        <button type="submit" class="btn btn-primary" style="width:100%;" id="ct-send">📨 إرسال الرسالة</button>
-      </form>
+      <div id="ct-from" style="margin-bottom:12px;"></div>
+      <textarea class="form-input" id="ct-msg" rows="4" placeholder="اكتب رسالتك هنا..." style="margin-bottom:10px;"></textarea>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+        <button type="button" class="btn sec" onclick="document.getElementById('ct-file-input').click()"><i class="fa-solid fa-paperclip"></i> إرفاق ملفات</button>
+        <button type="button" class="btn sec" id="ct-rec-btn" onclick="ctToggleRecord()"><i class="fa-solid fa-microphone"></i> تسجيل صوتي</button>
+        <span id="ct-rec-status" style="font-size:12px;color:var(--danger);font-weight:700;"></span>
+      </div>
+      <input type="file" id="ct-file-input" multiple style="display:none;" onchange="ctPickFiles(this)">
+      <div id="ct-files" style="display:flex;flex-direction:column;gap:6px;margin-bottom:10px;"></div>
+      <div id="ct-audio" style="margin-bottom:10px;"></div>
+      <button type="button" class="btn btn-primary" style="width:100%;" id="ct-send" onclick="submitContact(event)"><i class="fa-solid fa-paper-plane"></i> إرسال الرسالة</button>
+      <p style="font-size:11px;color:var(--text-muted);margin-top:10px;text-align:center;">رسالتك ومرفقاتك وتسجيلك الصوتي تصل مباشرة إلى إدارة الموقع باسم حسابك.</p>
     </div>
   </div>
 </div>
@@ -2108,6 +2118,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="lessons-extra.js"></script>
+<script src="titles-i18n.js"></script>
 <script>
 // ==============================
 // CONFIG
@@ -2539,7 +2550,7 @@ const UI_TEXTS = {
   'أولوية المحتوى الجديد': { en:'Priority access to new content', es:'Prioridad en el contenido nuevo', pt:'Prioridade no conteúdo novo', ru:'Приоритетный доступ к новому контенту' },
   'ابدأ مجاناً': { en:'Start free', es:'Empieza gratis', pt:'Comece grátis', ru:'Начать бесплатно' },
   'اشترك الآن': { en:'Subscribe now', es:'Suscríbete ahora', pt:'Assine agora', ru:'Подписаться сейчас' },
-  'منصة تعلم اللغة الإسبانية © 2024': { en:'Spanish learning platform © 2024', es:'Plataforma para aprender español © 2024', pt:'Plataforma para aprender espanhol © 2024', ru:'Платформа изучения испанского © 2024' },
+  'منصة تعلم اللغة الإسبانية © 2026 · RMO': { en:'Spanish learning platform © 2026 · RMO', es:'Plataforma para aprender español © 2026 · RMO', pt:'Plataforma para aprender espanhol © 2026 · RMO', ru:'Платформа изучения испанского © 2026 · RMO' },
   'سياسة الخصوصية': { en:'Privacy Policy', es:'Política de privacidad', pt:'Política de privacidade', ru:'Политика конфиденциальности' },
   'شروط الاستخدام': { en:'Terms of Use', es:'Términos de uso', pt:'Termos de uso', ru:'Условия использования' },
   '🌱 المستوى المبتدئ': { en:'🌱 Beginner level', es:'🌱 Nivel principiante', pt:'🌱 Nível iniciante', ru:'🌱 Начальный уровень' },
@@ -2611,9 +2622,20 @@ function renderLangList() {
     + '<span class="lang-flag">' + l.flag + '</span><span>' + l.name + '</span>'
     + (l.code === cur ? '<i class="fa-solid fa-check"></i>' : '') + '</div>').join('');
 }
+let lastLessonsChapterId = null;
+function refreshDynamicTitles() {
+  try {
+    if (typeof renderChapters === 'function' && typeof getFilteredChapters === 'function') renderChapters(getFilteredChapters());
+    if (typeof updateLevelCards === 'function') updateLevelCards();
+    if (typeof loadExams === 'function') loadExams();
+    const lm = document.getElementById('lessons-modal');
+    if (lm && lm.classList.contains('open') && lastLessonsChapterId) openLessonsModal(lastLessonsChapterId);
+  } catch (e) { console.warn('refreshDynamicTitles', e); }
+}
 function setLanguage(code) {
   applyLanguage(code);
   renderLangList();
+  refreshDynamicTitles();
   showToast('success', code === 'ar' ? 'تم تغيير لغة الواجهة إلى العربية' : 'Interface language updated');
 }
 function toggleSettingsSub(e) {
@@ -2948,6 +2970,7 @@ async function loadSiteSettings() {
 // ==============================
 async function init() {
   await loadSiteSettings();
+  updateHeroButtons();
   if (authToken) {
     try {
       const res = await fetch(`${API}/auth/me`, { headers: { 'Authorization': `Bearer ${authToken}` } });
@@ -2965,7 +2988,14 @@ async function init() {
   loadExams();
 }
 
+function updateHeroButtons() {
+  // زر «إنشاء حساب مجاني» في الواجهة يظهر لغير المسجلين فقط
+  const rb = document.getElementById('hero-register-btn');
+  if (rb) rb.style.display = currentUser ? 'none' : '';
+}
+
 function updateUserUI() {
+  updateHeroButtons();
   if (!currentUser) return;
   document.getElementById('auth-buttons').style.display = 'none';
   document.getElementById('user-menu').style.display = 'flex';
@@ -3071,6 +3101,44 @@ function logout() {
   loadChapters();
   loadExams();
   showToast('success', 'تم تسجيل الخروج');
+  updateHeroButtons();
+}
+
+// حذف الحساب نهائياً: يستدعي دالة delete_my_account في Supabase (تحذف بياناته وجلساته من القاعدة)
+async function deleteAccount() {
+  if (!currentUser) { openAuthModal('login'); return; }
+  const who = currentUser.name || 'حسابك';
+  if (!confirm('⚠️ حذف الحساب نهائياً؟\nسيُحذف «' + who + '» مع كل التقدم والنقاط والاشتراك من قاعدة البيانات.\nلا يمكن التراجع عن هذه الخطوة.')) return;
+  if (!confirm('تأكيد أخير: هل أنت متأكد تماماً من الحذف النهائي؟')) return;
+  toggleUserDropdown(true);
+  let ok = false, errMsg = '';
+  try {
+    const r = await sb.rpc('delete_my_account');
+    if (!r.error) ok = true; else errMsg = r.error.message || '';
+  } catch (e) { errMsg = (e && e.message) || ''; }
+  if (!ok) {
+    try {
+      const res = await fetch(`${API}/account`, { method: 'DELETE', headers: authToken ? { 'Authorization': `Bearer ${authToken}` } : {} });
+      ok = res.ok;
+    } catch (e) {}
+  }
+  if (!ok) {
+    showToast('error', /function|schema|not exist/i.test(errMsg) ? 'حذف الحساب يحتاج تنفيذ delete_account.sql في Supabase أولاً' : 'تعذر حذف الحساب الآن — جرّب لاحقاً أو راسلنا عبر Contact');
+    return;
+  }
+  authToken = null;
+  currentUser = null;
+  localStorage.removeItem('auth_token');
+  localStorage.removeItem('auth_intent');
+  localStorage.removeItem('local_progress');
+  document.getElementById('auth-buttons').style.display = 'flex';
+  document.getElementById('user-menu').style.display = 'none';
+  document.getElementById('user-progress-section').style.display = 'none';
+  try { await sb.auth.signOut(); } catch (e) {}
+  loadChapters();
+  loadExams();
+  updateHeroButtons();
+  showToast('success', 'تم حذف حسابك نهائياً من قاعدة البيانات');
 }
 
 // ==============================
@@ -3100,7 +3168,7 @@ async function loadChapters() {
   if (heroCh) heroCh.textContent = chapters.length;
   if (heroLs) heroLs.textContent = chapters.reduce((s, c) => s + (c.lessons || []).length, 0);
   const cntText = document.getElementById('chapters-count-text');
-  if (cntText) cntText.textContent = chapters.length + ' فصلاً شاملاً في 4 مستويات تأخذك من الصفر إلى الاحتراف';
+  if (cntText) cntText.textContent = chapters.length + ' ' + TW('فصلاً شاملاً في 4 مستويات تأخذك من الصفر إلى الاحتراف');
   updateLevelCards();
   renderChapters(getFilteredChapters());
 }
@@ -3119,11 +3187,11 @@ function renderChapters(chapters) {
          onclick="${isLocked ? "showToast('warning','🔒 هذا الفصل يتطلب اشتراكاً مميزاً')" : `openLessonsModal('${ch.id}')`}">
       ${isLocked ? '<div class="lock-overlay"><div class="lock-icon">🔒</div></div>' : ''}
       <span class="chapter-icon">${ch.icon || '📚'}</span>
-      <h3 class="chapter-title">${ch.title}</h3>
+      <h3 class="chapter-title">${T(ch.title)}</h3>
       <p class="chapter-desc">${ch.description || ''}</p>
       <div class="chapter-meta">
-        <span class="chapter-count"><i class="fa-solid fa-book-open"></i> ${(ch.lessons || []).length} درس</span>
-        <span class="chapter-badge ${ch.is_free ? 'badge-free' : 'badge-premium'}">${ch.is_free ? 'مجاني' : 'مميز'}</span>
+        <span class="chapter-count"><i class="fa-solid fa-book-open"></i> ${(ch.lessons || []).length} ${TW('درس')}</span>
+        <span class="chapter-badge ${ch.is_free ? 'badge-free' : 'badge-premium'}">${ch.is_free ? TW('مجاني') : TW('مميز')}</span>
       </div>
       ${currentUser ? `
       <div class="chapter-progress"><div class="chapter-progress-fill" style="width:${progress}%"></div></div>
@@ -3154,9 +3222,9 @@ function updateLevelCards() {
     const free = chs.filter(c => c.is_free).length;
     const el = document.getElementById('lvl-stats-' + lv);
     if (el) el.innerHTML = `
-      <span><i class="fa-solid fa-book-open"></i> ${chs.length} فصول</span>
-      <span><i class="fa-solid fa-file-lines"></i> ${lessons} دروس</span>
-      <span><i class="fa-solid fa-unlock" style="color:var(--success);"></i> ${free} مجاني</span>`;
+      <span><i class="fa-solid fa-book-open"></i> ${chs.length} ${TW('فصول')}</span>
+      <span><i class="fa-solid fa-file-lines"></i> ${lessons} ${TW('دروس')}</span>
+      <span><i class="fa-solid fa-unlock" style="color:var(--success);"></i> ${free} ${TW('مجاني')}</span>`;
   });
 }
 
@@ -3166,7 +3234,8 @@ function updateLevelCards() {
 function openLessonsModal(chapterId) {
   const ch = chapters.find(c => c.id === chapterId);
   if (!ch) return;
-  document.getElementById('lessons-modal-title').textContent = ch.title;
+  document.getElementById('lessons-modal-title').textContent = T(ch.title);
+  lastLessonsChapterId = chapterId;
   const body = document.getElementById('lessons-modal-body');
   const lessons = ch.lessons || [];
   if (!lessons.length) {
@@ -3183,11 +3252,11 @@ function openLessonsModal(chapterId) {
           ${isCompleted ? '<i class="fa-solid fa-check"></i>' : isLocked ? '<i class="fa-solid fa-lock"></i>' : i + 1}
         </div>
         <div class="lesson-info">
-          <div class="lesson-title">${l.title}</div>
+          <div class="lesson-title">${T(l.title)}</div>
           <div class="lesson-meta">
-            <span><i class="fa-regular fa-clock"></i> ${l.duration || 15} دقيقة</span>
+            <span><i class="fa-regular fa-clock"></i> ${l.duration || 15} ${TW('دقيقة')}</span>
             <span><i class="fa-solid fa-star"></i> ${l.xp_reward || 10} XP</span>
-            ${isCompleted ? '<span style="color:var(--success)"><i class="fa-solid fa-circle-check"></i> مكتمل</span>' : ''}
+            ${isCompleted ? '<span style="color:var(--success)"><i class="fa-solid fa-circle-check"></i> ' + TW('مكتمل') + '</span>' : ''}
           </div>
         </div>
         <i class="fa-solid fa-chevron-left" style="color:var(--text-muted);font-size:12px;"></i>
@@ -3210,7 +3279,7 @@ async function openLesson(lessonId) {
     const lp = readLocalProgress()[lessonId];
     const data = { ...LOCAL_LESSONS[lessonId], userProgress: lp && lp.completed ? lp : null };
     currentLesson = data;
-    document.getElementById('lesson-modal-title').textContent = data.title;
+    document.getElementById('lesson-modal-title').textContent = T(data.title);
     renderLessonView(data);
     return;
   }
@@ -3238,7 +3307,7 @@ async function openLesson(lessonId) {
     }
 
     currentLesson = data;
-    document.getElementById('lesson-modal-title').textContent = data.title;
+    document.getElementById('lesson-modal-title').textContent = T(data.title);
     renderLessonView(data);
   } catch {
     showToast('error', 'تعذر تحميل الدرس');
@@ -3254,12 +3323,12 @@ function renderLessonView(lesson) {
 
   let html = `
     <div class="lesson-view-header">
-      <h2 class="lesson-view-title" dir="ltr">${lesson.title}</h2>
+      <h2 class="lesson-view-title" dir="ltr">${T(lesson.title)}</h2>
       <p class="lesson-view-desc">${lesson.description || ''}</p>
       <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-        <span class="tag"><i class="fa-regular fa-clock"></i> ${lesson.duration || 15} دقيقة</span>
+        <span class="tag"><i class="fa-regular fa-clock"></i> ${lesson.duration || 15} ${TW('دقيقة')}</span>
         <span class="tag"><i class="fa-solid fa-star"></i> ${lesson.xp_reward || 10} XP</span>
-        ${isCompleted ? '<span class="tag" style="color:var(--success);border-color:rgba(16,185,129,0.3);"><i class="fa-solid fa-check"></i> مكتمل</span>' : ''}
+        ${isCompleted ? '<span class="tag" style="color:var(--success);border-color:rgba(16,185,129,0.3);"><i class="fa-solid fa-check"></i> ' + TW('مكتمل') + '</span>' : ''}
       </div>
     </div>`;
 
@@ -4019,17 +4088,17 @@ async function loadExams() {
     return `<div class="exam-card ${locked ? 'locked' : ''}" style="--exam-color:${colors[lv]};">
       <div class="exam-badge">${lv}</div>
       <div class="exam-name">امتحان ${names[lv] || lv} الشامل الرسمي</div>
-      <div class="exam-meta"><i class="fa-solid fa-list-check"></i> ${qCount} سؤال • 5 أقسام • مؤقّت 30 دقيقة • النجاح 70%</div>
+      <div class="exam-meta"><i class="fa-solid fa-list-check"></i> ${qCount} ${TW('سؤال')} • 5 ${TW('أقسام')} • 30 ${TW('دقيقة')} • ${TW('النجاح')} 70%</div>
       <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:10px;">
-        <span class="chip free" style="font-size:10px;">📝 قواعد</span>
-        <span class="chip free" style="font-size:10px;">📖 مفردات</span>
-        <span class="chip free" style="font-size:10px;">🎧 استماع</span>
-        <span class="chip free" style="font-size:10px;">✍️ إملاء</span>
-        <span class="chip free" style="font-size:10px;">🎤 نطق</span>
+        <span class="chip free" style="font-size:10px;">📝 ${TW('قواعد')}</span>
+        <span class="chip free" style="font-size:10px;">📖 ${TW('مفردات')}</span>
+        <span class="chip free" style="font-size:10px;">🎧 ${TW('استماع')}</span>
+        <span class="chip free" style="font-size:10px;">✍️ ${TW('إملاء')}</span>
+        <span class="chip free" style="font-size:10px;">🎤 ${TW('نطق')}</span>
       </div>
       ${locked
         ? `<button class="btn btn-accent" onclick="showPaymentModal()"><i class="fa-solid fa-crown"></i> 🔒 الامتحانات الرسمية للمشتركين المميزين</button>`
-        : `<button class="btn btn-primary" onclick="openExam('${lv}')"><i class="fa-solid fa-pen-to-square"></i> ابدأ الامتحان الرسمي</button>`}
+        : `<button class="btn btn-primary" onclick="openExam('${lv}')"><i class="fa-solid fa-pen-to-square"></i> ${TW('ابدأ الامتحان الرسمي')}</button>`}
     </div>`;
   }).join('');
 }
@@ -4054,7 +4123,7 @@ async function openExam(level) {
   let qi = 0, qhtml = '';
   try {
     examData.sections.forEach(sec => {
-      qhtml += '<div class="lvl-head" style="margin:16px 0 8px;">' + sec.icon + ' ' + sec.name + ' (' + sec.questions.length + ' أسئلة)</div>';
+      qhtml += '<div class="lvl-head" style="margin:16px 0 8px;">' + sec.icon + ' ' + TW(sec.name) + ' (' + sec.questions.length + ' ' + TW('أسئلة') + ')</div>';
       sec.questions.forEach(q => {
         const i = qi++;
         if (q.type === 'mc' || q.type === 'listening') {
@@ -4294,7 +4363,15 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 function openAuthModal(tab = 'login') { openModal('auth-modal'); switchAuthTab(tab); }
 function showPaymentModal() {
   if (!currentUser) { openAuthModal('login'); showToast('warning', 'يجب تسجيل الدخول أولاً'); return; }
-  openModal('payment-modal');
+  // الاشتراك يتم عبر مراسلة الدعم مباشرة من زر Contact
+  closeModal('payment-modal');
+  closeModal('lesson-modal');
+  openContactModal();
+  const msg = document.getElementById('ct-msg');
+  if (msg && !msg.value.trim()) {
+    msg.value = 'مرحباً، أرغب في تفعيل الاشتراك المميز 🌟\nاسم الحساب: ' + (currentUser.name || '') + '\nالمرجو إخباري بطريقة الدفع والخطوات المطلوبة. شكراً!';
+    msg.focus();
+  }
 }
 
 function switchAuthTab(tab) {
@@ -4330,28 +4407,153 @@ function showXpPopup(xp) {
 }
 
 // ==============================
-// زر التواصل العائم — إرسال رسالة للإدارة إلى جدول contact_messages
+// زر التواصل العائم — مراسلة الدعم: نص + ملفات (كل الصيغ) + تسجيل صوتي
+// النص يُحفظ في contact_messages والمرفقات في Storage (bucket: messages)
 // ==============================
-function openContactModal() { openModal('contact-modal'); }
-async function submitContact(e) {
-  e.preventDefault();
-  const name = document.getElementById('ct-name').value.trim();
-  const email = document.getElementById('ct-email').value.trim();
-  const message = document.getElementById('ct-msg').value.trim();
-  if (!message) { showToast('warning', 'اكتب رسالتك أولاً'); return; }
-  const btn = document.getElementById('ct-send');
-  btn.disabled = true; btn.textContent = 'جار الإرسال…';
-  const r = await sb.from('contact_messages').insert({ name: name || null, email: email || null, message: message });
-  btn.disabled = false; btn.textContent = '📨 إرسال الرسالة';
-  if (r.error) {
-    showToast('error', /does not exist|schema/i.test(r.error.message) ? 'صندوق الرسائل غير مفعّل بعد على الموقع' : 'تعذر إرسال الرسالة، حاول لاحقاً');
-    return;
+let ctFiles = [], ctRecorder = null, ctChunks = [], ctAudioBlob = null, ctStream = null, ctTimer = null, ctSeconds = 0;
+
+function openContactModal() {
+  ctFiles = []; ctAudioBlob = null;
+  renderCtFiles(); renderCtAudio();
+  const from = document.getElementById('ct-from');
+  if (currentUser) {
+    from.innerHTML = '<div style="display:flex;align-items:center;gap:8px;background:rgba(124,58,237,0.08);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;flex-wrap:wrap;">'
+      + '<i class="fa-solid fa-user" style="color:var(--secondary);"></i><span style="font-weight:700;">' + esc(currentUser.name || 'مستخدم') + '</span>'
+      + (currentUser.email ? '<span style="color:var(--text-muted);direction:ltr;">· ' + esc(currentUser.email) + '</span>' : '')
+      + '<span style="margin-inline-start:auto;font-size:11px;color:var(--success);">حسابك ✓</span></div>';
+  } else {
+    from.innerHTML = '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+      + '<input class="form-input" id="ct-name" placeholder="اسمك" style="flex:1;min-width:140px;">'
+      + '<input class="form-input" id="ct-email" type="email" placeholder="بريدك (اختياري — لنرد عليك)" style="flex:1;min-width:140px;direction:ltr;"></div>';
   }
-  showToast('success', 'وصلت رسالتك ✓ سنقرأها قريباً');
+  openModal('contact-modal');
+}
+function closeContactComposer() {
+  if (ctRecorder && ctRecorder.state === 'recording') { try { ctRecorder.stop(); } catch (e) {} }
+  if (ctStream) { try { ctStream.getTracks().forEach(t => t.stop()); } catch (e) {} ctStream = null; }
+  if (ctTimer) { clearInterval(ctTimer); ctTimer = null; }
   closeModal('contact-modal');
-  document.getElementById('ct-msg').value = '';
-  document.getElementById('ct-name').value = '';
-  document.getElementById('ct-email').value = '';
+}
+function ctPickFiles(input) {
+  for (const f of input.files) ctFiles.push(f);
+  input.value = '';
+  renderCtFiles();
+}
+function ctFmtSize(n) { return n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+function renderCtFiles() {
+  const el = document.getElementById('ct-files');
+  if (!el) return;
+  if (!ctFiles.length) { el.innerHTML = ''; return; }
+  el.innerHTML = ctFiles.map((f, i) =>
+    '<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;">'
+    + '<span>📄</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:left;">' + esc(f.name) + '</span>'
+    + '<span style="color:var(--text-muted);">' + ctFmtSize(f.size) + '</span>'
+    + '<button class="btn sec sm" onclick="ctRemoveFile(' + i + ')">✕</button></div>').join('');
+}
+function ctRemoveFile(i) { ctFiles.splice(i, 1); renderCtFiles(); }
+async function ctToggleRecord() {
+  const btn = document.getElementById('ct-rec-btn');
+  const st = document.getElementById('ct-rec-status');
+  if (ctRecorder && ctRecorder.state === 'recording') { ctRecorder.stop(); return; }
+  if (!window.MediaRecorder) { showToast('error', 'متصفحك لا يدعم التسجيل الصوتي'); return; }
+  try {
+    ctStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    ctRecorder = new MediaRecorder(ctStream);
+    ctChunks = [];
+    ctRecorder.ondataavailable = ev => { if (ev.data && ev.data.size) ctChunks.push(ev.data); };
+    ctRecorder.onstop = () => {
+      ctAudioBlob = new Blob(ctChunks, { type: ctRecorder.mimeType || 'audio/webm' });
+      if (ctStream) { try { ctStream.getTracks().forEach(t => t.stop()); } catch (e) {} ctStream = null; }
+      if (ctTimer) { clearInterval(ctTimer); ctTimer = null; }
+      btn.innerHTML = '<i class="fa-solid fa-microphone"></i> تسجيل صوتي';
+      st.textContent = '';
+      renderCtAudio();
+    };
+    ctRecorder.start();
+    ctSeconds = 0;
+    st.textContent = '● يسجل 0:00';
+    btn.innerHTML = '<i class="fa-solid fa-stop" style="color:var(--danger);"></i> إيقاف التسجيل';
+    ctTimer = setInterval(() => {
+      ctSeconds++;
+      st.textContent = '● يسجل ' + Math.floor(ctSeconds / 60) + ':' + String(ctSeconds % 60).padStart(2, '0');
+    }, 1000);
+  } catch (e) {
+    showToast('error', 'تعذر الوصول إلى الميكروفون — تحقق من صلاحيات المتصفح');
+  }
+}
+function renderCtAudio() {
+  const el = document.getElementById('ct-audio');
+  if (!el) return;
+  if (!ctAudioBlob) { el.innerHTML = ''; return; }
+  const url = URL.createObjectURL(ctAudioBlob);
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:8px 10px;">'
+    + '<span>🎙</span><audio controls src="' + url + '" style="flex:1;height:34px;"></audio>'
+    + '<button class="btn sec sm" onclick="ctDiscardAudio()">🗑 حذف</button></div>';
+}
+function ctDiscardAudio() { ctAudioBlob = null; renderCtAudio(); }
+
+async function submitContact(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  const message = document.getElementById('ct-msg').value.trim();
+  const nameEl = document.getElementById('ct-name');
+  const emailEl = document.getElementById('ct-email');
+  const name = currentUser ? (currentUser.name || 'مستخدم') : (nameEl ? nameEl.value.trim() : '');
+  const email = currentUser ? (currentUser.email || null) : (emailEl ? emailEl.value.trim() : null);
+  if (!message && !ctFiles.length && !ctAudioBlob) { showToast('warning', 'اكتب رسالتك أو أضف مرفقاً أو تسجيلاً أولاً'); return; }
+  const btn = document.getElementById('ct-send');
+  btn.disabled = true;
+  const setBusy = t => { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ' + t; };
+  try {
+    let storageWarn = '';
+    const attachments = [];
+    const stamp = Date.now();
+    if (ctFiles.length || ctAudioBlob) {
+      setBusy('جار رفع المرفقات…');
+      for (let i = 0; i < ctFiles.length; i++) {
+        const f = ctFiles[i];
+        const safe = f.name.replace(/[\\/:*?"<>|]+/g, '_');
+        const path = 'inbox/' + stamp + '-' + i + '-' + safe;
+        const up = await sb.storage.from('messages').upload(path, f, { upsert: false });
+        if (up.error) { storageWarn = up.error.message || 'storage'; break; }
+        attachments.push({ path, name: f.name, size: f.size, type: f.type || 'application/octet-stream' });
+      }
+      if (!storageWarn && ctAudioBlob) {
+        const vpath = 'inbox/' + stamp + '-voice.webm';
+        const up = await sb.storage.from('messages').upload(vpath, ctAudioBlob, { upsert: false, contentType: 'audio/webm' });
+        if (up.error) storageWarn = up.error.message || 'storage';
+        else attachments.push({ path: vpath, name: 'تسجيل صوتي', size: ctAudioBlob.size, type: 'audio/webm', audio: true });
+      }
+    }
+    setBusy('جار إرسال الرسالة…');
+    const base = { name: name || null, email: email || null, message: message || '(بدون نص — انظر المرفقات)' };
+    let r;
+    if (attachments.length) {
+      r = await sb.from('contact_messages').insert(Object.assign({ attachments }, base));
+      if (r.error) {
+        r = await sb.from('contact_messages').insert(Object.assign({}, base, {
+          message: (base.message || '') + '\n\n📎 [' + attachments.length + ' مرفقات — يلزم تنفيذ contact_files.sql لعرضها]'
+        }));
+        if (!r.error) storageWarn = storageWarn || 'attachments-column';
+      }
+    } else {
+      r = await sb.from('contact_messages').insert(base);
+    }
+    if (r.error) {
+      showToast('error', /does not exist|schema/i.test(r.error.message || '') ? 'صندوق الرسائل غير مفعّل بعد على الموقع' : 'تعذر إرسال الرسالة، حاول لاحقاً');
+    } else {
+      showToast('success', 'وصلت رسالتك ✓ سنقرأها قريباً');
+      document.getElementById('ct-msg').value = '';
+      ctFiles = []; ctAudioBlob = null;
+      renderCtFiles(); renderCtAudio();
+      closeContactComposer();
+      if (storageWarn) showToast('warning', 'النص وصل ✓ — لكن المرفقات تحتاج تنفيذ contact_files.sql في Supabase');
+    }
+  } catch (err) {
+    showToast('error', 'حدث خطأ غير متوقع أثناء الإرسال');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> إرسال الرسالة';
+  }
 }
 
 function scrollToChapters() {
