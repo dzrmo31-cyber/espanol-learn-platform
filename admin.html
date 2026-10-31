@@ -187,7 +187,7 @@ let sbAdmin = null, sbPublic = null;
 let userTable = 'users';
 let userCols = [];
 let autoTimer = null, lastFp = null, autoDirHandle = null;
-let attachedFiles = [], mailSel = null;
+let attachedFiles = [], mailSel = null, replyTarget = null;
 
 function toast(msg, ok) {
   const t = document.createElement('div');
@@ -804,9 +804,8 @@ function selectMail(id) {
     + (m.is_read ? '<span class="chip free">مقروءة</span>' : '<span class="chip premium">جديدة</span>') + '</div>'
     + '<div class="msg-body">' + esc(m.message) + '</div>'
     + '<div class="row-flex" style="margin-top:14px;">'
-    + (m.email ? '<a class="btn sm" href="mailto:' + esc(m.email) + '?subject=رد من إسبانيول">↩️ رد بالبريد</a>' : '')
     + (!m.is_read ? '<button class="btn sm sec" onclick="markRead(\'' + m.id + '\')">✓ تعليم كمقروءة</button>' : '')
-    + '<button class="btn sm sec" onclick="quoteToCompose(\'' + m.id + '\')">✍️ صياغة رد</button>'
+    + '<button class="btn sm" onclick="quoteToCompose(\'' + m.id + '\')">✍️ صياغة رد</button>'
     + '<button class="btn sm danger" onclick="delMsg(\'' + m.id + '\')">🗑 حذف</button></div>';
   if (!m.is_read) { sbAdmin.from('contact_messages').update({ is_read: true }).eq('id', id).then(() => { m.is_read = true; renderMailList(); }); }
 }
@@ -814,7 +813,10 @@ function quoteToCompose(id) {
   const m = mailItems.find(x => x.id === id);
   if (!m) return;
   showCompose();
+  replyTarget = { msgId: m.id, user_id: m.user_id || null, name: m.name || null, email: m.email || null };
   document.getElementById('cmp-to').value = m.email || '';
+  const sj = document.getElementById('cmp-subj');
+  if (!sj.value) sj.value = 'رد على رسالتك';
   document.getElementById('cmp-body').value = '\n\n──────────\nفي رد على رسالة «' + (m.message || '').slice(0, 80) + '» كتب ' + (m.name || 'الزائر') + ':';
 }
 function showCompose() {
@@ -822,14 +824,14 @@ function showCompose() {
   z.style.display = 'block';
   if (!z.innerHTML) {
     z.innerHTML = '<div class="pm-card compose"><h4>✍️ كتابة رسالة</h4>'
-      + '<div class="row-flex" style="gap:10px;"><input type="email" id="cmp-to" placeholder="إلى (بريد المستلم) — اختياري" style="direction:ltr;text-align:left;flex:1;min-width:200px;">'
+      + '<div class="row-flex" style="gap:10px;"><input type="email" id="cmp-to" placeholder="إلى (بريد المستخدم المسجّل في الموقع)" style="direction:ltr;text-align:left;flex:1;min-width:200px;">'
       + '<input type="text" id="cmp-subj" placeholder="الموضوع" style="flex:1;min-width:160px;"></div>'
       + '<div class="emoji-bar" id="emoji-bar"></div>'
       + '<textarea id="cmp-body" placeholder="اكتب رسالتك… استخدم الإيموجيات من الشريط أعلاه"></textarea>'
       + '<div class="row-flex" style="margin-top:10px;">'
       + '<label class="btn sec sm" style="cursor:pointer;">📎 إرفاق ملفات<input type="file" multiple style="display:none;" onchange="addFiles(this.files)"></label>'
-      + '<button class="btn sm" onclick="sendCompose()">📤 حفظ وإرسال بالبريد</button>'
-      + '<span class="muted">المرفقات تُرفع إلى تخزين Supabase وتظهر مع روابط تحميل تحت الرسالة</span></div>'
+      + '<button class="btn sm" onclick="sendCompose()">📤 إرسال</button>'
+      + '<span class="muted">يصل الرد إلى صندوق رسائل المستخدم داخل الموقع — والمرفقات تظهر فيه كروابط تحميل</span></div>'
       + '<div id="attach-list"></div>'
       + '<div id="cmp-status"></div></div>';
   }
@@ -845,30 +847,48 @@ function renderAttachList() {
 }
 async function sendCompose() {
   const to = document.getElementById('cmp-to').value.trim();
-  const subj = document.getElementById('cmp-subj').value.trim() || '(بدون موضوع)';
-  const body = document.getElementById('cmp-body').value.trim();
+  const subj = document.getElementById('cmp-subj').value.trim() || 'رسالة من إدارة إسبانيول';
+  let body = document.getElementById('cmp-body').value.trim();
   const st = document.getElementById('cmp-status');
   if (!body && !attachedFiles.length) { st.innerHTML = '<div class="err">اكتب رسالة أو أرفق ملفاً أولاً</div>'; return; }
-  st.innerHTML = '<div class="empty">جار الرفع والحفظ…</div>';
-  let saveErr = null;
+  st.innerHTML = '<div class="empty">جار الإرسال…</div>';
   try {
+    // 1) تحديد المستخدم المستلم (من الرسالة المردود عليها، وإلا بالبحث ببريده)
+    let uid = replyTarget && replyTarget.user_id, uname = replyTarget && replyTarget.name, uemail = to || (replyTarget && replyTarget.email) || null;
+    if (!uid && uemail) {
+      const ur = await sbAdmin.from('users').select('id, name').eq('email', uemail).limit(1);
+      if (!ur.error && ur.data && ur.data[0]) { uid = ur.data[0].id; uname = uname || ur.data[0].name; }
+    }
+    if (!uid) throw new Error('لا يوجد حساب مسجّل بهذا البريد — لا يمكن إيصال الرد إلى صندوقه');
+
+    // 2) رفع المرفقات (إن وجدت) وإلحاق روابطها بنص الرسالة
     let links = [];
     for (const f of attachedFiles) {
       const path = 'outbox/' + stamp() + '_' + f.name.replace(/[^\w.\-]/g, '_');
       const up = await sbAdmin.storage.from(BUCKET).upload(path, f);
       if (up.error) throw up.error;
       const su = await sbAdmin.storage.from(BUCKET).createSignedUrl(path, 60 * 60 * 24 * 30);
-      links.push({ name: f.name, url: su.data ? su.data.signedUrl : null });
+      if (su.data && su.data.signedUrl) links.push({ name: f.name, url: su.data.signedUrl });
     }
-    const ins = await sbAdmin.from('admin_outbox').insert({ to_email: to || null, subject: subj, body: body, files: links });
-    if (ins.error) throw ins.error;
-  } catch (e) { saveErr = e; }
+    if (links.length) body += '\n\n📎 المرفقات:\n' + links.map(l => '• ' + l.name + ': ' + l.url).join('\n');
 
-  if (to) window.open('mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body));
-  st.innerHTML = saveErr
-    ? '<div class="err">فُتح البريد، لكن تعذّر الحفظ: ' + esc(saveErr.message) + '</div>'
-    : '<div class="okbox">✅ حُفظت الرسالة وفُتح البريد</div>';
-  if (!saveErr) { attachedFiles = []; renderAttachList(); renderFilesZone(); }
+    // 3) الإرسال إلى صندوق المستخدم داخل الموقع
+    const row = { user_id: uid, user_email: uemail, user_name: uname, title: subj, body: body, in_reply_to: (replyTarget && replyTarget.msgId) || null };
+    const ins = await sbAdmin.from('user_inbox').insert(row);
+    if (ins.error) throw ins.error;
+
+    // 4) نسخة في الصادر (اختيارية — لا يؤثر فشلها على الإرسال)
+    try { await sbAdmin.from('admin_outbox').insert({ to_email: uemail, subject: subj, body: body, files: links }); } catch (_) {}
+
+    st.innerHTML = '<div class="okbox">✅ وصلت الرسالة إلى صندوق المستخدم داخل الموقع</div>';
+    document.getElementById('cmp-body').value = '';
+    document.getElementById('cmp-subj').value = '';
+    attachedFiles = []; replyTarget = null;
+    renderAttachList();
+    renderFilesZone();
+  } catch (e) {
+    st.innerHTML = '<div class="err">فشل: ' + esc(e.message) + '</div>';
+  }
 }
 async function renderFilesZone() {
   const el = document.getElementById('files-zone');
