@@ -1394,7 +1394,7 @@
               <div class="dropdown-item" onclick="openLanguageModal()"><i class="fa-solid fa-globe"></i> لغة الموقع</div>
               <div class="dropdown-item danger" onclick="deleteAccount()"><i class="fa-solid fa-user-slash"></i> حذف الحساب نهائياً</div>
             </div>
-            <div class="dropdown-item" onclick="openInbox()"><i class="fa-solid fa-inbox"></i> صندوق الرسائل<span class="chip premium" id="inbox-badge" style="display:none;margin-inline-start:auto;font-size:10px;">0</span></div>
+            <div class="dropdown-item" onclick="openInbox()"><i class="fa-solid fa-inbox"></i> <span>صندوق الرسائل</span><span class="chip" id="inbox-total" style="display:none;margin-inline-start:auto;font-size:11px;" title="عدد الرسائل في صندوقك">0</span><span class="chip premium" id="inbox-badge" style="display:none;margin-inline-start:6px;font-size:10px;">0</span></div>
             <div class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</div>
           </div>
         </div>
@@ -4244,6 +4244,7 @@ function _applyLanguageCore(lang) {
 // (محتوى الدروس التعليمي نفسه — الجداول والشروحات — يبقى بالعربية لأنه المنهج)
 // ============================================================
 Object.assign(UI_TEXTS, {"📩 لديك رسائل غير مقروءة في صندوقك — اضغط لفتحها": {"en": "📩 You have unread messages in your inbox — tap to open", "es": "📩 Tienes mensajes sin leer en tu buzón — pulsa para abrirlos", "pt": "📩 Tem mensagens por ler na sua caixa — toque para abrir", "ru": "📩 У вас есть непрочитанные сообщения — нажмите, чтобы открыть"}, "📩 وصلتك رسالة جديدة من إدارة إسبانيول — اضغط لفتح الصندوق": {"en": "📩 New message from the Español team — tap to open your inbox", "es": "📩 Nuevo mensaje del equipo de Español — pulsa para abrir tu buzón", "pt": "📩 Nova mensagem da equipa Español — toque para abrir a caixa", "ru": "📩 Новое сообщение от команды Español — нажмите, чтобы открыть ящик"}});
+Object.assign(UI_TEXTS, {"رسائل الصندوق:": {"en": "Messages in inbox:", "es": "Mensajes en el buzón:", "pt": "Mensagens na caixa:", "ru": "Сообщений в ящике:"}, "منها جديدة:": {"en": "of which new:", "es": "de ellas nuevas:", "pt": "das quais novas:", "ru": "из них новых:"}, "🧹 حذف المقروءة": {"en": "🧹 Delete read", "es": "🧹 Eliminar leídos", "pt": "🧹 Excluir lidas", "ru": "🧹 Удалить прочитанные"}, "حذف": {"en": "Delete", "es": "Eliminar", "pt": "Excluir", "ru": "Удалить"}, "↩️ رد": {"en": "↩️ Reply", "es": "↩️ Responder", "pt": "↩️ Responder", "ru": "↩️ Ответить"}, "اكتب ردك هنا…": {"en": "Write your reply here…", "es": "Escribe tu respuesta aquí…", "pt": "Escreva sua resposta aqui…", "ru": "Напишите ответ здесь…"}, "📤 إرسال الرد": {"en": "📤 Send reply", "es": "📤 Enviar respuesta", "pt": "📤 Enviar resposta", "ru": "📤 Отправить ответ"}, "اكتب ردك أولاً": {"en": "Write your reply first", "es": "Escribe primero tu respuesta", "pt": "Escreva primeiro a sua resposta", "ru": "Сначала напишите ответ"}, "تعذر إرسال الرد، حاول لاحقاً": {"en": "Could not send the reply, try later", "es": "No se pudo enviar la respuesta, inténtalo más tarde", "pt": "Não foi possível enviar a resposta, tente mais tarde", "ru": "Не удалось отправить ответ, попробуйте позже"}, "وصل ردك إلى الإدارة ✓": {"en": "Your reply reached the administration ✓", "es": "Tu respuesta llegó a la administración ✓", "pt": "Sua resposta chegou à administração ✓", "ru": "Ваш ответ доставлен администрации ✓"}, "حذف هذه الرسالة نهائياً؟": {"en": "Delete this message permanently?", "es": "¿Eliminar este mensaje definitivamente?", "pt": "Excluir esta mensagem definitivamente?", "ru": "Удалить это сообщение навсегда?"}, "حذف كل الرسائل المقروءة نهائياً؟": {"en": "Permanently delete all read messages?", "es": "¿Eliminar definitivamente todos los mensajes leídos?", "pt": "Excluir definitivamente todas as mensagens lidas?", "ru": "Удалить все прочитанные сообщения навсегда?"}, "تعذر حذف الرسالة — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات": {"en": "Could not delete the message — run user_inbox_actions.sql in the database", "es": "No se pudo eliminar el mensaje — hay que ejecutar user_inbox_actions.sql en la base de datos", "pt": "Não foi possível excluir a mensagem — execute user_inbox_actions.sql no banco de dados", "ru": "Не удалось удалить сообщение — выполните user_inbox_actions.sql в базе данных"}, "تعذر حذف الرسائل — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات": {"en": "Could not delete the messages — run user_inbox_actions.sql in the database", "es": "No se pudieron eliminar los mensajes — hay que ejecutar user_inbox_actions.sql en la base de datos", "pt": "Não foi possível excluir as mensagens — execute user_inbox_actions.sql no banco de dados", "ru": "Не удалось удалить сообщения — выполните user_inbox_actions.sql в базе данных"}, "تم حذف الرسالة": {"en": "Message deleted", "es": "Mensaje eliminado", "pt": "Mensagem excluída", "ru": "Сообщение удалено"}, "تم حذف الرسائل المقروءة": {"en": "Read messages deleted", "es": "Mensajes leídos eliminados", "pt": "Mensagens lidas excluídas", "ru": "Прочитанные сообщения удалены"}, "عدد الرسائل في صندوقك": {"en": "Number of messages in your inbox", "es": "Número de mensajes en tu buzón", "pt": "Número de mensagens na sua caixa", "ru": "Количество сообщений в вашем ящике"}, "ردود الإدارة على رسائلك ورسائلها إليك ستظهر هنا": {"en": "Replies from the administration and its messages to you will appear here", "es": "Las respuestas de la administración y sus mensajes para ti aparecerán aquí", "pt": "As respostas da administração e as mensagens dela para você aparecerão aqui", "ru": "Ответы администрации и её сообщения вам появятся здесь"}});
 const UI_PATTERNS = [
   [/^(\d+)% مكتمل$/, ['$1% complete', '$1% completado', '$1% concluído', '$1% завершено']],
   [/^(\d+)% — يُحمَّل مرة واحدة فقط ثم يعمل داخل جهازك$/, ['$1% — downloaded only once, then runs on your device', '$1% — se descarga solo una vez y luego funciona en tu dispositivo', '$1% — transferido apenas uma vez e depois funciona no seu dispositivo', '$1% — загружается один раз, затем работает на вашем устройстве']],
@@ -4920,11 +4921,18 @@ function _setAvatarDot(n) {
 }
 async function refreshInboxBadge() {
   const badge = document.getElementById('inbox-badge');
-  if (!currentUser) { _setAvatarDot(0); _inboxPrev = null; return; }
+  const totalChip = document.getElementById('inbox-total');
+  const hideChips = () => { if (badge) badge.style.display = 'none'; if (totalChip) totalChip.style.display = 'none'; };
+  if (!currentUser) { hideChips(); _setAvatarDot(0); _inboxPrev = null; return; }
   const uid = await getMyUid();
-  if (!uid) { if (badge) badge.style.display = 'none'; _setAvatarDot(0); return; }
-  const r = await sb.from('user_inbox').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('is_read', false);
-  const n = (!r.error && r.count) || 0;
+  if (!uid) { hideChips(); _setAvatarDot(0); return; }
+  const [rt, ru] = await Promise.all([
+    sb.from('user_inbox').select('id', { count: 'exact', head: true }).eq('user_id', uid),
+    sb.from('user_inbox').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('is_read', false)
+  ]);
+  const total = (!rt.error && rt.count) || 0;
+  const n = (!ru.error && ru.count) || 0;
+  if (totalChip) { totalChip.style.display = total ? 'inline-flex' : 'none'; totalChip.textContent = total; }
   if (badge) { badge.style.display = n ? 'inline-flex' : 'none'; badge.textContent = n; }
   _setAvatarDot(n);
   // تنبيه منبثق: عند أول دخول إن وُجدت رسائل غير مقروءة، وعند وصول رسالة جديدة أثناء التصفح
@@ -4972,13 +4980,76 @@ async function openInbox() {
     refreshInboxBadge();
     return;
   }
-  body.innerHTML = items.map(m =>
-    '<div class="quiz-card" id="ibx-' + m.id + '" style="cursor:pointer;" onclick="toggleInboxMsg(\'' + m.id + '\')">'
+  const unread = items.filter(m => !m.is_read).length;
+  const readCount = items.length - unread;
+  const bar = '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">'
+    + '<span style="font-size:13px;color:var(--text-muted);">' + uiText('رسائل الصندوق:') + ' <b style="color:var(--text);">' + items.length + '</b>'
+    + (unread ? ' · ' + uiText('منها جديدة:') + ' <b style="color:var(--text);">' + unread + '</b>' : '') + '</span>'
+    + (readCount ? '<button class="btn btn-secondary btn-sm" onclick="deleteReadInbox()">' + uiText('🧹 حذف المقروءة') + '</button>' : '')
+    + '</div>';
+  body.innerHTML = bar + items.map(m =>
+    '<div class="quiz-card" id="ibx-' + m.id + '" data-title="' + esc(m.title || 'رسالة من الإدارة') + '" style="cursor:pointer;" onclick="toggleInboxMsg(\'' + m.id + '\')">'
     + '<p class="exam-question" style="display:flex;justify-content:space-between;gap:8px;align-items:center;">'
     + '<span>' + (m.is_read ? '' : '<span class="chip premium" style="font-size:10px;">' + uiText('جديدة') + '</span> ') + esc(m.title || 'رسالة من الإدارة') + '</span>'
-    + '<span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + (m.created_at ? new Date(m.created_at).toLocaleDateString('ar') : '') + '</span></p>'
-    + '<div style="display:none;margin-top:8px;font-size:14px;line-height:1.9;white-space:pre-wrap;">' + esc(m.body || '') + '</div>'
+    + '<span style="display:flex;align-items:center;gap:10px;"><span style="font-size:11px;color:var(--text-muted);white-space:nowrap;">' + (m.created_at ? new Date(m.created_at).toLocaleDateString('ar') : '') + '</span>'
+    + '<button type="button" class="btn btn-secondary btn-sm" style="padding:4px 9px;" title="' + esc(uiText('حذف')) + '" onclick="event.stopPropagation();deleteInboxMsg(\'' + m.id + '\')"><i class="fa-solid fa-trash"></i></button></span></p>'
+    + '<div style="display:none;margin-top:8px;font-size:14px;line-height:1.9;">'
+    +   '<div style="white-space:pre-wrap;">' + esc(m.body || '') + '</div>'
+    +   '<div style="margin-top:12px;" onclick="event.stopPropagation()"><button type="button" class="btn btn-primary btn-sm" onclick="toggleInboxReply(\'' + m.id + '\')">' + uiText('↩️ رد') + '</button></div>'
+    +   '<div id="ibx-reply-' + m.id + '" style="display:none;margin-top:10px;" onclick="event.stopPropagation()">'
+    +     '<textarea id="ibx-reply-text-' + m.id + '" class="form-input" rows="3" placeholder="' + esc(uiText('اكتب ردك هنا…')) + '" style="width:100%;resize:vertical;"></textarea>'
+    +     '<button type="button" class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="sendInboxReply(\'' + m.id + '\')">' + uiText('📤 إرسال الرد') + '</button>'
+    +   '</div>'
+    + '</div>'
     + '</div>').join('');
+  refreshInboxBadge();
+}
+
+function toggleInboxReply(id) {
+  const box = document.getElementById('ibx-reply-' + id);
+  if (!box) return;
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  if (box.style.display === 'block') { const t = document.getElementById('ibx-reply-text-' + id); if (t) t.focus(); }
+}
+
+async function sendInboxReply(id) {
+  const ta = document.getElementById('ibx-reply-text-' + id);
+  const card = document.getElementById('ibx-' + id);
+  const text = ta ? ta.value.trim() : '';
+  if (!text) { showToast('warning', uiText('اكتب ردك أولاً')); return; }
+  const title = (card && card.dataset.title) || 'رسالة من الإدارة';
+  const uid = await getMyUid();
+  const base = {
+    name: (currentUser && (currentUser.name || currentUser.username)) || 'مستخدم',
+    email: (currentUser && currentUser.email) || null,
+    message: '↩️ رد على رسالتك «' + title + '»:\n\n' + text,
+    user_id: uid
+  };
+  let res = await sb.from('contact_messages').insert(base);
+  if (res.error && /user_id/i.test(res.error.message || '')) { const p2 = Object.assign({}, base); delete p2.user_id; res = await sb.from('contact_messages').insert(p2); }
+  if (res.error) { showToast('error', uiText('تعذر إرسال الرد، حاول لاحقاً')); return; }
+  ta.value = '';
+  document.getElementById('ibx-reply-' + id).style.display = 'none';
+  showToast('success', uiText('وصل ردك إلى الإدارة ✓'));
+}
+
+async function deleteInboxMsg(id) {
+  if (!confirm(uiText('حذف هذه الرسالة نهائياً؟'))) return;
+  const uid = await getMyUid();
+  const r = await sb.from('user_inbox').delete().eq('id', id).eq('user_id', uid).select('id');
+  if (r.error || !r.data || !r.data.length) { showToast('error', uiText('تعذر حذف الرسالة — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات')); return; }
+  showToast('success', uiText('تم حذف الرسالة'));
+  openInbox();
+  refreshInboxBadge();
+}
+
+async function deleteReadInbox() {
+  if (!confirm(uiText('حذف كل الرسائل المقروءة نهائياً؟'))) return;
+  const uid = await getMyUid();
+  const r = await sb.from('user_inbox').delete().eq('user_id', uid).eq('is_read', true).select('id');
+  if (r.error || !r.data || !r.data.length) { showToast('error', uiText('تعذر حذف الرسائل — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات')); return; }
+  showToast('success', uiText('تم حذف الرسائل المقروءة'));
+  openInbox();
   refreshInboxBadge();
 }
 
