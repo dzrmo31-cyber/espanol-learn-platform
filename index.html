@@ -2140,6 +2140,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script src="lessons-extra.js"></script>
 <script src="titles-i18n.js"></script>
+<script src="content-i18n.js"></script>
 <script>
 // ==============================
 // CONFIG
@@ -4281,6 +4282,10 @@ function translateString(s, lang) {
   const key = _uiNorm(s);
   const e = UI_TEXTS[key];
   if (e && e[lang]) return e[lang];
+  const ce = window.CONTENT_I18N && window.CONTENT_I18N[key];
+  if (ce && ce[li]) return ce[li];
+  const nm = key.match(/^(\d+)\.\s+(.+)$/);
+  if (nm) { const t = translateString(nm[2], lang); if (t !== nm[2]) return nm[1] + '. ' + t; }
   for (const p of UI_PATTERNS) {
     const m = key.match(p[0]);
     if (m) return p[1][li].replace(/\$(\d)/g, (_, i) => (p[2] && i === '1') ? translateString(m[1], lang) : m[i]);
@@ -4292,7 +4297,7 @@ function translateString(s, lang) {
 }
 const _uiAR = /[\u0600-\u06FF]/;
 const _uiRec = new WeakMap();
-const _uiSKIP = 'script,style,textarea,noscript,.quiz-option,.lr-opt,[class*="exam-opt"]';
+const _uiSKIP = 'script,style,textarea,noscript,.lr-opt,[class*="exam-opt"]';
 function translateTextNodes(lang) {
   const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   const nodes = [];
@@ -5227,7 +5232,7 @@ function renderLessonView(lesson) {
         <p class="quiz-question">${qi + 1}. ${q.question}</p>
         <div class="quiz-options">
           ${(q.options || []).map((opt, oi) => `
-          <div class="quiz-option" id="opt-${qi}-${oi}" onclick="selectOption(${qi}, ${oi}, '${opt.replace(/'/g,"\\'")}', '${q.correct_answer.replace(/'/g,"\\'")}', '${(q.explanation||'').replace(/'/g,"\\'")}')">
+          <div class="quiz-option" id="opt-${qi}-${oi}" data-val="${esc(opt)}" onclick="selectOption(${qi}, ${oi}, '${opt.replace(/'/g,"\\'")}', '${q.correct_answer.replace(/'/g,"\\'")}', '${(q.explanation||'').replace(/'/g,"\\'")}')">
             <span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;"></span>
             ${opt}
           </div>`).join('')}
@@ -5303,7 +5308,7 @@ function selectOption(qi, oi, selected, correct, explanation) {
   const opts = document.querySelectorAll(`#quiz-${qi} .quiz-option`);
   opts.forEach((opt, i) => {
     if (i === oi) opt.classList.add(isCorrect ? 'correct' : 'wrong');
-    if (opt.textContent.trim() === correct) opt.classList.add('correct');
+    if ((opt.dataset.val != null ? opt.dataset.val : opt.textContent.trim()) === correct) opt.classList.add('correct');
     opt.style.pointerEvents = 'none';
   });
   const feedback = document.getElementById(`feedback-${qi}`);
