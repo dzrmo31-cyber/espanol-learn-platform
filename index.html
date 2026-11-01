@@ -205,6 +205,37 @@
     }
     .user-avatar:hover { border-color: var(--primary-light); box-shadow: var(--glow); }
 
+    /* ===== نافذة الدخول / إنشاء الحساب (تصميمان متمايزان) ===== */
+    .auth-band { height:5px; background:linear-gradient(90deg, var(--primary), var(--secondary)); }
+    .modal[data-mode="register"] .auth-band { background:linear-gradient(90deg, #10b981, #06b6d4); }
+    .auth-pane { text-align:center; padding:8px 0 4px; }
+    .auth-badge { width:64px; height:64px; border-radius:50%; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:30px; }
+    .auth-badge.login { background:rgba(124,58,237,0.18); border:1px solid var(--primary); }
+    .auth-badge.reg { background:rgba(16,185,129,0.15); border:1px solid #10b981; }
+    .auth-h { font-size:18px; margin:0 0 8px; }
+    .auth-p { color:var(--text-secondary); font-size:14px; line-height:1.9; margin:0 0 18px; }
+    .auth-perks { list-style:none; padding:0; margin:0 0 18px; display:inline-block; text-align:start; }
+    .auth-perks li { padding:4px 0; font-size:14px; color:var(--text-secondary); }
+    .auth-perks i { color:#10b981; margin-inline-end:6px; }
+    .auth-reg-btn { width:100%; background:linear-gradient(135deg,#10b981,#06b6d4); color:#fff; border:0; }
+    .auth-reg-btn:hover { filter:brightness(1.08); }
+    .auth-fine { font-size:12px; color:var(--text-muted); line-height:1.8; margin:12px 0 0; }
+    .auth-switch { margin:16px 0 0; font-size:13px; color:var(--text-muted); }
+    .auth-switch a { color:var(--secondary); cursor:pointer; font-weight:600; }
+    #tab-register.active { color:#10b981; border-bottom-color:#10b981; }
+    /* ===== نافذة التقييم ===== */
+    .rt-stars { display:flex; justify-content:center; gap:6px; margin:10px 0 6px; direction:ltr; }
+    .rt-star { position:relative; width:46px; height:46px; cursor:pointer; flex-shrink:0; }
+    .rt-star svg { width:46px; height:46px; display:block; }
+    .rt-outline { position:absolute; inset:0; color:var(--text-muted); }
+    .rt-outline path { fill:transparent; stroke:currentColor; stroke-width:1.4; stroke-linejoin:round; }
+    .rt-fill { position:absolute; top:0; left:0; height:100%; overflow:hidden; pointer-events:none; }
+    .rt-fill path { fill:#fbbf24; stroke:#fbbf24; stroke-width:1.4; stroke-linejoin:round; }
+    .rt-hit { position:absolute; top:0; height:100%; width:50%; z-index:2; }
+    .rt-hit.l { left:0; } .rt-hit.r { right:0; }
+    .rt-value { text-align:center; font-size:20px; font-weight:700; min-height:30px; }
+    .rt-stats { text-align:center; color:var(--text-muted); font-size:13px; margin:8px 0 16px; line-height:1.8; }
+    .rt-actions { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
     /* ===== توجيه المبتدئين إلى قسم الدروس ===== */
     .lr-guide { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:14px 18px; margin:0 0 22px; border:1px solid var(--primary); border-radius:14px; background:linear-gradient(135deg, rgba(124,58,237,0.18), rgba(6,182,212,0.08)); position:relative; }
     .lr-guide-icon { font-size:28px; }
@@ -1440,6 +1471,7 @@
               <div class="dropdown-item danger" onclick="deleteAccount()"><i class="fa-solid fa-user-slash"></i> حذف الحساب نهائياً</div>
             </div>
             <div class="dropdown-item" onclick="openInbox()"><i class="fa-solid fa-inbox"></i> <span>صندوق الرسائل</span><span class="chip" id="inbox-total" style="display:none;margin-inline-start:auto;font-size:11px;" title="عدد الرسائل في صندوقك">0</span><span class="chip premium" id="inbox-badge" style="display:none;margin-inline-start:6px;font-size:10px;">0</span></div>
+        <div class="dropdown-item" onclick="openRatingModal()"><i class="fa-regular fa-star"></i> <span>تقييم الموقع</span></div>
             <div class="dropdown-item danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</div>
           </div>
         </div>
@@ -1894,10 +1926,30 @@
 
 
   <!-- Auth Modal -->
-<div class="modal-overlay" id="auth-modal">
-  <div class="modal" style="max-width:480px;">
+<div class="modal-overlay" id="rating-modal">
+  <div class="modal" style="max-width:440px;">
     <div class="modal-header">
-      <h3 class="modal-title i18n-t">الدخول إلى إسبانيول</h3>
+      <h3 class="modal-title">⭐ قيّم إسبانيول</h3>
+      <button class="modal-close" onclick="closeModal('rating-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="text-align:center;color:var(--text-secondary);font-size:14px;line-height:1.9;margin:0;">ما رأيك في الموقع؟ اضغط على النجوم — ويمكنك اختيار نصف نجمة، مثل 4.5.</p>
+      <div class="rt-stars" id="rt-stars"></div>
+      <div class="rt-value" id="rt-value"></div>
+      <div class="rt-stats" id="rt-stats"></div>
+      <div class="rt-actions">
+        <button type="button" class="btn btn-primary" id="rt-submit" onclick="submitRating()">إرسال التقييم</button>
+        <button type="button" class="btn btn-secondary" id="rt-clear" onclick="clearRating()" style="display:none;">حذف تقييمي</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal" style="max-width:480px;" data-mode="login">
+    <div class="auth-band"></div>
+    <div class="modal-header">
+      <h3 class="modal-title" id="auth-title">👋 مرحباً بعودتك</h3>
       <button class="modal-close" onclick="closeModal('auth-modal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
@@ -1905,20 +1957,32 @@
         <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">تسجيل الدخول</div>
         <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">إنشاء حساب</div>
       </div>
-      <div id="google-login-box" style="text-align:center;padding:8px 0 4px;">
-        <p class="i18n-t" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">لديك حساب بالفعل؟ ادخل بنقرة واحدة باستخدام حساب Google</p>
+      <div id="google-login-box" class="auth-pane">
+        <div class="auth-badge login">🔑</div>
+        <h4 class="auth-h">سجّل دخولك لمتابعة تعلّمك</h4>
+        <p class="auth-p">ادخل بنقرة واحدة باستخدام حساب Google، وستجد تقدّمك ونقاطك كما تركتها.</p>
         <button type="button" class="btn btn-primary btn-lg" style="width:100%;" onclick="signInWithGoogle('login')">
           <i class="fa-brands fa-google"></i> تسجيل الدخول باستخدام Google
         </button>
+        <p class="auth-switch">ليس لديك حساب؟ <a onclick="switchAuthTab('register')">أنشئ حساباً مجانياً</a></p>
       </div>
-      <div id="google-register-box" style="display:none;text-align:center;padding:8px 0 4px;">
-        <div id="no-account-notice" style="display:none;background:rgba(245,158,11,0.12);border:1px solid var(--warning);color:var(--warning);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.8;margin-bottom:16px;text-align:right;">
+      <div id="google-register-box" class="auth-pane" style="display:none;">
+        <div id="no-account-notice" style="display:none;background:rgba(245,158,11,0.12);border:1px solid var(--warning);color:var(--warning);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.8;margin-bottom:14px;">
           <i class="fa-solid fa-circle-info"></i> لا يوجد حساب مسجّل بحساب Google هذا. أنشئ حساباً جديداً أولاً بالزر أدناه، وبعدها يمكنك تسجيل الدخول متى شئت.
         </div>
-        <p class="i18n-t" style="color:var(--text-secondary);font-size:14px;margin-bottom:18px;">أنشئ حسابك المجاني بنقرة واحدة باستخدام حساب Google</p>
-        <button type="button" class="btn btn-secondary btn-lg" style="width:100%;" onclick="signInWithGoogle('register')">
+        <div class="auth-badge reg">✨</div>
+        <h4 class="auth-h">أنشئ حسابك المجاني</h4>
+        <ul class="auth-perks">
+          <li><i class="fa-solid fa-check"></i> مجاني بالكامل</li>
+          <li><i class="fa-solid fa-check"></i> يحفظ تقدّمك ونقاطك تلقائياً</li>
+          <li><i class="fa-solid fa-check"></i> أكثر من 120 فصلاً مع دروس وتمارين</li>
+          <li><i class="fa-solid fa-check"></i> بنقرة واحدة ودون كلمة مرور</li>
+        </ul>
+        <button type="button" class="btn btn-lg auth-reg-btn" onclick="signInWithGoogle('register')">
           <i class="fa-brands fa-google"></i> إنشاء حساب باستخدام Google
         </button>
+        <p class="auth-fine">إن كان بريدك مسجّلاً لدينا فسندخلك إلى حسابك الحالي دون إنشاء حساب جديد.</p>
+        <p class="auth-switch">لديك حساب بالفعل؟ <a onclick="switchAuthTab('login')">سجّل الدخول</a></p>
       </div>
       <div style="display:none;">
       <!-- Login Form -->
@@ -4317,6 +4381,7 @@ Object.assign(UI_TEXTS, {"📩 لديك رسائل غير مقروءة في صن
 Object.assign(UI_TEXTS, {"رسائل الصندوق:": {"en": "Messages in inbox:", "es": "Mensajes en el buzón:", "pt": "Mensagens na caixa:", "ru": "Сообщений в ящике:"}, "منها جديدة:": {"en": "of which new:", "es": "de ellas nuevas:", "pt": "das quais novas:", "ru": "из них новых:"}, "🧹 حذف المقروءة": {"en": "🧹 Delete read", "es": "🧹 Eliminar leídos", "pt": "🧹 Excluir lidas", "ru": "🧹 Удалить прочитанные"}, "حذف": {"en": "Delete", "es": "Eliminar", "pt": "Excluir", "ru": "Удалить"}, "↩️ رد": {"en": "↩️ Reply", "es": "↩️ Responder", "pt": "↩️ Responder", "ru": "↩️ Ответить"}, "اكتب ردك هنا…": {"en": "Write your reply here…", "es": "Escribe tu respuesta aquí…", "pt": "Escreva sua resposta aqui…", "ru": "Напишите ответ здесь…"}, "📤 إرسال الرد": {"en": "📤 Send reply", "es": "📤 Enviar respuesta", "pt": "📤 Enviar resposta", "ru": "📤 Отправить ответ"}, "اكتب ردك أولاً": {"en": "Write your reply first", "es": "Escribe primero tu respuesta", "pt": "Escreva primeiro a sua resposta", "ru": "Сначала напишите ответ"}, "تعذر إرسال الرد، حاول لاحقاً": {"en": "Could not send the reply, try later", "es": "No se pudo enviar la respuesta, inténtalo más tarde", "pt": "Não foi possível enviar a resposta, tente mais tarde", "ru": "Не удалось отправить ответ, попробуйте позже"}, "وصل ردك إلى الإدارة ✓": {"en": "Your reply reached the administration ✓", "es": "Tu respuesta llegó a la administración ✓", "pt": "Sua resposta chegou à administração ✓", "ru": "Ваш ответ доставлен администрации ✓"}, "حذف هذه الرسالة نهائياً؟": {"en": "Delete this message permanently?", "es": "¿Eliminar este mensaje definitivamente?", "pt": "Excluir esta mensagem definitivamente?", "ru": "Удалить это сообщение навсегда?"}, "حذف كل الرسائل المقروءة نهائياً؟": {"en": "Permanently delete all read messages?", "es": "¿Eliminar definitivamente todos los mensajes leídos?", "pt": "Excluir definitivamente todas as mensagens lidas?", "ru": "Удалить все прочитанные сообщения навсегда?"}, "تعذر حذف الرسالة — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات": {"en": "Could not delete the message — run user_inbox_actions.sql in the database", "es": "No se pudo eliminar el mensaje — hay que ejecutar user_inbox_actions.sql en la base de datos", "pt": "Não foi possível excluir a mensagem — execute user_inbox_actions.sql no banco de dados", "ru": "Не удалось удалить сообщение — выполните user_inbox_actions.sql в базе данных"}, "تعذر حذف الرسائل — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات": {"en": "Could not delete the messages — run user_inbox_actions.sql in the database", "es": "No se pudieron eliminar los mensajes — hay que ejecutar user_inbox_actions.sql en la base de datos", "pt": "Não foi possível excluir as mensagens — execute user_inbox_actions.sql no banco de dados", "ru": "Не удалось удалить сообщения — выполните user_inbox_actions.sql в базе данных"}, "تم حذف الرسالة": {"en": "Message deleted", "es": "Mensaje eliminado", "pt": "Mensagem excluída", "ru": "Сообщение удалено"}, "تم حذف الرسائل المقروءة": {"en": "Read messages deleted", "es": "Mensajes leídos eliminados", "pt": "Mensagens lidas excluídas", "ru": "Прочитанные сообщения удалены"}, "عدد الرسائل في صندوقك": {"en": "Number of messages in your inbox", "es": "Número de mensajes en tu buzón", "pt": "Número de mensagens na sua caixa", "ru": "Количество сообщений в вашем ящике"}, "ردود الإدارة على رسائلك ورسائلها إليك ستظهر هنا": {"en": "Replies from the administration and its messages to you will appear here", "es": "Las respuestas de la administración y sus mensajes para ti aparecerán aquí", "pt": "As respostas da administração e as mensagens dela para você aparecerão aqui", "ru": "Ответы администрации и её сообщения вам появятся здесь"}});
 Object.assign(UI_TEXTS, {"إدارة إسبانيول": {"en": "Español Team", "es": "Equipo de Español", "pt": "Equipe Español", "ru": "Команда Español"}, "رد على رسالتك": {"en": "Reply to your message", "es": "Respuesta a tu mensaje", "pt": "Resposta à sua mensagem", "ru": "Ответ на ваше сообщение"}, "رسالة من إدارة إسبانيول": {"en": "Message from the Español team", "es": "Mensaje del equipo de Español", "pt": "Mensagem da equipe Español", "ru": "Сообщение от команды Español"}, "الكل": {"en": "All", "es": "Todos", "pt": "Todas", "ru": "Все"}, "غير المقروءة": {"en": "Unread", "es": "No leídos", "pt": "Não lidas", "ru": "Непрочитанные"}, "اختر رسالة لقراءتها": {"en": "Select a message to read", "es": "Elige un mensaje para leerlo", "pt": "Escolha uma mensagem para ler", "ru": "Выберите сообщение для чтения"}, "لا توجد رسائل غير مقروءة": {"en": "No unread messages", "es": "No hay mensajes sin leer", "pt": "Não há mensagens por ler", "ru": "Нет непрочитанных сообщений"}, "→ الرجوع للصندوق": {"en": "→ Back to inbox", "es": "→ Volver al buzón", "pt": "→ Voltar à caixa", "ru": "→ Назад к ящику"}});
 Object.assign(UI_TEXTS, {"جميع الفصول والدروس (أكثر من 120 فصلاً)": {"en": "All chapters and lessons (120+ chapters)", "es": "Todos los capítulos y lecciones (más de 120 capítulos)", "pt": "Todos os capítulos e lições (mais de 120 capítulos)", "ru": "Все главы и уроки (более 120 глав)"}, "الامتحانات الشاملة لكل مستوى: A1 ← A2 ← B1 ← B2": {"en": "Comprehensive exams for every level: A1 → A2 → B1 → B2", "es": "Exámenes integrales de cada nivel: A1 → A2 → B1 → B2", "pt": "Exames completos de cada nível: A1 → A2 → B1 → B2", "ru": "Итоговые экзамены каждого уровня: A1 → A2 → B1 → B2"}, "خمسة أقسام في كل امتحان: قواعد، مفردات، استماع، إملاء، نطق": {"en": "Five sections in every exam: grammar, vocabulary, listening, dictation, speaking", "es": "Cinco partes en cada examen: gramática, vocabulario, comprensión auditiva, dictado y pronunciación", "pt": "Cinco seções em cada exame: gramática, vocabulário, audição, ditado e pronúncia", "ru": "Пять разделов в каждом экзамене: грамматика, лексика, аудирование, диктант, произношение"}, "تصحيح تلقائي ونتيجة فورية (حد النجاح 70%)": {"en": "Automatic grading and instant result (70% pass mark)", "es": "Corrección automática y resultado inmediato (aprobado con 70%)", "pt": "Correção automática e resultado imediato (nota de aprovação 70%)", "ru": "Автоматическая проверка и мгновенный результат (проходной балл 70%)"}, "💡 الفرق الوحيد بين الخطتين: الامتحانات الشاملة للمستويات تظهر للمشتركين في الخطة المميزة فقط، أما كل الدروس والتمارين فمجانية.": {"en": "💡 The only difference between the two plans: the comprehensive level exams are available to Premium subscribers only — all lessons and exercises are free.", "es": "💡 La única diferencia entre los dos planes: los exámenes integrales de nivel solo están disponibles para suscriptores Premium; todas las lecciones y ejercicios son gratuitos.", "pt": "💡 A única diferença entre os dois planos: os exames completos de nível estão disponíveis apenas para assinantes Premium; todas as lições e exercícios são gratuitos.", "ru": "💡 Единственное различие между планами: итоговые экзамены по уровням доступны только подписчикам Premium, а все уроки и упражнения бесплатны."}, "جديد على الإسبانية؟ ابدأ من قسم «دروس»": {"en": "New to Spanish? Start with the “Lessons” section", "es": "¿Nuevo en español? Empieza por la sección «Lecciones»", "pt": "Novo no espanhol? Comece pela seção «Lições»", "ru": "Впервые изучаете испанский? Начните с раздела «Уроки»"}, "8 دروس أساسية: الحروف والأصوات، الأرقام، التحيات والتعارف، الضمائر، Ser و Estar، المذكر والمؤنث، الأدوات، الألوان — ثم انتقل إلى المستوى الأول وفصوله.": {"en": "8 core lessons: letters and sounds, numbers, greetings and introductions, pronouns, Ser and Estar, masculine and feminine, articles, colors — then move on to level one and its chapters.", "es": "8 lecciones básicas: letras y sonidos, números, saludos y presentaciones, pronombres, Ser y Estar, masculino y femenino, artículos, colores — y luego pasa al primer nivel y sus capítulos.", "pt": "8 lições básicas: letras e sons, números, cumprimentos e apresentações, pronomes, Ser e Estar, masculino e feminino, artigos, cores — depois passe ao primeiro nível e seus capítulos.", "ru": "8 базовых уроков: буквы и звуки, числа, приветствия и знакомство, местоимения, Ser и Estar, мужской и женский род, артикли, цвета — затем переходите к первому уровню и его главам."}, "📖 اذهب إلى الدروس": {"en": "📖 Go to the lessons", "es": "📖 Ir a las lecciones", "pt": "📖 Ir para as lições", "ru": "📖 Перейти к урокам"}, "إغلاق": {"en": "Close", "es": "Cerrar", "pt": "Fechar", "ru": "Закрыть"}, "📖 ابدأ من قسم «دروس» أولاً": {"en": "📖 Start with the “Lessons” section first", "es": "📖 Empieza primero por la sección «Lecciones»", "pt": "📖 Comece primeiro pela seção «Lições»", "ru": "📖 Сначала начните с раздела «Уроки»"}, "قبل أن تدخل المستوى الأول (A1) وفصوله، ننصحك بإنهاء قسم «دروس» أولاً: 8 دروس أساسية مكتوبة بالعربية مع صوت إسباني واختبار استماع لكل درس.": {"en": "Before entering level one (A1) and its chapters, we recommend finishing the “Lessons” section first: 8 core lessons written in Arabic with Spanish audio and a listening quiz for each lesson.", "es": "Antes de entrar en el primer nivel (A1) y sus capítulos, te recomendamos terminar primero la sección «Lecciones»: 8 lecciones básicas escritas en árabe con audio en español y un test de comprensión auditiva por lección.", "pt": "Antes de entrar no primeiro nível (A1) e seus capítulos, recomendamos concluir primeiro a seção «Lições»: 8 lições básicas escritas em árabe, com áudio em espanhol e um teste de audição por lição.", "ru": "Прежде чем перейти к первому уровню (A1) и его главам, рекомендуем сначала пройти раздел «Уроки»: 8 базовых уроков на арабском с испанской озвучкой и тестом на аудирование к каждому уроку."}, "ستتعلم فيها الحروف والأصوات والأرقام والتحيات، فتجد فصول المستوى الأول أسهل بكثير.": {"en": "You will learn letters, sounds, numbers and greetings there, which makes the level-one chapters much easier.", "es": "Allí aprenderás las letras, los sonidos, los números y los saludos, y los capítulos del primer nivel te resultarán mucho más fáciles.", "pt": "Lá você aprende as letras, os sons, os números e os cumprimentos, e os capítulos do primeiro nível ficam muito mais fáceis.", "ru": "Там вы изучите буквы, звуки, числа и приветствия, и главы первого уровня станут намного легче."}, "المتابعة إلى الفصل": {"en": "Continue to the chapter", "es": "Continuar al capítulo", "pt": "Continuar para o capítulo", "ru": "Перейти к главе"}, "أنت مسجل بالفعل ولديك الخطة المجانية ✓ — ابدأ من قسم «دروس» ثم انتقل إلى الفصول": {"en": "You are already registered and have the free plan ✓ — start with the “Lessons” section, then move on to the chapters", "es": "Ya estás registrado y tienes el plan gratuito ✓ — empieza por la sección «Lecciones» y luego pasa a los capítulos", "pt": "Você já está registrado e tem o plano gratuito ✓ — comece pela seção «Lições» e depois passe aos capítulos", "ru": "Вы уже зарегистрированы и у вас бесплатный план ✓ — начните с раздела «Уроки», затем переходите к главам"}});
+Object.assign(UI_TEXTS, {"هذا البريد مسجّل لدينا مسبقاً — لم نُنشئ حساباً جديداً، بل سجّلنا دخولك إلى حسابك الحالي.": {"en": "This email is already registered with us — we did not create a new account; we signed you in to your existing one.", "es": "Este correo ya está registrado — no hemos creado una cuenta nueva, sino que hemos iniciado sesión en tu cuenta existente.", "pt": "Este e-mail já está registrado — não criamos uma conta nova, entramos na sua conta existente.", "ru": "Этот адрес уже зарегистрирован — новый аккаунт не создан, мы выполнили вход в ваш существующий аккаунт."}, "👋 مرحباً بعودتك": {"en": "👋 Welcome back", "es": "👋 Bienvenido de nuevo", "pt": "👋 Bem-vindo de volta", "ru": "👋 С возвращением"}, "✨ انضم إلى إسبانيول": {"en": "✨ Join Español", "es": "✨ Únete a Español", "pt": "✨ Junte-se ao Español", "ru": "✨ Присоединяйтесь к Español"}, "سجّل دخولك لمتابعة تعلّمك": {"en": "Sign in to continue learning", "es": "Inicia sesión para seguir aprendiendo", "pt": "Entre para continuar aprendendo", "ru": "Войдите, чтобы продолжить обучение"}, "ادخل بنقرة واحدة باستخدام حساب Google، وستجد تقدّمك ونقاطك كما تركتها.": {"en": "Sign in with one click using your Google account and find your progress and points just as you left them.", "es": "Entra con un clic usando tu cuenta de Google y encontrarás tu progreso y tus puntos como los dejaste.", "pt": "Entre com um clique usando sua conta Google e encontre seu progresso e seus pontos como deixou.", "ru": "Войдите одним нажатием через аккаунт Google — ваш прогресс и баллы будут на месте."}, "ليس لديك حساب؟": {"en": "Don't have an account?", "es": "¿No tienes cuenta?", "pt": "Não tem conta?", "ru": "Нет аккаунта?"}, "أنشئ حساباً مجانياً": {"en": "Create a free account", "es": "Crea una cuenta gratuita", "pt": "Crie uma conta gratuita", "ru": "Создайте бесплатный аккаунт"}, "أنشئ حسابك المجاني": {"en": "Create your free account", "es": "Crea tu cuenta gratuita", "pt": "Crie sua conta gratuita", "ru": "Создайте бесплатный аккаунт"}, "مجاني بالكامل": {"en": "Completely free", "es": "Totalmente gratis", "pt": "Totalmente gratuito", "ru": "Полностью бесплатно"}, "يحفظ تقدّمك ونقاطك تلقائياً": {"en": "Saves your progress and points automatically", "es": "Guarda tu progreso y tus puntos automáticamente", "pt": "Guarda seu progresso e seus pontos automaticamente", "ru": "Автоматически сохраняет прогресс и баллы"}, "أكثر من 120 فصلاً مع دروس وتمارين": {"en": "120+ chapters with lessons and exercises", "es": "Más de 120 capítulos con lecciones y ejercicios", "pt": "Mais de 120 capítulos com lições e exercícios", "ru": "Более 120 глав с уроками и упражнениями"}, "بنقرة واحدة ودون كلمة مرور": {"en": "With one click and no password", "es": "Con un solo clic y sin contraseña", "pt": "Com um clique e sem senha", "ru": "Одним нажатием и без пароля"}, "إن كان بريدك مسجّلاً لدينا فسندخلك إلى حسابك الحالي دون إنشاء حساب جديد.": {"en": "If your email is already registered with us, we will sign you in to your existing account instead of creating a new one.", "es": "Si tu correo ya está registrado, te llevaremos a tu cuenta existente en lugar de crear una nueva.", "pt": "Se o seu e-mail já estiver registrado, entraremos na sua conta existente em vez de criar uma nova.", "ru": "Если ваш адрес уже зарегистрирован, мы войдём в существующий аккаунт, а не создадим новый."}, "لديك حساب بالفعل؟": {"en": "Already have an account?", "es": "¿Ya tienes cuenta?", "pt": "Já tem conta?", "ru": "Уже есть аккаунт?"}, "سجّل الدخول": {"en": "Sign in", "es": "Inicia sesión", "pt": "Entre", "ru": "Войдите"}, "تقييم الموقع": {"en": "Rate the site", "es": "Valorar el sitio", "pt": "Avaliar o site", "ru": "Оценить сайт"}, "⭐ قيّم إسبانيول": {"en": "⭐ Rate Español", "es": "⭐ Valora Español", "pt": "⭐ Avalie o Español", "ru": "⭐ Оцените Español"}, "ما رأيك في الموقع؟ اضغط على النجوم — ويمكنك اختيار نصف نجمة، مثل 4.5.": {"en": "What do you think of the site? Tap the stars — you can choose half a star, like 4.5.", "es": "¿Qué te parece el sitio? Pulsa las estrellas — puedes elegir media estrella, como 4,5.", "pt": "O que você acha do site? Toque nas estrelas — pode escolher meia estrela, como 4,5.", "ru": "Что вы думаете о сайте? Нажимайте на звёзды — можно выбрать и половину звезды, например 4,5."}, "إرسال التقييم": {"en": "Submit rating", "es": "Enviar valoración", "pt": "Enviar avaliação", "ru": "Отправить оценку"}, "تحديث التقييم": {"en": "Update rating", "es": "Actualizar valoración", "pt": "Atualizar avaliação", "ru": "Обновить оценку"}, "حذف تقييمي": {"en": "Delete my rating", "es": "Eliminar mi valoración", "pt": "Excluir minha avaliação", "ru": "Удалить мою оценку"}, "اختر عدد النجوم أولاً": {"en": "Choose the number of stars first", "es": "Elige primero el número de estrellas", "pt": "Escolha primeiro o número de estrelas", "ru": "Сначала выберите число звёзд"}, "تعذر حفظ التقييم، حاول لاحقاً": {"en": "Could not save the rating, try later", "es": "No se pudo guardar la valoración, inténtalo más tarde", "pt": "Não foi possível salvar a avaliação, tente mais tarde", "ru": "Не удалось сохранить оценку, попробуйте позже"}, "شكراً لتقييمك! ⭐": {"en": "Thank you for your rating! ⭐", "es": "¡Gracias por tu valoración! ⭐", "pt": "Obrigado pela sua avaliação! ⭐", "ru": "Спасибо за вашу оценку! ⭐"}, "تعذر حذف التقييم، حاول لاحقاً": {"en": "Could not delete the rating, try later", "es": "No se pudo eliminar la valoración, inténtalo más tarde", "pt": "Não foi possível excluir a avaliação, tente mais tarde", "ru": "Не удалось удалить оценку, попробуйте позже"}, "تم حذف تقييمك": {"en": "Your rating was deleted", "es": "Tu valoración fue eliminada", "pt": "Sua avaliação foi excluída", "ru": "Ваша оценка удалена"}, "كن أول من يقيّم الموقع!": {"en": "Be the first to rate the site!", "es": "¡Sé el primero en valorar el sitio!", "pt": "Seja o primeiro a avaliar o site!", "ru": "Будьте первым, кто оценит сайт!"}, "متوسط تقييم المستخدمين:": {"en": "Average user rating:", "es": "Valoración media de los usuarios:", "pt": "Avaliação média dos usuários:", "ru": "Средняя оценка пользователей:"}, "عدد المقيّمين:": {"en": "Number of raters:", "es": "Número de valoraciones:", "pt": "Número de avaliações:", "ru": "Количество оценивших:"}, "التقييم غير مفعّل بعد — يلزم تنفيذ site_ratings.sql في قاعدة البيانات": {"en": "Rating is not enabled yet — run site_ratings.sql in the database", "es": "La valoración aún no está activada — hay que ejecutar site_ratings.sql en la base de datos", "pt": "A avaliação ainda não está ativada — execute site_ratings.sql no banco de dados", "ru": "Оценки ещё не включены — выполните site_ratings.sql в базе данных"}});
 const UI_PATTERNS = [
   [/^(\d+)% مكتمل$/, ['$1% complete', '$1% completado', '$1% concluído', '$1% завершено']],
   [/^(\d+)% — يُحمَّل مرة واحدة فقط ثم يعمل داخل جهازك$/, ['$1% — downloaded only once, then runs on your device', '$1% — se descarga solo una vez y luego funciona en tu dispositivo', '$1% — transferido apenas uma vez e depois funciona no seu dispositivo', '$1% — загружается один раз, затем работает на вашем устройстве']],
@@ -4693,6 +4758,14 @@ updateLrGuide();
       }
       if (intent === 'register') {
         await rpc('api_confirm_account').catch(e => console.warn('api_confirm_account:', e.message));
+        // إن كان الحساب قديماً (أُنشئ قبل أكثر من 3 دقائق) فهو موجود مسبقاً: ندخله ونخبره
+        try {
+          const sd = await sb.auth.getSession();
+          const created = sd && sd.data && sd.data.session && sd.data.session.user && sd.data.session.user.created_at;
+          if (created && (Date.now() - new Date(created).getTime()) > 180000) {
+            setTimeout(() => showToast('info', 'هذا البريد مسجّل لدينا مسبقاً — لم نُنشئ حساباً جديداً، بل سجّلنا دخولك إلى حسابك الحالي.'), 1400);
+          }
+        } catch (e) {}
       }
       if (intent === 'login') {
         const r = await rpc('api_cancel_new_account').catch(e => { console.warn('api_cancel_new_account:', e.message); return null; });
@@ -5032,6 +5105,95 @@ function startInboxWatch() {
         .subscribe();
     } catch (e) { /* Realtime غير متاح — يعمل الفحص الدوري */ }
   });
+}
+
+// ===== تقييم الموقع بالنجوم (يقبل أنصاف النجوم: 0.5 إلى 5) =====
+let _rt = { value: 0, saved: null, ready: false };
+const _RT_STAR = '<svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
+function renderRatingStars(preview) {
+  const v = preview != null ? preview : _rt.value;
+  const box = document.getElementById('rt-stars');
+  if (!box) return;
+  let h = '';
+  for (let i = 1; i <= 5; i++) {
+    const pct = Math.max(0, Math.min(1, v - (i - 1))) * 100;
+    h += '<span class="rt-star">'
+      + '<span class="rt-outline">' + _RT_STAR + '</span>'
+      + '<span class="rt-fill" style="width:' + pct + '%">' + _RT_STAR + '</span>'
+      + '<span class="rt-hit l" data-v="' + (i - 0.5) + '"></span><span class="rt-hit r" data-v="' + i + '"></span>'
+      + '</span>';
+  }
+  box.innerHTML = h;
+  const lab = document.getElementById('rt-value');
+  if (lab) lab.textContent = v ? v.toFixed(1) + ' / 5' : '';
+  const sub = document.getElementById('rt-submit');
+  if (sub) sub.textContent = _rt.saved ? uiText('تحديث التقييم') : uiText('إرسال التقييم');
+  const clr = document.getElementById('rt-clear');
+  if (clr) clr.style.display = _rt.saved ? '' : 'none';
+}
+function _rtBind() {
+  const box = document.getElementById('rt-stars');
+  if (!box || box._bound) return;
+  box._bound = true;
+  box.addEventListener('mouseover', e => { const t = e.target.closest && e.target.closest('.rt-hit'); if (t) _rtPreview(parseFloat(t.dataset.v)); });
+  box.addEventListener('mouseleave', () => _rtPreview(null));
+  box.addEventListener('click', e => { const t = e.target.closest && e.target.closest('.rt-hit'); if (t) { _rt.value = parseFloat(t.dataset.v); renderRatingStars(); } });
+}
+function _rtPreview(v) {
+  const box = document.getElementById('rt-stars');
+  if (!box) return;
+  const val = v != null ? v : _rt.value;
+  box.querySelectorAll('.rt-star').forEach((st, idx) => {
+    const pct = Math.max(0, Math.min(1, val - idx)) * 100;
+    st.querySelector('.rt-fill').style.width = pct + '%';
+  });
+  const lab = document.getElementById('rt-value');
+  if (lab) lab.textContent = val ? val.toFixed(1) + ' / 5' : '';
+}
+function _rtStatsText(st) {
+  if (!st || !st.count) return uiText('كن أول من يقيّم الموقع!');
+  return uiText('متوسط تقييم المستخدمين:') + ' <b style="color:var(--text);">' + Number(st.avg).toFixed(1) + '</b> / 5 · ' + uiText('عدد المقيّمين:') + ' <b style="color:var(--text);">' + st.count + '</b>';
+}
+async function openRatingModal() {
+  if (!currentUser) { openAuthModal('login'); return; }
+  toggleUserDropdown(true);
+  _rt = { value: 0, saved: null, ready: false };
+  openModal('rating-modal');
+  renderRatingStars();
+  _rtBind();
+  const stats = document.getElementById('rt-stats');
+  const sub = document.getElementById('rt-submit');
+  stats.textContent = '';
+  const [mine, st] = await Promise.all([sb.rpc('get_my_site_rating'), sb.rpc('site_rating_stats')]);
+  if (mine.error || st.error) {
+    stats.textContent = uiText('التقييم غير مفعّل بعد — يلزم تنفيذ site_ratings.sql في قاعدة البيانات');
+    if (sub) sub.disabled = true;
+    return;
+  }
+  if (sub) sub.disabled = false;
+  _rt.ready = true;
+  if (mine.data != null) { _rt.saved = Number(mine.data); _rt.value = _rt.saved; }
+  renderRatingStars();
+  stats.innerHTML = _rtStatsText(st.data);
+}
+async function submitRating() {
+  if (!_rt.value) { showToast('warning', 'اختر عدد النجوم أولاً'); return; }
+  const r = await sb.rpc('submit_site_rating', { p_rating: _rt.value });
+  if (r.error) { showToast('error', 'تعذر حفظ التقييم، حاول لاحقاً'); return; }
+  _rt.saved = _rt.value;
+  showToast('success', 'شكراً لتقييمك! ⭐');
+  renderRatingStars();
+  const st = await sb.rpc('site_rating_stats');
+  if (!st.error) document.getElementById('rt-stats').innerHTML = _rtStatsText(st.data);
+}
+async function clearRating() {
+  const r = await sb.rpc('delete_my_site_rating');
+  if (r.error) { showToast('error', 'تعذر حذف التقييم، حاول لاحقاً'); return; }
+  _rt.saved = null; _rt.value = 0;
+  showToast('success', 'تم حذف تقييمك');
+  renderRatingStars();
+  const st = await sb.rpc('site_rating_stats');
+  if (!st.error) document.getElementById('rt-stats').innerHTML = _rtStatsText(st.data);
 }
 
 let _ibx = { items: [], sel: null, filter: 'all', uid: null };
@@ -7455,6 +7617,10 @@ lrBuildGrid();
     if (l && r) { l.style.display = tab === 'login' ? 'block' : 'none'; r.style.display = tab === 'register' ? 'block' : 'none'; }
     const n = document.getElementById('no-account-notice');
     if (n && tab === 'login') n.style.display = 'none';
+    const mod = document.querySelector('#auth-modal .modal');
+    if (mod) mod.dataset.mode = tab;
+    const t = document.getElementById('auth-title');
+    if (t) t.textContent = tab === 'register' ? '✨ انضم إلى إسبانيول' : '👋 مرحباً بعودتك';
   };
 })();
 
