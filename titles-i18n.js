@@ -46,6 +46,14 @@
   };
 
   var CHAPTERS = {
+    'البدايات والتحيات': ['Beginnings and Greetings', 'Começos e cumprimentos', 'Первые шаги и приветствия'],
+    'العائلة والأرقام': ['Family and Numbers', 'Família e números', 'Семья и числа'],
+    'الطعام والمطعم': ['Food and the Restaurant', 'Comida e restaurante', 'Еда и ресторан'],
+    'الروتين والأنشطة': ['Routine and Activities', 'Rotina e atividades', 'Распорядок дня и занятия'],
+    'الماضي البسيط': ['The Simple Past', 'O pretérito simples', 'Простое прошедшее время'],
+    'المستقبل والمشروط': ['Future and Conditional', 'Futuro e condicional', 'Будущее и условное наклонение'],
+    'صيغة الشك': ['The Subjunctive', 'O subjuntivo', 'Сослагательное наклонение'],
+    'الإسبانية الاحترافية': ['Professional Spanish', 'Espanhol profissional', 'Профессиональный испанский'],
     'الأخبار الحالية': ['Current News', 'Notícias atuais', 'Актуальные новости'],
     'الأدب': ['Literature', 'Literatura', 'Литература'],
     'الأدب الإسباني الكلاسيكي': ['Spanish Classics', 'Clássicos espanhóis', 'Классика испанской литературы'],
@@ -217,7 +225,11 @@
       var headEs = ch ? chapterHead('es', ch[1]) : '';
       return headEs + (bi.es || rest);
     }
-    if (!dict) return title;
+    if (!dict) {
+      // لا ترجمة مسجّلة: نعرض الجزء الإسباني من العنوان (إن وُجد) بدل العربية
+      if (bi.es) return (ch ? chapterHead(lang, ch[1]) : '') + bi.es;
+      return title;
+    }
     var idx = lang === 'en' ? 0 : lang === 'pt' ? 1 : lang === 'ru' ? 2 : -1;
     if (idx < 0 || !dict[idx]) return title;
     var head = ch ? chapterHead(lang, ch[1]) : '';

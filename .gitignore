@@ -5,3 +5,8 @@ db/
 uploads/
 *.log
 .env
+
+# لوحة الأدمن: تحتوي مفتاح service_role الكامل الصلاحيات (SAVED_KEY) — تبقى على جهازك فقط
+admin.html
+admin_server.py
+ابدأ اللوحة.bat

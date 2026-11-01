@@ -204,6 +204,9 @@
       transition: var(--transition);
     }
     .user-avatar:hover { border-color: var(--primary-light); box-shadow: var(--glow); }
+    .user-avatar { position: relative; }
+    .user-avatar .avatar-dot { position:absolute; top:-5px; inset-inline-end:-5px; min-width:18px; height:18px; padding:0 4px; border-radius:9px; background:#ef4444; color:#fff; font-size:11px; font-weight:700; line-height:18px; text-align:center; border:2px solid var(--bg, #0f0c29); box-sizing:content-box; animation: avatarPulse 1.6s ease-in-out infinite; }
+    @keyframes avatarPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.18); } }
     .user-dropdown {
       position: absolute;
       top: calc(100% + 10px);
@@ -4239,6 +4242,7 @@ function _applyLanguageCore(lang) {
 // ترجمة شاملة: كل نص عربي في الواجهة (ثابت أو يُنشأ ديناميكياً) يُترجم إلى اللغة المختارة
 // (محتوى الدروس التعليمي نفسه — الجداول والشروحات — يبقى بالعربية لأنه المنهج)
 // ============================================================
+Object.assign(UI_TEXTS, {"📩 لديك رسائل غير مقروءة في صندوقك — اضغط لفتحها": {"en": "📩 You have unread messages in your inbox — tap to open", "es": "📩 Tienes mensajes sin leer en tu buzón — pulsa para abrirlos", "pt": "📩 Tem mensagens por ler na sua caixa — toque para abrir", "ru": "📩 У вас есть непрочитанные сообщения — нажмите, чтобы открыть"}, "📩 وصلتك رسالة جديدة من إدارة إسبانيول — اضغط لفتح الصندوق": {"en": "📩 New message from the Español team — tap to open your inbox", "es": "📩 Nuevo mensaje del equipo de Español — pulsa para abrir tu buzón", "pt": "📩 Nova mensagem da equipa Español — toque para abrir a caixa", "ru": "📩 Новое сообщение от команды Español — нажмите, чтобы открыть ящик"}});
 const UI_PATTERNS = [
   [/^(\d+)% مكتمل$/, ['$1% complete', '$1% completado', '$1% concluído', '$1% завершено']],
   [/^(\d+)% — يُحمَّل مرة واحدة فقط ثم يعمل داخل جهازك$/, ['$1% — downloaded only once, then runs on your device', '$1% — se descarga solo una vez y luego funciona en tu dispositivo', '$1% — transferido apenas uma vez e depois funciona no seu dispositivo', '$1% — загружается один раз, затем работает на вашем устройстве']],
@@ -4745,11 +4749,12 @@ function updateHeroButtons() {
 function updateUserUI() {
   updateHeroButtons();
   refreshInboxBadge();
+  if (currentUser) startInboxWatch();
   if (!currentUser) return;
   document.getElementById('auth-buttons').style.display = 'none';
   document.getElementById('user-menu').style.display = 'flex';
   const initials = currentUser.name ? currentUser.name.charAt(0) : 'م';
-  document.getElementById('user-avatar-btn').textContent = initials;
+  { const _ab = document.getElementById('user-avatar-btn'); const _d = _ab.querySelector('.avatar-dot'); _ab.textContent = initials; if (_d) _ab.appendChild(_d); }
   document.getElementById('user-progress-section').style.display = 'block';
   document.getElementById('progress-username').textContent = currentUser.name;
   document.getElementById('progress-xp').textContent = currentUser.xp || 0;
@@ -4842,6 +4847,7 @@ function handleRegister(e) {
 function logout() {
   authToken = null;
   currentUser = null;
+  _inboxPrev = null; _setAvatarDot(0);
   localStorage.removeItem('auth_token');
   document.getElementById('auth-buttons').style.display = 'flex';
   document.getElementById('user-menu').style.display = 'none';
@@ -4898,15 +4904,48 @@ async function getMyUid() {
   try { const g = await sb.auth.getUser(); return (g.data && g.data.user && g.data.user.id) || null; } catch (e) { return null; }
 }
 
+let _inboxPrev = null, _inboxTimer = null, _inboxChannel = null;
+function _setAvatarDot(n) {
+  const av = document.getElementById('user-avatar-btn');
+  if (!av) return;
+  let d = av.querySelector('.avatar-dot');
+  if (!n) { if (d) d.remove(); return; }
+  if (!d) { d = document.createElement('span'); d.className = 'avatar-dot'; av.appendChild(d); }
+  d.textContent = n > 9 ? '9+' : n;
+}
 async function refreshInboxBadge() {
   const badge = document.getElementById('inbox-badge');
-  if (!badge || !currentUser) return;
+  if (!currentUser) { _setAvatarDot(0); _inboxPrev = null; return; }
   const uid = await getMyUid();
-  if (!uid) { badge.style.display = 'none'; return; }
+  if (!uid) { if (badge) badge.style.display = 'none'; _setAvatarDot(0); return; }
   const r = await sb.from('user_inbox').select('id', { count: 'exact', head: true }).eq('user_id', uid).eq('is_read', false);
   const n = (!r.error && r.count) || 0;
-  badge.style.display = n ? 'inline-flex' : 'none';
-  badge.textContent = n;
+  if (badge) { badge.style.display = n ? 'inline-flex' : 'none'; badge.textContent = n; }
+  _setAvatarDot(n);
+  // تنبيه منبثق: عند أول دخول إن وُجدت رسائل غير مقروءة، وعند وصول رسالة جديدة أثناء التصفح
+  const inboxOpen = (document.getElementById('inbox-modal') || {}).classList && document.getElementById('inbox-modal').classList.contains('open');
+  if (n > 0 && (_inboxPrev === null || n > _inboxPrev) && !inboxOpen) {
+    showToast('info', _inboxPrev === null ? '📩 لديك رسائل غير مقروءة في صندوقك — اضغط لفتحها' : '📩 وصلتك رسالة جديدة من إدارة إسبانيول — اضغط لفتح الصندوق');
+    const c = document.getElementById('toast-container');
+    const t = c && c.lastElementChild;
+    if (t) { t.style.cursor = 'pointer'; t.style.pointerEvents = 'auto'; t.onclick = () => { t.remove(); openInbox(); }; }
+  }
+  if (inboxOpen && n > 0 && _inboxPrev !== null && n > _inboxPrev) openInbox();
+  _inboxPrev = n;
+}
+function startInboxWatch() {
+  if (_inboxTimer) return;
+  _inboxTimer = setInterval(() => { if (currentUser && !document.hidden) refreshInboxBadge(); }, 30000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) refreshInboxBadge(); });
+  // وصول فوري عبر Realtime (إن كان مفعّلاً على الجدول) — وإلا يكفي الفحص الدوري
+  getMyUid().then(uid => {
+    if (!uid || _inboxChannel || !sb.channel) return;
+    try {
+      _inboxChannel = sb.channel('inbox-' + uid)
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'user_inbox', filter: 'user_id=eq.' + uid }, () => refreshInboxBadge())
+        .subscribe();
+    } catch (e) { /* Realtime غير متاح — يعمل الفحص الدوري */ }
+  });
 }
 
 async function openInbox() {
@@ -6602,7 +6641,6 @@ async function saveProfile(e) {
     const b = document.getElementById('user-avatar-btn');
     if (currentUser.avatar.startsWith('data:image/')) {
       b.textContent = '';
-      b.style.overflow = 'hidden';
       const im = document.createElement('img');
       im.src = currentUser.avatar; im.alt = '';
       im.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;';
@@ -6610,6 +6648,7 @@ async function saveProfile(e) {
     } else {
       b.textContent = currentUser.avatar;
     }
+    if (typeof _inboxPrev === 'number') _setAvatarDot(_inboxPrev);
   };
 })();
 
