@@ -4901,7 +4901,7 @@ function updateHeroButtons() {
 function updateUserUI() {
   updateHeroButtons();
   refreshInboxBadge();
-  if (currentUser) startInboxWatch();
+  if (currentUser) { startInboxWatch(); startPresence(); }
   if (!currentUser) return;
   document.getElementById('auth-buttons').style.display = 'none';
   document.getElementById('user-menu').style.display = 'flex';
@@ -5091,6 +5091,15 @@ async function refreshInboxBadge() {
   }
   if (inboxOpen && n > 0 && _inboxPrev !== null && n > _inboxPrev) openInbox(true);
   _inboxPrev = n;
+}
+// نبضة حضور كل دقيقتين بينما الصفحة مفتوحة، ليعرف الأدمن من هو أونلاين (تتطلب user_presence.sql — وتُتجاهل بصمت إن لم يُنفَّذ)
+let _presTimer = null;
+function startPresence() {
+  if (_presTimer) return;
+  const beat = () => { if (currentUser && !document.hidden) sb.rpc('touch_presence').then(() => {}, () => {}); };
+  beat();
+  _presTimer = setInterval(beat, 120000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) beat(); });
 }
 function startInboxWatch() {
   if (_inboxTimer) return;
