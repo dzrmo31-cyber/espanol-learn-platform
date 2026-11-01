@@ -205,6 +205,13 @@
     }
     .user-avatar:hover { border-color: var(--primary-light); box-shadow: var(--glow); }
 
+    /* ===== توجيه المبتدئين إلى قسم الدروس ===== */
+    .lr-guide { display:flex; align-items:center; gap:14px; flex-wrap:wrap; padding:14px 18px; margin:0 0 22px; border:1px solid var(--primary); border-radius:14px; background:linear-gradient(135deg, rgba(124,58,237,0.18), rgba(6,182,212,0.08)); position:relative; }
+    .lr-guide-icon { font-size:28px; }
+    .lr-guide-text { flex:1; min-width:220px; display:flex; flex-direction:column; gap:4px; }
+    .lr-guide-text b { font-size:15px; }
+    .lr-guide-text span { font-size:13px; color:var(--text-muted); line-height:1.8; }
+    .lr-guide-x { background:transparent; border:0; color:var(--text-muted); cursor:pointer; font-size:16px; padding:4px 8px; }
     /* ===== صندوق البريد ===== */
     .mb { display:flex; height:min(560px, 68vh); border:1px solid var(--border); border-radius:14px; overflow:hidden; background:rgba(255,255,255,0.02); }
     .mb-list { width:340px; flex-shrink:0; border-inline-end:1px solid var(--border); display:flex; flex-direction:column; min-height:0; }
@@ -1470,7 +1477,7 @@
           منهج متكامل لتعلم اللغة الإسبانية من الصفر، مع دروس تفاعلية، نطق صوتي، اختبارات، ونظام نقاط يحفّزك على الاستمرار.
         </p>
         <div class="hero-actions">
-          <button class="btn btn-primary btn-lg" onclick="scrollToChapters()">
+          <button class="btn btn-primary btn-lg" onclick="startLearning()">
             <i class="fa-solid fa-rocket"></i>
             ابدأ التعلم الآن
           </button>
@@ -1746,6 +1753,15 @@
       <h2 class="section-title">الفصول التعليمية</h2>
       <p class="section-subtitle" id="chapters-count-text">12 فصلاً شاملاً في 4 مستويات تأخذك من الصفر إلى الاحتراف</p>
     </div>
+    <div class="lr-guide" id="lr-guide-banner" style="display:none;">
+      <div class="lr-guide-icon">🧭</div>
+      <div class="lr-guide-text">
+        <b>جديد على الإسبانية؟ ابدأ من قسم «دروس»</b>
+        <span>8 دروس أساسية: الحروف والأصوات، الأرقام، التحيات والتعارف، الضمائر، Ser و Estar، المذكر والمؤنث، الأدوات، الألوان — ثم انتقل إلى المستوى الأول وفصوله.</span>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="goToLessonsRoom()">📖 اذهب إلى الدروس</button>
+      <button class="lr-guide-x" onclick="hideLrBanner()" aria-label="إغلاق">✕</button>
+    </div>
     <div class="level-filter" id="level-filter">
       <button class="filter-btn active" data-level="" onclick="filterByLevel(null)">كل المستويات</button>
       <button class="filter-btn" data-level="A1" onclick="filterByLevel('A1')">A1 مبتدئ</button>
@@ -1834,7 +1850,7 @@
         <p class="pricing-plan">الخطة المجانية</p>
         <div class="pricing-price">0 <span>دج</span></div>
         <ul class="pricing-features">
-          <li><i class="fa-solid fa-check"></i> جميع الفصول والدروس (75 درساً)</li>
+          <li><i class="fa-solid fa-check"></i> جميع الفصول والدروس (أكثر من 120 فصلاً)</li>
           <li><i class="fa-solid fa-check"></i> تمارين النطق مع التحليل التصحيحي</li>
           <li><i class="fa-solid fa-check"></i> نصوص الإملاء المترجمة</li>
           <li><i class="fa-solid fa-check"></i> نظام النقاط والمستويات</li>
@@ -1848,15 +1864,14 @@
         <div class="pricing-price">1500 <span>دج/شهر</span></div>
         <ul class="pricing-features">
           <li><i class="fa-solid fa-check"></i> كل مزايا الخطة المجانية</li>
-          <li><i class="fa-solid fa-check"></i> امتحانات شاملة A1 ← A2 ← B1 ← B2</li>
-          <li><i class="fa-solid fa-check"></i> شهادة اجتياز كل مستوى</li>
-          <li><i class="fa-solid fa-check"></i> مكافآت XP مضاعفة</li>
-          <li><i class="fa-solid fa-check"></i> دعم مباشر</li>
-          <li><i class="fa-solid fa-check"></i> أولوية المحتوى الجديد</li>
+          <li><i class="fa-solid fa-check"></i> الامتحانات الشاملة لكل مستوى: A1 ← A2 ← B1 ← B2</li>
+          <li><i class="fa-solid fa-check"></i> خمسة أقسام في كل امتحان: قواعد، مفردات، استماع، إملاء، نطق</li>
+          <li><i class="fa-solid fa-check"></i> تصحيح تلقائي ونتيجة فورية (حد النجاح 70%)</li>
         </ul>
         <button class="btn btn-primary" style="width:100%;" onclick="showPaymentModal()">اشترك الآن</button>
       </div>
     </div>
+    <p class="pricing-note" style="text-align:center;margin:22px auto 0;max-width:640px;color:var(--text-muted);font-size:14px;line-height:1.9;">💡 الفرق الوحيد بين الخطتين: الامتحانات الشاملة للمستويات تظهر للمشتركين في الخطة المميزة فقط، أما كل الدروس والتمارين فمجانية.</p>
     <div style="text-align:center;margin-top:28px;">
       <button class="btn btn-accent donate-btn" style="padding:12px 34px;border-radius:14px;font-weight:800;" onclick="donateRequest()">
         <i class="fa-solid fa-heart"></i> ادعم الموقع بتبرع
@@ -2034,6 +2049,23 @@
 </div>
 
 <!-- Chapters/Lessons Modal -->
+<div class="modal-overlay" id="lr-guide-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h3 class="modal-title">📖 ابدأ من قسم «دروس» أولاً</h3>
+      <button class="modal-close" onclick="closeModal('lr-guide-modal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="line-height:1.9;margin:0 0 10px;">قبل أن تدخل المستوى الأول (A1) وفصوله، ننصحك بإنهاء قسم «دروس» أولاً: 8 دروس أساسية مكتوبة بالعربية مع صوت إسباني واختبار استماع لكل درس.</p>
+      <p style="line-height:1.9;margin:0;color:var(--text-muted);">ستتعلم فيها الحروف والأصوات والأرقام والتحيات، فتجد فصول المستوى الأول أسهل بكثير.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+        <button class="btn btn-primary" onclick="lrGuideGo()">📖 اذهب إلى الدروس</button>
+        <button class="btn btn-secondary" onclick="lrGuideContinue()">المتابعة إلى الفصل</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="lessons-modal">
   <div class="modal">
     <div class="modal-header">
@@ -4284,6 +4316,7 @@ function _applyLanguageCore(lang) {
 Object.assign(UI_TEXTS, {"📩 لديك رسائل غير مقروءة في صندوقك — اضغط لفتحها": {"en": "📩 You have unread messages in your inbox — tap to open", "es": "📩 Tienes mensajes sin leer en tu buzón — pulsa para abrirlos", "pt": "📩 Tem mensagens por ler na sua caixa — toque para abrir", "ru": "📩 У вас есть непрочитанные сообщения — нажмите, чтобы открыть"}, "📩 وصلتك رسالة جديدة من إدارة إسبانيول — اضغط لفتح الصندوق": {"en": "📩 New message from the Español team — tap to open your inbox", "es": "📩 Nuevo mensaje del equipo de Español — pulsa para abrir tu buzón", "pt": "📩 Nova mensagem da equipa Español — toque para abrir a caixa", "ru": "📩 Новое сообщение от команды Español — нажмите, чтобы открыть ящик"}});
 Object.assign(UI_TEXTS, {"رسائل الصندوق:": {"en": "Messages in inbox:", "es": "Mensajes en el buzón:", "pt": "Mensagens na caixa:", "ru": "Сообщений в ящике:"}, "منها جديدة:": {"en": "of which new:", "es": "de ellas nuevas:", "pt": "das quais novas:", "ru": "из них новых:"}, "🧹 حذف المقروءة": {"en": "🧹 Delete read", "es": "🧹 Eliminar leídos", "pt": "🧹 Excluir lidas", "ru": "🧹 Удалить прочитанные"}, "حذف": {"en": "Delete", "es": "Eliminar", "pt": "Excluir", "ru": "Удалить"}, "↩️ رد": {"en": "↩️ Reply", "es": "↩️ Responder", "pt": "↩️ Responder", "ru": "↩️ Ответить"}, "اكتب ردك هنا…": {"en": "Write your reply here…", "es": "Escribe tu respuesta aquí…", "pt": "Escreva sua resposta aqui…", "ru": "Напишите ответ здесь…"}, "📤 إرسال الرد": {"en": "📤 Send reply", "es": "📤 Enviar respuesta", "pt": "📤 Enviar resposta", "ru": "📤 Отправить ответ"}, "اكتب ردك أولاً": {"en": "Write your reply first", "es": "Escribe primero tu respuesta", "pt": "Escreva primeiro a sua resposta", "ru": "Сначала напишите ответ"}, "تعذر إرسال الرد، حاول لاحقاً": {"en": "Could not send the reply, try later", "es": "No se pudo enviar la respuesta, inténtalo más tarde", "pt": "Não foi possível enviar a resposta, tente mais tarde", "ru": "Не удалось отправить ответ, попробуйте позже"}, "وصل ردك إلى الإدارة ✓": {"en": "Your reply reached the administration ✓", "es": "Tu respuesta llegó a la administración ✓", "pt": "Sua resposta chegou à administração ✓", "ru": "Ваш ответ доставлен администрации ✓"}, "حذف هذه الرسالة نهائياً؟": {"en": "Delete this message permanently?", "es": "¿Eliminar este mensaje definitivamente?", "pt": "Excluir esta mensagem definitivamente?", "ru": "Удалить это сообщение навсегда?"}, "حذف كل الرسائل المقروءة نهائياً؟": {"en": "Permanently delete all read messages?", "es": "¿Eliminar definitivamente todos los mensajes leídos?", "pt": "Excluir definitivamente todas as mensagens lidas?", "ru": "Удалить все прочитанные сообщения навсегда?"}, "تعذر حذف الرسالة — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات": {"en": "Could not delete the message — run user_inbox_actions.sql in the database", "es": "No se pudo eliminar el mensaje — hay que ejecutar user_inbox_actions.sql en la base de datos", "pt": "Não foi possível excluir a mensagem — execute user_inbox_actions.sql no banco de dados", "ru": "Не удалось удалить сообщение — выполните user_inbox_actions.sql в базе данных"}, "تعذر حذف الرسائل — يلزم تنفيذ user_inbox_actions.sql في قاعدة البيانات": {"en": "Could not delete the messages — run user_inbox_actions.sql in the database", "es": "No se pudieron eliminar los mensajes — hay que ejecutar user_inbox_actions.sql en la base de datos", "pt": "Não foi possível excluir as mensagens — execute user_inbox_actions.sql no banco de dados", "ru": "Не удалось удалить сообщения — выполните user_inbox_actions.sql в базе данных"}, "تم حذف الرسالة": {"en": "Message deleted", "es": "Mensaje eliminado", "pt": "Mensagem excluída", "ru": "Сообщение удалено"}, "تم حذف الرسائل المقروءة": {"en": "Read messages deleted", "es": "Mensajes leídos eliminados", "pt": "Mensagens lidas excluídas", "ru": "Прочитанные сообщения удалены"}, "عدد الرسائل في صندوقك": {"en": "Number of messages in your inbox", "es": "Número de mensajes en tu buzón", "pt": "Número de mensagens na sua caixa", "ru": "Количество сообщений в вашем ящике"}, "ردود الإدارة على رسائلك ورسائلها إليك ستظهر هنا": {"en": "Replies from the administration and its messages to you will appear here", "es": "Las respuestas de la administración y sus mensajes para ti aparecerán aquí", "pt": "As respostas da administração e as mensagens dela para você aparecerão aqui", "ru": "Ответы администрации и её сообщения вам появятся здесь"}});
 Object.assign(UI_TEXTS, {"إدارة إسبانيول": {"en": "Español Team", "es": "Equipo de Español", "pt": "Equipe Español", "ru": "Команда Español"}, "رد على رسالتك": {"en": "Reply to your message", "es": "Respuesta a tu mensaje", "pt": "Resposta à sua mensagem", "ru": "Ответ на ваше сообщение"}, "رسالة من إدارة إسبانيول": {"en": "Message from the Español team", "es": "Mensaje del equipo de Español", "pt": "Mensagem da equipe Español", "ru": "Сообщение от команды Español"}, "الكل": {"en": "All", "es": "Todos", "pt": "Todas", "ru": "Все"}, "غير المقروءة": {"en": "Unread", "es": "No leídos", "pt": "Não lidas", "ru": "Непрочитанные"}, "اختر رسالة لقراءتها": {"en": "Select a message to read", "es": "Elige un mensaje para leerlo", "pt": "Escolha uma mensagem para ler", "ru": "Выберите сообщение для чтения"}, "لا توجد رسائل غير مقروءة": {"en": "No unread messages", "es": "No hay mensajes sin leer", "pt": "Não há mensagens por ler", "ru": "Нет непрочитанных сообщений"}, "→ الرجوع للصندوق": {"en": "→ Back to inbox", "es": "→ Volver al buzón", "pt": "→ Voltar à caixa", "ru": "→ Назад к ящику"}});
+Object.assign(UI_TEXTS, {"جميع الفصول والدروس (أكثر من 120 فصلاً)": {"en": "All chapters and lessons (120+ chapters)", "es": "Todos los capítulos y lecciones (más de 120 capítulos)", "pt": "Todos os capítulos e lições (mais de 120 capítulos)", "ru": "Все главы и уроки (более 120 глав)"}, "الامتحانات الشاملة لكل مستوى: A1 ← A2 ← B1 ← B2": {"en": "Comprehensive exams for every level: A1 → A2 → B1 → B2", "es": "Exámenes integrales de cada nivel: A1 → A2 → B1 → B2", "pt": "Exames completos de cada nível: A1 → A2 → B1 → B2", "ru": "Итоговые экзамены каждого уровня: A1 → A2 → B1 → B2"}, "خمسة أقسام في كل امتحان: قواعد، مفردات، استماع، إملاء، نطق": {"en": "Five sections in every exam: grammar, vocabulary, listening, dictation, speaking", "es": "Cinco partes en cada examen: gramática, vocabulario, comprensión auditiva, dictado y pronunciación", "pt": "Cinco seções em cada exame: gramática, vocabulário, audição, ditado e pronúncia", "ru": "Пять разделов в каждом экзамене: грамматика, лексика, аудирование, диктант, произношение"}, "تصحيح تلقائي ونتيجة فورية (حد النجاح 70%)": {"en": "Automatic grading and instant result (70% pass mark)", "es": "Corrección automática y resultado inmediato (aprobado con 70%)", "pt": "Correção automática e resultado imediato (nota de aprovação 70%)", "ru": "Автоматическая проверка и мгновенный результат (проходной балл 70%)"}, "💡 الفرق الوحيد بين الخطتين: الامتحانات الشاملة للمستويات تظهر للمشتركين في الخطة المميزة فقط، أما كل الدروس والتمارين فمجانية.": {"en": "💡 The only difference between the two plans: the comprehensive level exams are available to Premium subscribers only — all lessons and exercises are free.", "es": "💡 La única diferencia entre los dos planes: los exámenes integrales de nivel solo están disponibles para suscriptores Premium; todas las lecciones y ejercicios son gratuitos.", "pt": "💡 A única diferença entre os dois planos: os exames completos de nível estão disponíveis apenas para assinantes Premium; todas as lições e exercícios são gratuitos.", "ru": "💡 Единственное различие между планами: итоговые экзамены по уровням доступны только подписчикам Premium, а все уроки и упражнения бесплатны."}, "جديد على الإسبانية؟ ابدأ من قسم «دروس»": {"en": "New to Spanish? Start with the “Lessons” section", "es": "¿Nuevo en español? Empieza por la sección «Lecciones»", "pt": "Novo no espanhol? Comece pela seção «Lições»", "ru": "Впервые изучаете испанский? Начните с раздела «Уроки»"}, "8 دروس أساسية: الحروف والأصوات، الأرقام، التحيات والتعارف، الضمائر، Ser و Estar، المذكر والمؤنث، الأدوات، الألوان — ثم انتقل إلى المستوى الأول وفصوله.": {"en": "8 core lessons: letters and sounds, numbers, greetings and introductions, pronouns, Ser and Estar, masculine and feminine, articles, colors — then move on to level one and its chapters.", "es": "8 lecciones básicas: letras y sonidos, números, saludos y presentaciones, pronombres, Ser y Estar, masculino y femenino, artículos, colores — y luego pasa al primer nivel y sus capítulos.", "pt": "8 lições básicas: letras e sons, números, cumprimentos e apresentações, pronomes, Ser e Estar, masculino e feminino, artigos, cores — depois passe ao primeiro nível e seus capítulos.", "ru": "8 базовых уроков: буквы и звуки, числа, приветствия и знакомство, местоимения, Ser и Estar, мужской и женский род, артикли, цвета — затем переходите к первому уровню и его главам."}, "📖 اذهب إلى الدروس": {"en": "📖 Go to the lessons", "es": "📖 Ir a las lecciones", "pt": "📖 Ir para as lições", "ru": "📖 Перейти к урокам"}, "إغلاق": {"en": "Close", "es": "Cerrar", "pt": "Fechar", "ru": "Закрыть"}, "📖 ابدأ من قسم «دروس» أولاً": {"en": "📖 Start with the “Lessons” section first", "es": "📖 Empieza primero por la sección «Lecciones»", "pt": "📖 Comece primeiro pela seção «Lições»", "ru": "📖 Сначала начните с раздела «Уроки»"}, "قبل أن تدخل المستوى الأول (A1) وفصوله، ننصحك بإنهاء قسم «دروس» أولاً: 8 دروس أساسية مكتوبة بالعربية مع صوت إسباني واختبار استماع لكل درس.": {"en": "Before entering level one (A1) and its chapters, we recommend finishing the “Lessons” section first: 8 core lessons written in Arabic with Spanish audio and a listening quiz for each lesson.", "es": "Antes de entrar en el primer nivel (A1) y sus capítulos, te recomendamos terminar primero la sección «Lecciones»: 8 lecciones básicas escritas en árabe con audio en español y un test de comprensión auditiva por lección.", "pt": "Antes de entrar no primeiro nível (A1) e seus capítulos, recomendamos concluir primeiro a seção «Lições»: 8 lições básicas escritas em árabe, com áudio em espanhol e um teste de audição por lição.", "ru": "Прежде чем перейти к первому уровню (A1) и его главам, рекомендуем сначала пройти раздел «Уроки»: 8 базовых уроков на арабском с испанской озвучкой и тестом на аудирование к каждому уроку."}, "ستتعلم فيها الحروف والأصوات والأرقام والتحيات، فتجد فصول المستوى الأول أسهل بكثير.": {"en": "You will learn letters, sounds, numbers and greetings there, which makes the level-one chapters much easier.", "es": "Allí aprenderás las letras, los sonidos, los números y los saludos, y los capítulos del primer nivel te resultarán mucho más fáciles.", "pt": "Lá você aprende as letras, os sons, os números e os cumprimentos, e os capítulos do primeiro nível ficam muito mais fáceis.", "ru": "Там вы изучите буквы, звуки, числа и приветствия, и главы первого уровня станут намного легче."}, "المتابعة إلى الفصل": {"en": "Continue to the chapter", "es": "Continuar al capítulo", "pt": "Continuar para o capítulo", "ru": "Перейти к главе"}, "أنت مسجل بالفعل ولديك الخطة المجانية ✓ — ابدأ من قسم «دروس» ثم انتقل إلى الفصول": {"en": "You are already registered and have the free plan ✓ — start with the “Lessons” section, then move on to the chapters", "es": "Ya estás registrado y tienes el plan gratuito ✓ — empieza por la sección «Lecciones» y luego pasa a los capítulos", "pt": "Você já está registrado e tem o plano gratuito ✓ — comece pela seção «Lições» e depois passe aos capítulos", "ru": "Вы уже зарегистрированы и у вас бесплатный план ✓ — начните с раздела «Уроки», затем переходите к главам"}});
 const UI_PATTERNS = [
   [/^(\d+)% مكتمل$/, ['$1% complete', '$1% completado', '$1% concluído', '$1% завершено']],
   [/^(\d+)% — يُحمَّل مرة واحدة فقط ثم يعمل داخل جهازك$/, ['$1% — downloaded only once, then runs on your device', '$1% — se descarga solo una vez y luego funciona en tu dispositivo', '$1% — transferido apenas uma vez e depois funciona no seu dispositivo', '$1% — загружается один раз, затем работает на вашем устройстве']],
@@ -4542,7 +4575,7 @@ function renderProgressView() {
     });
   } else {
     h += '<div class="pm-empty"><i class="fa-solid fa-book-open"></i><div>' + pt_('noProgress') + '</div>'
-      + '<button class="btn btn-primary" style="margin-top:12px;" onclick="closeModal(\'progress-modal\');scrollToChapters()">' + pt_('startNow') + '</button></div>';
+      + '<button class="btn btn-primary" style="margin-top:12px;" onclick="closeModal(\'progress-modal\');startLearning()">' + pt_('startNow') + '</button></div>';
   }
   h += '</div>';
   h += '<div class="pm-card"><h4>🏆 ' + pt_('levelXp') + '</h4>';
@@ -4562,6 +4595,7 @@ function renderProgressView() {
 }
 applyLanguage(currentLang());
 _trStartObserver();
+updateLrGuide();
 
 (function installSupabaseBackend() {
   const nativeFetch = window.fetch.bind(window);
@@ -5268,6 +5302,12 @@ function updateLevelCards() {
 function openLessonsModal(chapterId) {
   const ch = chapters.find(c => c.id === chapterId);
   if (!ch) return;
+  // أول مرة يدخل فيها مستخدم فصلاً من المستوى الأول: نوجّهه إلى قسم «دروس» أولاً (مرة واحدة)
+  if (String(ch.level || '').trim().indexOf('A1') === 0 && !_lsGet('lr_seen') && !_lsGet('lr_guide_skip') && !document.getElementById('lessons-modal').classList.contains('open')) {
+    _lrGuidePending = chapterId;
+    openModal('lr-guide-modal');
+    return;
+  }
   document.getElementById('lessons-modal-title').textContent = T(ch.title);
   lastLessonsChapterId = chapterId;
   const body = document.getElementById('lessons-modal-body');
@@ -6410,8 +6450,8 @@ function donateRequest() {
 
 function startFreePlan() {
   if (currentUser) {
-    showToast('success', 'أنت مسجل بالفعل ولديك الخطة المجانية ✓ — إنها مفتوحة لجميع المستخدمين المسجلين، ابدأ من الفصول مباشرة');
-    scrollToChapters();
+    showToast('success', 'أنت مسجل بالفعل ولديك الخطة المجانية ✓ — ابدأ من قسم «دروس» ثم انتقل إلى الفصول');
+    startLearning();
     return;
   }
   openAuthModal('register');
@@ -6625,6 +6665,23 @@ async function submitContact(e) {
   }
 }
 
+function _lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+function _lsSet(k) { try { localStorage.setItem(k, '1'); } catch (e) {} }
+function updateLrGuide() {
+  const b = document.getElementById('lr-guide-banner');
+  if (b) b.style.display = (_lsGet('lr_seen') || _lsGet('lr_banner_hidden')) ? 'none' : 'flex';
+}
+function hideLrBanner() { _lsSet('lr_banner_hidden'); updateLrGuide(); }
+function goToLessonsRoom() { const el = document.getElementById('lessons-room'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }
+function startLearning() { if (_lsGet('lr_seen')) scrollToChapters(); else goToLessonsRoom(); }
+let _lrGuidePending = null;
+function lrGuideGo() { closeModal('lr-guide-modal'); _lrGuidePending = null; goToLessonsRoom(); }
+function lrGuideContinue() {
+  _lsSet('lr_guide_skip');
+  closeModal('lr-guide-modal');
+  const id = _lrGuidePending; _lrGuidePending = null;
+  if (id) openLessonsModal(id);
+}
 function scrollToChapters() {
   document.getElementById('chapters').scrollIntoView({ behavior: 'smooth' });
 }
@@ -7245,6 +7302,7 @@ function lrBuildGrid() {
 
 function lrOpen(i) {
   if (i < 0 || i >= LR_LESSONS.length) return;
+  _lsSet('lr_seen'); updateLrGuide();
   lrStopAll();
   lrIdx = i;
   const L = LR_LESSONS[i];
