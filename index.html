@@ -4901,7 +4901,7 @@ function updateHeroButtons() {
 function updateUserUI() {
   updateHeroButtons();
   refreshInboxBadge();
-  if (currentUser) { startInboxWatch(); startPresence(); }
+  if (currentUser) { startInboxWatch(); startPresence(); syncAllLocalProgress(); }
   if (!currentUser) return;
   document.getElementById('auth-buttons').style.display = 'none';
   document.getElementById('user-menu').style.display = 'flex';
@@ -5093,6 +5093,22 @@ async function refreshInboxBadge() {
   _inboxPrev = n;
 }
 // نبضة حضور كل دقيقتين بينما الصفحة مفتوحة، ليعرف الأدمن من هو أونلاين (تتطلب user_presence.sql — وتُتجاهل بصمت إن لم يُنفَّذ)
+// مزامنة تقدّم الفصول المحلية إلى القاعدة (كان يُحفظ في المتصفح فقط) — ليراه الأدمن وليبقى لو بدّل المستخدم جهازه
+async function syncAllLocalProgress() {
+  try {
+    const uid = await getMyUid();
+    if (!uid) return;
+    const lp = localStorage.getItem('local_progress');
+    if (!lp || lp === '{}') return;
+    const key = 'lp_synced_' + uid;
+    if (localStorage.getItem(key) === lp) return;
+    const r = await sb.rpc('sync_local_progress', { p: JSON.parse(lp) });
+    if (!r.error) localStorage.setItem(key, lp);
+  } catch (e) { /* تُتجاهل إن لم يُنفَّذ user_progress_sync.sql */ }
+}
+function syncLocalLesson(id, score, xp) {
+  try { if (currentUser) sb.rpc('save_local_progress', { p_lesson_id: String(id), p_score: Math.round(score || 0), p_xp: Math.round(xp || 0) }).then(() => {}, () => {}); } catch (e) {}
+}
 let _presTimer = null;
 function startPresence() {
   if (_presTimer) return;
@@ -6499,6 +6515,7 @@ async function completeLesson() {
     };
     if (!prev) lp.__xp = (lp.__xp || 0) + xp;
     localStorage.setItem('local_progress', JSON.stringify(lp));
+    syncLocalLesson(currentLesson.id, lp[currentLesson.id].score, prev ? 0 : xp);
     showXpPopup(xp);
     showToast('success', `🎉 أحسنت! اكتسبت ${xp} نقطة XP!`);
     userProgress[currentLesson.id] = { completed: 1, score };
